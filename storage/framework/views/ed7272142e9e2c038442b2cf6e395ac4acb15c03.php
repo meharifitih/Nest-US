@@ -114,7 +114,7 @@
                                                 <?php if(Auth::user()->canImpersonate()): ?>
                                                     <a class="avtar avtar-xs btn-link-info text-info" data-bs-toggle="tooltip"
                                                         data-bs-original-title="<?php echo e(__('Continue as Customer')); ?>"
-                                                        href="<?php echo e(route('impersonate', $user->id)); ?>"> <i
+                                                        href="<?php echo e(route('impersonate', $user->id)); ?>" target="_blank"> <i
                                                             data-feather="log-in"></i></a>
                                                 <?php endif; ?>
 

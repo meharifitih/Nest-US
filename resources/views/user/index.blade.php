@@ -106,7 +106,7 @@
                                                 @if (Auth::user()->canImpersonate())
                                                     <a class="avtar avtar-xs btn-link-info text-info" data-bs-toggle="tooltip"
                                                         data-bs-original-title="{{ __('Continue as Customer') }}"
-                                                        href="{{ route('impersonate', $user->id) }}"> <i
+                                                        href="{{ route('impersonate', $user->id) }}" target="_blank"> <i
                                                             data-feather="log-in"></i></a>
                                                 @endif
 
