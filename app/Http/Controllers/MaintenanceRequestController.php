@@ -228,70 +228,76 @@ class MaintenanceRequestController extends Controller
             $messages = $validator->getMessageBag();
             return redirect()->back()->with('error', $messages->first());
         }
-        $setting = settings();
 
         $maintenanceRequest = MaintenanceRequest::find($id);
-        $maintenanceRequest->fixed_date = $request->fixed_date;
-        $maintenanceRequest->status = $request->status;
-        $maintenanceRequest->amount = $request->amount;
-        $maintenanceRequest->save();
+        if (!$maintenanceRequest) {
+            return redirect()->back()->with('error', __('Maintenance request not found.'));
+        }
 
-        if (!empty($request->invoice)) {
-            $requestFilenameWithExt = $request->file('invoice')->getClientOriginalName();
-            $requestFilename = pathinfo($requestFilenameWithExt, PATHINFO_FILENAME);
-            $requestExtension = $request->file('invoice')->getClientOriginalExtension();
-            $requestFileName = $requestFilename . '_' . time() . '.' . $requestExtension;
-            $dir = storage_path('upload/invoice');
-            if (!file_exists($dir)) {
-                mkdir($dir, 0777, true);
+        try {
+            $maintenanceRequest->fixed_date = $request->fixed_date;
+            $maintenanceRequest->status = $request->status;
+            $maintenanceRequest->amount = $request->amount;
+            
+            if (!empty($request->invoice)) {
+                $requestFilenameWithExt = $request->file('invoice')->getClientOriginalName();
+                $requestFilename = pathinfo($requestFilenameWithExt, PATHINFO_FILENAME);
+                $requestExtension = $request->file('invoice')->getClientOriginalExtension();
+                $requestFileName = $requestFilename . '_' . time() . '.' . $requestExtension;
+                $dir = storage_path('upload/invoice');
+                if (!file_exists($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+                $request->file('invoice')->storeAs('upload/invoice/', $requestFileName);
+                $maintenanceRequest->invoice = $requestFileName;
             }
-            $request->file('invoice')->storeAs('upload/invoice/', $requestFileName);
-            $maintenanceRequest->invoice = $requestFileName;
+
             $maintenanceRequest->save();
-        }
 
+            $tenants = Tenant::where('property', $maintenanceRequest->property_id)
+                ->where('unit', $maintenanceRequest->unit_id)
+                ->get();
 
-        $tenants = Tenant::where('property', $maintenanceRequest->property_id)
-            ->where('unit', $maintenanceRequest->unit_id)
-            ->get();
+            if ($tenants->isNotEmpty()) {
 
-        if ($tenants->isNotEmpty()) {
+                $userIds = [];
+                foreach ($tenants as $tenant) {
+                    $userIds[] = $tenant->user_id;
+                    $userIds[] = $tenant->parent_id;
+                }
 
-            $userIds = [];
-            foreach ($tenants as $tenant) {
-                $userIds[] = $tenant->user_id;
-                $userIds[] = $tenant->parent_id;
+                $email = User::whereIn('id', array_unique($userIds))
+                    ->pluck('email')
+                    ->toArray();
+
+            } else {
+            
+                $email = User::where('id', $maintenanceRequest->parent_id)
+                    ->pluck('email')
+                    ->toArray();
             }
 
-            $email = User::whereIn('id', array_unique($userIds))
-                ->pluck('email')
-                ->toArray();
+            $module = 'maintenance_request_complete';
+            $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
+            $errorMessage = '';
+            if (!empty($notification) && $notification->enabled_email == 1) {
+                $user_email = $maintenanceRequest->maintainers->email;
+                $notification_responce = MessageReplace($notification, $id);
+                $datas['subject'] = $notification_responce['subject'];
+                $datas['message'] = $notification_responce['message'];
+                $datas['module'] = $module;
+                $datas['logo'] =  $setting['company_logo'];
+                $to = $email;
+                $response = commonEmailSend($to, $datas);
+                        if ($response['status'] == 'error') {
+                            $errorMessage=$response['message'];
+                        }
+            }
 
-        } else {
-        
-            $email = User::where('id', $maintenanceRequest->parent_id)
-                ->pluck('email')
-                ->toArray();
+            return redirect()->back()->with('success', __('Maintenance request successfully update.'). '</br>'.$errorMessage);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('An error occurred while updating the maintenance request. Please try again later.'));
         }
-
-        $module = 'maintenance_request_complete';
-        $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-        $errorMessage = '';
-        if (!empty($notification) && $notification->enabled_email == 1) {
-            $user_email = $maintenanceRequest->maintainers->email;
-            $notification_responce = MessageReplace($notification, $id);
-            $datas['subject'] = $notification_responce['subject'];
-            $datas['message'] = $notification_responce['message'];
-            $datas['module'] = $module;
-            $datas['logo'] =  $setting['company_logo'];
-            $to = $email;
-            $response = commonEmailSend($to, $datas);
-                    if ($response['status'] == 'error') {
-                        $errorMessage=$response['message'];
-                    }
-        }
-
-        return redirect()->back()->with('success', __('Maintenance request successfully update.'). '</br>'.$errorMessage);
     }
 
     public function pendingRequest()

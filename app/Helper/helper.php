@@ -498,13 +498,8 @@ if (!function_exists('settingsById')) {
 if (!function_exists('defaultTenantCreate')) {
     function defaultTenantCreate($id)
     {
-        // Default Tenant role
-        $tenantRoleData = [
-            'name' => 'tenant',
-            'parent_id' => $id,
-        ];
-        $systemTenantRole = Role::create($tenantRoleData);
-        // Default Tenant permissions
+        $systemTenantRole = \App\Models\Role::findOrCreateWithParent('tenant', 'web', $id);
+
         $systemTenantPermissions = [
             ['name' => 'manage invoice'],
             ['name' => 'show invoice'],
@@ -523,7 +518,12 @@ if (!function_exists('defaultTenantCreate')) {
             ['name' => 'delete maintenance request'],
             ['name' => 'show maintenance request'],
         ];
-        $systemTenantRole->givePermissionTo($systemTenantPermissions);
+        if ($systemTenantRole) {
+            $systemTenantRole->givePermissionTo($systemTenantPermissions);
+        } else {
+            \Log::error('Failed to find or create tenant role for parent_id: ' . $id);
+            throw new \Exception('Failed to find or create tenant role for parent_id: ' . $id);
+        }
         return $systemTenantRole;
     }
 }
@@ -531,11 +531,20 @@ if (!function_exists('defaultTenantCreate')) {
 if (!function_exists('defaultMaintainerCreate')) {
     function defaultMaintainerCreate($id)
     {
-        $maintainerRoleData =  [
+        $maintainerRoleData = [
             'name' => 'maintainer',
             'parent_id' => $id,
+            'guard_name' => 'web',
         ];
-        $systemMaintainerRole = Role::create($maintainerRoleData);
+        $systemMaintainerRole = \App\Models\Role::where('name', 'maintainer')
+            ->where('parent_id', $id)
+            ->where('guard_name', 'web')
+            ->first();
+
+        if (!$systemMaintainerRole) {
+            $systemMaintainerRole = (new \App\Models\Role)->newQuery()->create($maintainerRoleData);
+        }
+
         // Default admin permissions
         $systemMaintainerPermissions = [
             ['name' => 'manage maintenance request'],

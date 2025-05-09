@@ -86,7 +86,7 @@
                                                             data-bs-original-title="{{ __('Detete') }}" href="#"> <i
                                                                 data-feather="trash-2"></i></a>
                                                     @endcan
-                                                    @if (\Auth::user()->type == 'maintainer')
+                                                    @if (\Auth::user()->type == 'maintainer' && $request->status == 'pending')
                                                         <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-bs-toggle="tooltip"
                                                             data-size="lg"
                                                             data-bs-original-title="{{ __('Status Update') }}"

@@ -56,6 +56,7 @@
                                     @if (\Auth::user()->type == 'super admin')
                                         <th>{{ __('Active Package') }}</th>
                                         <th>{{ __('Package Due Date') }}</th>
+                                        <th>{{ __('Approval Status') }}</th>
                                     @else
                                         <th>{{ __('Assign Role') }}</th>
                                     @endif
@@ -78,13 +79,16 @@
                                             </td>
                                             <td>{{ !empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited') }}
                                             </td>
+                                            <td>
+                                                <span class="badge bg-{{ $user->approval_status === 'approved' ? 'success' : ($user->approval_status === 'rejected' ? 'danger' : 'warning') }}">
+                                                    {{ ucfirst($user->approval_status) }}
+                                                </span>
+                                            </td>
                                         @else
                                             <td>{{ ucfirst($user->type) }} </td>
                                         @endif
                                         <td>
                                             <div class="cart-action">
-                                                {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id]]) !!}
-
                                                 @can('show user')
                                                     <a class="avtar avtar-xs btn-link-warning text-warning" data-bs-toggle="tooltip"
                                                         data-bs-original-title="{{ __('Show') }}"
@@ -98,9 +102,12 @@
                                                         data-title="{{ __('Edit User') }}"> <i data-feather="edit"></i></a>
                                                 @endcan
                                                 @can('delete user')
-                                                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                        data-bs-original-title="{{ __('Detete') }}" href="#"> <i
-                                                            data-feather="trash-2"></i></a>
+                                                    {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id], 'class' => 'd-inline']) !!}
+                                                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('Delete') }}">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
+                                                    {!! Form::close() !!}
                                                 @endcan
 
                                                 @if (Auth::user()->canImpersonate())
@@ -110,9 +117,23 @@
                                                             data-feather="log-in"></i></a>
                                                 @endif
 
-                                                {!! Form::close() !!}
+                                                @if (\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending')
+                                                    <form action="{{ route('users.approve', $user->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('Approve') }}">
+                                                            <i data-feather="check"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('users.reject', $user->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('Reject') }}">
+                                                            <i data-feather="x"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
-
                                         </td>
                                     </tr>
                                 @endforeach

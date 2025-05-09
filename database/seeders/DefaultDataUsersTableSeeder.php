@@ -483,6 +483,8 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'lang' => 'english',
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
+                'approval_status' => 'approved',
+                'is_active' => 1
             ];
             $systemSuperAdmin = User::create($superAdminData);
             $systemSuperAdmin->assignRole($systemSuperAdminRole);
@@ -675,6 +677,8 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'profile' => 'avatar.png',
                 'subscription' => 0,
                 'parent_id' => $systemOwner->id,
+                'approval_status' => 'approved',
+                'is_active' => 1
             ];
             $systemManager = User::create($managerData);
             // Default Manager Role Assign
@@ -694,6 +698,8 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
                 'parent_id' => $systemOwner->id,
+                'approval_status' => 'approved',
+                'is_active' => 1
             ];
             $systemTenant = User::create($tenantData);
             $systemTenantDetail = new Tenant();
@@ -715,6 +721,8 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
                 'parent_id' => $systemOwner->id,
+                'approval_status' => 'approved',
+                'is_active' => 1
             ];
             $systemMaintainer = User::create($maintainerData);
             $systemMaintainerDetail = new Maintainer();

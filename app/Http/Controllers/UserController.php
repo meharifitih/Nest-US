@@ -68,6 +68,16 @@ class UserController extends Controller
                 $user->subscription = 1;
                 $user->parent_id = parentId();
                 $user->email_verified_at = now();
+                
+                // Set approval status based on user type
+                if ($user->type === 'tenant' || $user->type === 'maintainer') {
+                    $user->approval_status = 'approved';
+                    $user->is_active = 1;
+                } else {
+                    $user->approval_status = 'pending';
+                    $user->is_active = 0;
+                }
+                
                 $user->save();
                 $userRole = Role::findByName('owner');
                 $user->assignRole($userRole);
@@ -148,6 +158,16 @@ class UserController extends Controller
                 $user->profile = 'avatar.png';
                 $user->lang = 'english';
                 $user->parent_id = parentId();
+                
+                // Set approval status based on user type
+                if ($userRole->name === 'tenant' || $userRole->name === 'maintainer') {
+                    $user->approval_status = 'approved';
+                    $user->is_active = 1;
+                } else {
+                    $user->approval_status = 'pending';
+                    $user->is_active = 0;
+                }
+                
                 $user->save();
                 $user->assignRole($userRole);
 

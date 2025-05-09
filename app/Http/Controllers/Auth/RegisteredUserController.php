@@ -67,10 +67,26 @@ class RegisteredUserController extends Controller
             'lang' => 'english',
             'subscription' => 1,
             'parent_id' => 1,
+            'approval_status' => 'pending',
+            'is_active' => 0
         ];
+        
+        // If this is the first user (super admin), set as approved
+        if (User::count() === 0) {
+            $userData['type'] = 'super admin';
+            $userData['approval_status'] = 'approved';
+            $userData['is_active'] = 1;
+        } else {
+            // Auto-approve non-owner users
+            if ($userData['type'] !== 'owner') {
+                $userData['approval_status'] = 'approved';
+                $userData['is_active'] = 1;
+            }
+        }
+        
         $owner_email_verification = getSettingsValByName('owner_email_verification');
         $owner = User::create($userData);
-        $userRole = Role::findByName('owner');
+        $userRole = Role::findByName($userData['type']);
         $owner->assignRole($userRole);
         Auth::login($owner);
         defaultTenantCreate($owner->id);
@@ -116,7 +132,9 @@ class RegisteredUserController extends Controller
             $owner->email_verified_at = now();
             $owner->email_verification_token = null;
             $owner->save();
-            return redirect(RouteServiceProvider::HOME);
+            
+            // Redirect to review page instead of home
+            return redirect()->route('account.review');
         }
 
         

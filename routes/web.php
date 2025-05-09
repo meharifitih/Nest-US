@@ -28,6 +28,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\MaintainerController;
 use App\Http\Controllers\MaintenanceRequestController;
+use App\Http\Controllers\AccountReviewController;
 
 
 /*
@@ -394,4 +395,15 @@ Route::group(
 Route::get('page/{slug}', [PageController::class, 'page'])->name('page');
 //-------------------------------FAQ-------------------------------------------
 Route::impersonate();
+
+// Account Review Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account/review', [AccountReviewController::class, 'showReviewPage'])->name('account.review');
+});
+
+// Admin Approval Routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/users/{id}/approve', [AccountReviewController::class, 'approveUser'])->name('users.approve');
+    Route::post('/users/{id}/reject', [AccountReviewController::class, 'rejectUser'])->name('users.reject');
+});
 

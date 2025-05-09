@@ -3,17 +3,17 @@
     <div class="row">
         <div class="form-group">
             {{Form::label('fixed_date',__('Date'),array('class'=>'form-label'))}}
-            {{Form::date('fixed_date',null,array('class'=>'form-control hidesearch'))}}
+            {{Form::date('fixed_date',null,array('class'=>'form-control hidesearch','required'))}}
         </div>
         <div class="form-group">
             {{Form::label('status',__('Status'),array('class'=>'form-label'))}}
-            {{Form::select('status',$status,$maintenanceRequest->status,array('class'=>'form-control hidesearch'))}}
+            {{Form::select('status',$status,$maintenanceRequest->status,array('class'=>'form-control hidesearch','required'))}}
         </div>
-        <div class="form-group ">
+        <div class="form-group">
             {{Form::label('amount',__('Amount'),array('class'=>'form-label'))}}
-            {{Form::number('amount',null,array('class'=>'form-control'))}}
+            {{Form::number('amount',null,array('class'=>'form-control','required','min'=>'0','step'=>'0.01'))}}
         </div>
-        <div class="form-group  col-md-12 col-lg-12">
+        <div class="form-group col-md-12 col-lg-12">
             {{Form::label('invoice',__('Attachment'),array('class'=>'form-label'))}}
             {{Form::file('invoice',array('class'=>'form-control'))}}
         </div>

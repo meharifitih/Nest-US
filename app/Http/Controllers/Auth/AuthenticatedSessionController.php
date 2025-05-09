@@ -39,16 +39,29 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
         $loginUser = Auth::user();
+        
         if($loginUser->is_active == 0)
         {
             auth()->logout();
             return redirect()->route('login')->with('error', __('Your account is temporarily inactive. Please contact your administrator to reactivate your account.'));
         }
+        
         if(empty($loginUser->email_verified_at)) {
             auth()->logout();
             return redirect()->route('login')->with('error', __('Verification required: Please check your email to verify your account before continuing.'));
         }
-        if( $loginUser->type=='owner'){
+        
+        // Skip review page for super admin users
+        if($loginUser->type !== 'super admin' && $loginUser->approval_status === 'pending') {
+            return redirect()->route('account.review');
+        }
+        
+        if($loginUser->approval_status === 'rejected') {
+            auth()->logout();
+            return redirect()->route('login')->with('error', __('Your account has been rejected. Please contact support for more information.'));
+        }
+        
+        if($loginUser->type=='owner'){
 
             if($loginUser->subscription_expire_date!=null && date('Y-m-d') > $loginUser->subscription_expire_date){
                 assignSubscription(1);
