@@ -175,6 +175,23 @@
                                         </a>
                                     </li>
                                 @endif
+                                @if (\Auth::user()->type == 'super admin')
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ !empty($activeTab) && $activeTab == 'tutorial_videos' ? ' active ' : '' }}"
+                                            id="profile-tab-tutorial-videos" data-bs-toggle="tab" href="#tutorial_videos" role="tab"
+                                            aria-selected="true">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="ti ti-video me-2 f-20"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-2">
+                                                    <h5 class="mb-0">{{ __('Tutorial Videos') }}</h5>
+                                                    <small class="text-muted">{{ __('Manage tutorial video links') }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                         <div class="col-lg-8">
@@ -870,6 +887,45 @@
                                         @endif
                                         {{ Form::close() }}
 
+                                    </div>
+                                @endif
+                                @if (\Auth::user()->type == 'super admin')
+                                    <div class="tab-pane {{ !empty($activeTab) && $activeTab == 'tutorial_videos' ? ' active show ' : '' }}"
+                                        id="tutorial_videos" role="tabpanel" aria-labelledby="tutorial_videos">
+                                        <form method="POST" action="{{ route('setting.tutorial_videos') }}">
+                                            @csrf
+                                            <div id="video-links-list">
+                                                @php
+                                                    $tutorialVideos = isset($settings['tutorial_videos']) ? json_decode($settings['tutorial_videos'], true) : [];
+                                                @endphp
+                                                @foreach ($tutorialVideos as $idx => $video)
+                                                    <div class="input-group mb-2 video-link-row">
+                                                        <input type="text" name="video_links[]" class="form-control" value="{{ $video }}" placeholder="{{ __('Enter video link') }}" required />
+                                                        <button type="button" class="btn btn-danger remove-video-link">&times;</button>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            <button type="button" class="btn btn-secondary mb-3" id="add-video-link">{{ __('Add Video Link') }}</button>
+                                            <div>
+                                                <button type="submit" class="btn btn-primary">{{ __('Save Video Links') }}</button>
+                                            </div>
+                                        </form>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                document.getElementById('add-video-link').onclick = function() {
+                                                    const row = document.createElement('div');
+                                                    row.className = 'input-group mb-2 video-link-row';
+                                                    row.innerHTML = `<input type="text" name="video_links[]" class="form-control" placeholder="{{ __('Enter video link') }}" required />
+                                                        <button type="button" class="btn btn-danger remove-video-link">&times;</button>`;
+                                                    document.getElementById('video-links-list').appendChild(row);
+                                                };
+                                                document.getElementById('video-links-list').addEventListener('click', function(e) {
+                                                    if (e.target.classList.contains('remove-video-link')) {
+                                                        e.target.closest('.video-link-row').remove();
+                                                    }
+                                                });
+                                            });
+                                        </script>
                                     </div>
                                 @endif
                             </div>

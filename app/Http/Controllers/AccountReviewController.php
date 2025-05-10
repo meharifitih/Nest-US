@@ -21,29 +21,32 @@ class AccountReviewController extends Controller
             return redirect()->route('dashboard');
         }
         
-        // Get tutorial videos from settings
-        $tutorialVideos = getSettingsValByName('tutorial_videos');
+        // Always fetch tutorial videos from the global (super admin) settings
+        $settings = settingsById(1);
+        $tutorialVideos = isset($settings['tutorial_videos']) ? $settings['tutorial_videos'] : '';
         if (empty($tutorialVideos)) {
-            $tutorialVideos = [
-                [
-                    'title' => 'Getting Started Guide',
-                    'url' => 'https://www.youtube.com/embed/example1',
-                    'description' => 'Learn the basics of using our property management system'
-                ],
-                [
-                    'title' => 'Managing Properties',
-                    'url' => 'https://www.youtube.com/embed/example2',
-                    'description' => 'How to add and manage your properties'
-                ],
-                [
-                    'title' => 'Tenant Management',
-                    'url' => 'https://www.youtube.com/embed/example3',
-                    'description' => 'Learn how to manage your tenants effectively'
-                ]
-            ];
+            $tutorialVideos = [];
         } else {
             $tutorialVideos = json_decode($tutorialVideos, true);
         }
+        
+        // Normalize and convert YouTube links to embed format
+        $tutorialVideos = array_map(function($item) {
+            $url = is_array($item) && isset($item['url']) ? $item['url'] : (is_string($item) ? $item : null);
+            if ($url) {
+                // Convert YouTube watch links to embed links
+                if (preg_match('/youtube\\.com\\/watch\\?v=([\\w-]+)/', $url, $matches)) {
+                    $url = 'https://www.youtube.com/embed/' . $matches[1];
+                }
+                return [
+                    'url' => $url,
+                ];
+            }
+            return null;
+        }, $tutorialVideos);
+        
+        // Remove any nulls (invalid entries)
+        $tutorialVideos = array_filter($tutorialVideos);
         
         return view('account.review', compact('tutorialVideos'));
     }

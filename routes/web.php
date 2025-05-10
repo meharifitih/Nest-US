@@ -141,6 +141,7 @@ Route::group(
     Route::post('settings/google-recaptcha', [SettingController::class,'googleRecaptchaData'])->name('setting.google.recaptcha');
     Route::post('settings/company', [SettingController::class,'companyData'])->name('setting.company');
     Route::post('settings/2fa', [SettingController::class, 'twofaEnable'])->name('setting.twofa.enable');
+    Route::post('/settings/tutorial-videos', [\App\Http\Controllers\SettingController::class, 'saveTutorialVideos'])->name('setting.tutorial_videos');
 
     Route::get('footer-setting', [SettingController::class, 'footerSetting'])->name('footerSetting');
     Route::post('settings/footer', [SettingController::class,'footerData'])->name('setting.footer');

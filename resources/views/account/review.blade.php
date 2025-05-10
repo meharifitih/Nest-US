@@ -15,20 +15,24 @@
                     <p class="text-muted">{{ __('While you wait, feel free to explore our tutorial videos below to get familiar with the system.') }}</p>
                 </div>
 
-                <div class="row">
-                    @foreach($tutorialVideos as $video)
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $video['title'] }}</h5>
-                                <p class="card-text">{{ $video['description'] }}</p>
-                                <div class="ratio ratio-16x9">
-                                    <iframe src="{{ $video['url'] }}" title="{{ $video['title'] }}" allowfullscreen></iframe>
+                <div class="row justify-content-center">
+                    @if(count($tutorialVideos) > 0)
+                        @foreach($tutorialVideos as $video)
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body p-2">
+                                    <div class="ratio ratio-16x9">
+                                        <iframe src="{{ $video['url'] }}" allowfullscreen style="border-radius:8px;"></iframe>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @endforeach
+                        @endforeach
+                    @else
+                        <div class="col-12 text-center">
+                            <p class="text-muted">{{ __('No tutorial videos available at the moment. Please check back later!') }}</p>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="text-center mt-4">

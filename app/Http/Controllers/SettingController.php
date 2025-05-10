@@ -853,4 +853,27 @@ class SettingController extends Controller
 
         throw ValidationException::withMessages(['otp' => 'Incorrect value. Please try again...']);
     }
+
+    public function saveTutorialVideos(Request $request)
+    {
+        $this->validate($request, [
+            'video_links' => 'array',
+            'video_links.*' => 'url',
+        ]);
+
+        $videoLinks = $request->input('video_links', []);
+        $jsonLinks = json_encode($videoLinks);
+
+        // Use PostgreSQL upsert syntax
+        \DB::insert(
+            'INSERT INTO settings (value, name, parent_id) VALUES (?, ?, ?) ON CONFLICT (name, parent_id) DO UPDATE SET value = EXCLUDED.value',
+            [
+                $jsonLinks,
+                'tutorial_videos',
+                parentId(),
+            ]
+        );
+
+        return redirect()->back()->with('success', __('Tutorial video links updated!'))->with('tab', 'tutorial_videos');
+    }
 }
