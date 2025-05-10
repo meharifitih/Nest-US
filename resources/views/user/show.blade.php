@@ -83,6 +83,19 @@
                                                 </a>
                                                 <a href="#" class="list-group-item list-group-item-action">
                                                     <div class="d-flex align-items-center">
+                                                        <!-- <div class="flex-shrink-0">
+                                                            <i class="material-icons-two-tone f-20">badge</i>
+                                                        </div> -->
+                                                        <div class="flex-grow-1 mx-3">
+                                                            <h5 class="m-0">{{ __('Fayda ID') }}</h5>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <small>{{ $user->fayda_id }}</small>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action">
+                                                    <div class="d-flex align-items-center">
                                                         <div class="flex-shrink-0">
                                                             <i class="material-icons-two-tone f-20">phonelink_ring</i>
                                                         </div>
@@ -197,6 +210,19 @@
                                                         </div>
                                                         <div class="flex-shrink-0">
                                                             <small>{{ $user->email }}</small>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="material-icons-two-tone f-20">badge</i>
+                                                        </div>
+                                                        <div class="flex-grow-1 mx-3">
+                                                            <h5 class="m-0">{{ __('Fayda ID') }}</h5>
+                                                        </div>
+                                                        <div class="flex-shrink-0">
+                                                            <small>{{ $user->fayda_id }}</small>
                                                         </div>
                                                     </div>
                                                 </a>

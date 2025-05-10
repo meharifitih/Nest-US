@@ -53,6 +53,7 @@
                                     <th>{{ __('User') }}</th>
                                     <th>{{ __('Email') }}</th>
                                     <th>{{ __('Phone Number') }}</th>
+                                    <th>{{ __('Fayda ID') }}</th>
                                     @if (\Auth::user()->type == 'super admin')
                                         <th>{{ __('Active Package') }}</th>
                                         <th>{{ __('Package Due Date') }}</th>
@@ -74,6 +75,7 @@
                                         </td>
                                         <td>{{ $user->email }} </td>
                                         <td>{{ !empty($user->phone_number) ? $user->phone_number : '-' }} </td>
+                                        <td>{{ !empty($user->fayda_id) ? $user->fayda_id : '-' }} </td>
                                         @if (\Auth::user()->type == 'super admin')
                                             <td>{{ !empty($user->subscriptions) ? $user->subscriptions->title : '-' }}
                                             </td>

@@ -10,6 +10,36 @@
         <?php echo NoCaptcha::renderJs(); ?>
 
     <?php endif; ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phone_number');
+            const phoneError = document.getElementById('phone_error');
+            
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                // Remove any non-digit characters
+                value = value.replace(/\D/g, '');
+                
+                // Check if number starts with 9 (Ethio Telecom) or 7 (Safaricom)
+                if (value.length > 0) {
+                    const firstDigit = value.charAt(0);
+                    if (firstDigit !== '9' && firstDigit !== '7') {
+                        phoneError.textContent = 'Phone number must start with 9 (Ethio Telecom) or 7 (Safaricom)';
+                        phoneError.style.display = 'block';
+                    } else {
+                        phoneError.style.display = 'none';
+                    }
+                }
+                
+                // Limit to 9 digits
+                if (value.length > 9) {
+                    value = value.slice(0, 9);
+                }
+                
+                e.target.value = value;
+            });
+        });
+    </script>
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
     <div class="card">
@@ -33,7 +63,7 @@
             <?php endif; ?>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="name" name="name"
-                    placeholder="<?php echo e(__('Name')); ?>" />
+                    placeholder="<?php echo e(__('Name')); ?>" required />
                 <label for="name"><?php echo e(__('Name')); ?></label>
                 <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -50,7 +80,7 @@ unset($__errorArgs, $__bag); ?>
             </div>
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email"
-                    placeholder="<?php echo e(__('Email address')); ?>" />
+                    placeholder="<?php echo e(__('Email address')); ?>" required />
                 <label for="email"><?php echo e(__('Email address')); ?></label>
                 <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -66,8 +96,46 @@ endif;
 unset($__errorArgs, $__bag); ?>
             </div>
             <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="fayda_id" name="fayda_id"
+                    placeholder="<?php echo e(__('Fayda ID')); ?>" required />
+                <label for="fayda_id"><?php echo e(__('Fayda ID')); ?></label>
+                <?php $__errorArgs = ['fayda_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <span class="invalid-fayda_id text-danger" role="alert">
+                        <strong><?php echo e($message); ?></strong>
+                    </span>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
+            <div class="form-floating mb-3">
+                <div class="input-group">
+                    <span class="input-group-text">+251</span>
+                    <input type="text" class="form-control" id="phone_number" name="phone_number"
+                        placeholder="<?php echo e(__('Phone Number (e.g., 912345678)')); ?>" required />
+                </div>
+                <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                <span id="phone_error" class="text-danger" style="display: none;"></span>
+                <?php $__errorArgs = ['phone_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <span class="invalid-phone_number text-danger" role="alert">
+                        <strong><?php echo e($message); ?></strong>
+                    </span>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
+            <div class="form-floating mb-3">
                 <input type="password" class="form-control" id="password" name="password"
-                    placeholder="<?php echo e(__('Password')); ?>" />
+                    placeholder="<?php echo e(__('Password')); ?>" required />
                 <label for="password"><?php echo e(__('Password')); ?></label>
                 <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -84,8 +152,8 @@ unset($__errorArgs, $__bag); ?>
             </div>
             <div class="form-floating mb-3">
                 <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                    placeholder="<?php echo e(__('Password Confirmation')); ?>" />
-                <label for="password_confirmation"><?php echo e(__('Password Confirmation')); ?></label>
+                    placeholder="<?php echo e(__('Confirm Password')); ?>" required />
+                <label for="password_confirmation"><?php echo e(__('Confirm Password')); ?></label>
                 <?php $__errorArgs = ['password_confirmation'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -128,7 +196,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
-
             <?php endif; ?>
             <div class="d-grid mt-4">
                 <button type="submit" class="btn btn-secondary p-2"><?php echo e(__('Sign Up')); ?></button>

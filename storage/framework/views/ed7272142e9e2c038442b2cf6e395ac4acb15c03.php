@@ -58,9 +58,11 @@
                                     <th><?php echo e(__('User')); ?></th>
                                     <th><?php echo e(__('Email')); ?></th>
                                     <th><?php echo e(__('Phone Number')); ?></th>
+                                    <th><?php echo e(__('Fayda ID')); ?></th>
                                     <?php if(\Auth::user()->type == 'super admin'): ?>
                                         <th><?php echo e(__('Active Package')); ?></th>
                                         <th><?php echo e(__('Package Due Date')); ?></th>
+                                        <th><?php echo e(__('Approval Status')); ?></th>
                                     <?php else: ?>
                                         <th><?php echo e(__('Assign Role')); ?></th>
                                     <?php endif; ?>
@@ -78,6 +80,7 @@
                                         </td>
                                         <td><?php echo e($user->email); ?> </td>
                                         <td><?php echo e(!empty($user->phone_number) ? $user->phone_number : '-'); ?> </td>
+                                        <td><?php echo e(!empty($user->fayda_id) ? $user->fayda_id : '-'); ?> </td>
                                         <?php if(\Auth::user()->type == 'super admin'): ?>
                                             <td><?php echo e(!empty($user->subscriptions) ? $user->subscriptions->title : '-'); ?>
 
@@ -85,14 +88,17 @@
                                             <td><?php echo e(!empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited')); ?>
 
                                             </td>
+                                            <td>
+                                                <span class="badge bg-<?php echo e($user->approval_status === 'approved' ? 'success' : ($user->approval_status === 'rejected' ? 'danger' : 'warning')); ?>">
+                                                    <?php echo e(ucfirst($user->approval_status)); ?>
+
+                                                </span>
+                                            </td>
                                         <?php else: ?>
                                             <td><?php echo e(ucfirst($user->type)); ?> </td>
                                         <?php endif; ?>
                                         <td>
                                             <div class="cart-action">
-                                                <?php echo Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id]]); ?>
-
-
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('show user')): ?>
                                                     <a class="avtar avtar-xs btn-link-warning text-warning" data-bs-toggle="tooltip"
                                                         data-bs-original-title="<?php echo e(__('Show')); ?>"
@@ -106,9 +112,14 @@
                                                         data-title="<?php echo e(__('Edit User')); ?>"> <i data-feather="edit"></i></a>
                                                 <?php endif; ?>
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete user')): ?>
-                                                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                        data-bs-original-title="<?php echo e(__('Detete')); ?>" href="#"> <i
-                                                            data-feather="trash-2"></i></a>
+                                                    <?php echo Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id], 'class' => 'd-inline']); ?>
+
+                                                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="<?php echo e(__('Delete')); ?>">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
+                                                    <?php echo Form::close(); ?>
+
                                                 <?php endif; ?>
 
                                                 <?php if(Auth::user()->canImpersonate()): ?>
@@ -118,10 +129,23 @@
                                                             data-feather="log-in"></i></a>
                                                 <?php endif; ?>
 
-                                                <?php echo Form::close(); ?>
-
+                                                <?php if(\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending'): ?>
+                                                    <form action="<?php echo e(route('users.approve', $user->id)); ?>" method="POST" class="d-inline">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="<?php echo e(__('Approve')); ?>">
+                                                            <i data-feather="check"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form action="<?php echo e(route('users.reject', $user->id)); ?>" method="POST" class="d-inline">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="<?php echo e(__('Reject')); ?>">
+                                                            <i data-feather="x"></i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
                                             </div>
-
                                         </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
