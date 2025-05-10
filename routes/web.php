@@ -261,6 +261,10 @@ Route::resource('authPage', AuthPageController::class)->middleware(
     ]
 );
 
+// Property Excel Upload Routes
+Route::post('property/{property}/upload-tenant-excel', [PropertyController::class, 'uploadTenantExcel'])->name('property.upload.tenant.excel');
+Route::get('property/{property}/tenant-excel-uploads', [PropertyController::class, 'getTenantExcelUploads'])->name('property.tenant.excel.uploads');
+Route::get('property/tenant-excel-template', [PropertyController::class, 'downloadTenantExcelTemplate'])->name('property.tenant.excel.template');
 
 //-------------------------------Property-------------------------------------------
 Route::group(
@@ -407,4 +411,3 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{id}/approve', [AccountReviewController::class, 'approveUser'])->name('users.approve');
     Route::post('/users/{id}/reject', [AccountReviewController::class, 'rejectUser'])->name('users.reject');
 });
-

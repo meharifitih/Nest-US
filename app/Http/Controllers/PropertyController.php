@@ -8,6 +8,9 @@ use App\Models\PropertyUnit;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\TenantExcelUpload;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\TenantsImport;
 
 class PropertyController extends Controller
 {
@@ -93,11 +96,11 @@ class PropertyController extends Controller
                 $thumbnailFilename = pathinfo($thumbnailFilenameWithExt, PATHINFO_FILENAME);
                 $thumbnailExtension = $request->file('thumbnail')->getClientOriginalExtension();
                 $thumbnailFileName = $thumbnailFilename . '_' . time() . '.' . $thumbnailExtension;
-                $dir = storage_path('upload/thumbnail');
+                $dir = storage_path('app/public/upload/thumbnail');
                 if (!file_exists($dir)) {
                     mkdir($dir, 0777, true);
                 }
-                $request->file('thumbnail')->storeAs('upload/thumbnail/', $thumbnailFileName);
+                $request->file('thumbnail')->storeAs('public/upload/thumbnail/', $thumbnailFileName);
                 $thumbnail = new PropertyImage();
                 $thumbnail->property_id = $property->id;
                 $thumbnail->image = $thumbnailFileName;
@@ -111,11 +114,11 @@ class PropertyController extends Controller
                     $propertyFilename = pathinfo($propertyFilenameWithExt, PATHINFO_FILENAME);
                     $propertyExtension = $file->getClientOriginalExtension();
                     $propertyFileName = $propertyFilename . '_' . time() . '.' . $propertyExtension;
-                    $dir = storage_path('upload/property');
+                    $dir = storage_path('app/public/upload/property');
                     if (!file_exists($dir)) {
                         mkdir($dir, 0777, true);
                     }
-                    $file->storeAs('upload/property/', $propertyFileName);
+                    $file->storeAs('public/upload/property/', $propertyFileName);
 
                     $propertyImage = new PropertyImage();
                     $propertyImage->property_id = $property->id;
@@ -240,11 +243,11 @@ class PropertyController extends Controller
                 $thumbnailFilename = pathinfo($thumbnailFilenameWithExt, PATHINFO_FILENAME);
                 $thumbnailExtension = $request->file('thumbnail')->getClientOriginalExtension();
                 $thumbnailFileName = $thumbnailFilename . '_' . time() . '.' . $thumbnailExtension;
-                $dir = storage_path('upload/thumbnail');
+                $dir = storage_path('app/public/upload/thumbnail');
                 if (!file_exists($dir)) {
                     mkdir($dir, 0777, true);
                 }
-                $request->file('thumbnail')->storeAs('upload/thumbnail/', $thumbnailFileName);
+                $request->file('thumbnail')->storeAs('public/upload/thumbnail/', $thumbnailFileName);
                 $thumbnail = PropertyImage::where('property_id', $property->id)->where('type', 'thumbnail')->first();
                 if ($thumbnail) {
                     $thumbnail->image = $thumbnailFileName;
@@ -264,11 +267,11 @@ class PropertyController extends Controller
                     $propertyFilename = pathinfo($propertyFilenameWithExt, PATHINFO_FILENAME);
                     $propertyExtension = $file->getClientOriginalExtension();
                     $propertyFileName = $propertyFilename . '_' . time() . '.' . $propertyExtension;
-                    $dir = storage_path('upload/property');
+                    $dir = storage_path('app/public/upload/property');
                     if (!file_exists($dir)) {
                         mkdir($dir, 0777, true);
                     }
-                    $file->storeAs('upload/property/', $propertyFileName);
+                    $file->storeAs('public/upload/property/', $propertyFileName);
 
                     $propertyImage = new PropertyImage();
                     $propertyImage->property_id = $property->id;
@@ -518,5 +521,129 @@ class PropertyController extends Controller
     {
         $units = PropertyUnit::where('property_id', $property_id)->get()->pluck('name', 'id');
         return response()->json($units);
+    }
+
+    public function uploadTenantExcel(Request $request, Property $property)
+    {
+        if (\Auth::user()->can('edit property')) {
+            $validator = \Validator::make(
+                $request->all(),
+                [
+                    'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => $validator->errors()->first()
+                ]);
+            }
+
+            try {
+                $file = $request->file('excel_file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('upload/tenant_excel', $fileName);
+
+                $excelUpload = new TenantExcelUpload();
+                $excelUpload->property_id = $property->id;
+                $excelUpload->file_name = $fileName;
+                $excelUpload->original_name = $file->getClientOriginalName();
+                $excelUpload->parent_id = parentId();
+                $excelUpload->save();
+
+                Excel::import(new TenantsImport($property->id), $file);
+
+                $excelUpload->status = 'completed';
+                $excelUpload->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    'msg' => __('Tenant information successfully imported.')
+                ]);
+            } catch (\Exception $e) {
+                if (isset($excelUpload)) {
+                    $excelUpload->status = 'failed';
+                    $excelUpload->error_log = $e->getMessage();
+                    $excelUpload->save();
+                }
+
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => __('Error importing tenant information: ') . $e->getMessage()
+                ]);
+            }
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
+    }
+
+    public function getTenantExcelUploads(Property $property)
+    {
+        if (\Auth::user()->can('show property')) {
+            $uploads = TenantExcelUpload::where('property_id', $property->id)
+                ->where('parent_id', parentId())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'uploads' => $uploads
+            ]);
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
+    }
+
+    public function downloadTenantExcelTemplate()
+    {
+        if (\Auth::user()->can('edit property')) {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $data = [
+                [
+                    'first_name' => 'John',
+                    'last_name' => 'Doe',
+                    'email' => 'john@example.com',
+                    'password' => 'password123',
+                    'phone_number' => '+1234567890',
+                    'family_member' => 2,
+                    'country' => 'USA',
+                    'state' => 'California',
+                    'city' => 'Los Angeles',
+                    'zip_code' => '90001',
+                    'address' => '123 Main St',
+                    'unit_name' => 'Unit 101',
+                    'lease_start_date' => '2024-01-01',
+                    'lease_end_date' => '2024-12-31'
+                ]
+            ];
+
+            // Add headers
+            $headers = array_keys($data[0]);
+            foreach ($headers as $i => $header) {
+                $sheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+            }
+
+            // Add sample data
+            foreach ($data as $rowIndex => $row) {
+                foreach ($headers as $colIndex => $header) {
+                    $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+                }
+            }
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+            // Output to browser
+            return response()->streamDownload(function () use ($writer) {
+                $writer->save('php://output');
+            }, 'tenant_template.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
     }
 }

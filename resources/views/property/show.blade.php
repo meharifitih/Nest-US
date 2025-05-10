@@ -6,8 +6,62 @@
     product-detail-page
 @endsection
 @push('script-page')
-@endpush
+<script>
+    $(document).ready(function() {
+        $('#uploadExcelForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            
+            $.ajax({
+                url: "{{ route('property.upload.tenant.excel', $property->id) }}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        toastrs('success', response.msg, 'success');
+                        loadExcelUploads();
+                    } else {
+                        toastrs('error', response.msg, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    toastrs('error', xhr.responseJSON.msg || 'Error uploading file', 'error');
+                }
+            });
+        });
 
+        function loadExcelUploads() {
+            $.ajax({
+                url: "{{ route('property.tenant.excel.uploads', $property->id) }}",
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        var html = '';
+                        response.uploads.forEach(function(upload) {
+                            html += '<tr>';
+                            html += '<td>' + upload.original_name + '</td>';
+                            html += '<td>' + upload.status + '</td>';
+                            html += '<td>' + upload.created_at + '</td>';
+                            if (upload.error_log) {
+                                html += '<td><span class="text-danger">' + upload.error_log + '</span></td>';
+                            } else {
+                                html += '<td>-</td>';
+                            }
+                            html += '</tr>';
+                        });
+                        $('#excelUploadsTable tbody').html(html);
+                    }
+                }
+            });
+        }
+
+        // Load uploads on page load
+        loadExcelUploads();
+    });
+</script>
+@endpush
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
@@ -18,8 +72,6 @@
         <a href="#">{{ __('Details') }}</a>
     </li>
 @endsection
-
-
 
 @section('content')
     <div class="row">
@@ -66,7 +118,12 @@
                                 {{ __('Property Units') }}
                             </a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab-3" data-bs-toggle="tab" href="#profile-3" role="tab" aria-selected="true">
+                                <i class="material-icons-two-tone me-2">upload_file</i>
+                                {{ __('Tenant Excel Upload') }}
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -293,6 +350,62 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="profile-3" role="tabpanel" aria-labelledby="profile-tab-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Upload Tenant Excel') }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="uploadExcelForm" enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="form-group">
+                                                    <label for="excel_file">{{ __('Excel File') }}</label>
+                                                    <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx,.xls,.csv" required>
+                                                    <small class="form-text text-muted">
+                                                        {{ __('Supported formats: XLSX, XLS, CSV. Maximum file size: 2MB') }}
+                                                    </small>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="material-icons-two-tone me-2">upload</i>
+                                                        {{ __('Upload') }}
+                                                    </button>
+                                                    <a href="{{ route('property.tenant.excel.template') }}" class="btn btn-secondary">
+                                                        <i class="material-icons-two-tone me-2">download</i>
+                                                        {{ __('Download Template') }}
+                                                    </a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Upload History') }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table" id="excelUploadsTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{{ __('File Name') }}</th>
+                                                            <th>{{ __('Status') }}</th>
+                                                            <th>{{ __('Upload Date') }}</th>
+                                                            <th>{{ __('Error') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
