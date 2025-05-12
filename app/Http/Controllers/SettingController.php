@@ -187,10 +187,11 @@ class SettingController extends Controller
 
             if (!empty($request->copyright)) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $request->copyright,
                         'copyright',
+                        'common',
                         parentId(),
                     ]
                 );
@@ -238,7 +239,7 @@ class SettingController extends Controller
 
             foreach ($themeSettings as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -291,20 +292,22 @@ class SettingController extends Controller
 
             if (!empty($request->application_name) || !empty($request->copyright)) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $request->application_name,
                         'app_name',
+                        'common',
                         parentId(),
                     ]
                 );
             }
             if (!empty($request->copyright)) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $request->copyright,
                         'copyright',
+                        'common',
                         parentId(),
                     ]
                 );
@@ -316,10 +319,11 @@ class SettingController extends Controller
                 $request->file('logo')->storeAs('upload/logo/', $ownerLogoName);
 
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $ownerLogoName,
                         'company_logo',
+                        'common',
                         parentId(),
                     ]
                 );
@@ -330,10 +334,11 @@ class SettingController extends Controller
                 $request->file('favicon')->storeAs('upload/logo/', $ownerFaviconName);
 
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $ownerFaviconName,
                         'company_favicon',
+                        'common',
                         parentId(),
                     ]
                 );
@@ -344,10 +349,11 @@ class SettingController extends Controller
                 $request->file('light_logo')->storeAs('upload/logo/', $ownerLightLogoName);
 
                 \DB::insert(
-                    'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $ownerLightLogoName,
                         'light_logo',
+                        'common',
                         parentId(),
                     ]
                 );
@@ -398,7 +404,7 @@ class SettingController extends Controller
             ];
             foreach ($smtpArray as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -471,7 +477,7 @@ class SettingController extends Controller
         ];
         foreach ($currencyArray as $key => $val) {
             \DB::insert(
-                'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $val,
                     $key,
@@ -508,7 +514,7 @@ class SettingController extends Controller
 
             foreach ($bankArray as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -541,7 +547,7 @@ class SettingController extends Controller
 
             foreach ($stripeArray as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -577,7 +583,7 @@ class SettingController extends Controller
 
             foreach ($paypalArray as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -611,7 +617,7 @@ class SettingController extends Controller
 
             foreach ($flutterwaveArray as $key => $val) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $val,
                         $key,
@@ -653,7 +659,7 @@ class SettingController extends Controller
 
         foreach ($settings as $key => $val) {
             \DB::insert(
-                'insert into settings (`value`, `name`,`parent_id`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, parent_id) VALUES (?, ?, ?) ON CONFLICT (name, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $val,
                     $key,
@@ -683,7 +689,7 @@ class SettingController extends Controller
 
         foreach ($themeSettings as $key => $val) {
             \DB::insert(
-                'insert into settings (`value`, `name`,`type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $val,
                     $key,
@@ -729,7 +735,7 @@ class SettingController extends Controller
 
 
             \DB::insert(
-                'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $seoFileName,
                     'meta_seo_image',
@@ -741,7 +747,7 @@ class SettingController extends Controller
         unset($settings['meta_seo_image']);
         foreach ($settings as $key => $val) {
             \DB::insert(
-                'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $val,
                     $key,
@@ -781,7 +787,7 @@ class SettingController extends Controller
 
         foreach ($recaptchaArray as $key => $val) {
             \DB::insert(
-                'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                 [
                     $val,
                     $key,
@@ -816,7 +822,7 @@ class SettingController extends Controller
             }
             if (!empty($s_value)) {
                 \DB::insert(
-                    'insert into settings (`value`, `name`, `type`,`parent_id`) values (?, ?, ?,?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
                     [
                         $s_value,
                         $s_key,
