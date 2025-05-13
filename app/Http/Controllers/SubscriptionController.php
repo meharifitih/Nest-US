@@ -44,11 +44,12 @@ class SubscriptionController extends Controller
                     'user_limit' => 'required',
                     'property_limit' => 'required',
                     'tenant_limit' => 'required',
+                    'min_units' => 'required|integer|min:0',
+                    'max_units' => 'required|integer|min:0',
                 ]
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
@@ -59,6 +60,8 @@ class SubscriptionController extends Controller
             $subscription->user_limit = $request->user_limit;
             $subscription->property_limit = $request->property_limit;
             $subscription->tenant_limit = $request->tenant_limit;
+            $subscription->min_units = $request->min_units;
+            $subscription->max_units = $request->max_units;
             $subscription->enabled_logged_history = isset($request->enabled_logged_history) ? 1 : 0;
             $subscription->save();
 
@@ -71,7 +74,7 @@ class SubscriptionController extends Controller
 
     public function show($ids)
     {
-        if (\Auth::user()->can('buy pricing packages')) {
+        if (\Auth::user()->type == 'owner' || \Auth::user()->can('buy pricing packages')) {
             $id = Crypt::decrypt($ids);
             $subscription = Subscription::find($id);
             $settings = subscriptionPaymentSettings();
@@ -93,7 +96,6 @@ class SubscriptionController extends Controller
 
     public function update(Request $request, subscription $subscription)
     {
-
         if (\Auth::user()->can('edit pricing packages')) {
             $validator = \Validator::make(
                 $request->all(), [
@@ -103,11 +105,12 @@ class SubscriptionController extends Controller
                     'user_limit' => 'required',
                     'property_limit' => 'required',
                     'tenant_limit' => 'required',
+                    'min_units' => 'required|integer|min:0',
+                    'max_units' => 'required|integer|min:0',
                 ]
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
@@ -117,6 +120,8 @@ class SubscriptionController extends Controller
             $subscription->user_limit = $request->user_limit;
             $subscription->property_limit = $request->property_limit;
             $subscription->tenant_limit = $request->tenant_limit;
+            $subscription->min_units = $request->min_units;
+            $subscription->max_units = $request->max_units;
             $subscription->enabled_logged_history = isset($request->enabled_logged_history) ? 1 : 0;
             $subscription->save();
 
@@ -142,9 +147,9 @@ class SubscriptionController extends Controller
     {
         if (\Auth::user()->can('manage pricing transation')) {
             if (\Auth::user()->type == 'super admin') {
-                $transactions = PackageTransaction::orderBy('created_at', 'DESC')->get();
+                $transactions = PackageTransaction::with(['subscription', 'user'])->orderBy('created_at', 'DESC')->get();
             } else {
-                $transactions = PackageTransaction::where('user_id', \Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+                $transactions = PackageTransaction::with(['subscription', 'user'])->where('user_id', \Auth::user()->id)->orderBy('created_at', 'DESC')->get();
             }
             $settings = settings();
             return view('subscription.transaction', compact('transactions', 'settings'));
@@ -221,5 +226,23 @@ class SubscriptionController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
 
+    }
+
+    public function subscribe($id)
+    {
+        $user = \Auth::user();
+        $subscription = Subscription::findOrFail($id);
+
+        // Only allow for free packages
+        if ($subscription->package_amount > 0) {
+            return redirect()->back()->with('error', __('This package requires payment.'));
+        }
+
+        // Assign subscription to user
+        $user->subscription = $subscription->id;
+        $user->subscription_expire_date = null; // or set as needed
+        $user->save();
+
+        return redirect()->route('subscriptions.index')->with('success', __('Subscribed successfully! Please wait for admin approval.'));
     }
 }

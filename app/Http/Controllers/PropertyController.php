@@ -326,7 +326,6 @@ class PropertyController extends Controller
 
     public function unitStore(Request $request, $property_id)
     {
-
         if (\Auth::user()->can('create unit')) {
             $validator = \Validator::make(
                 $request->all(),
@@ -346,8 +345,17 @@ class PropertyController extends Controller
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
+            }
+
+            // Check subscription unit limit
+            $user = \Auth::user();
+            $subscription = Subscription::find($user->subscription);
+            if ($subscription) {
+                $totalUnits = PropertyUnit::where('parent_id', parentId())->count();
+                if (!$subscription->checkUnitLimit($totalUnits + 1)) {
+                    return redirect()->back()->with('error', __('You have reached the maximum unit limit for your subscription. Please upgrade your package.'));
+                }
             }
 
             $unit = new PropertyUnit();

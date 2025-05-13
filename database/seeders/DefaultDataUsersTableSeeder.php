@@ -736,12 +736,14 @@ class DefaultDataUsersTableSeeder extends Seeder
             // Subscription default data
             $subscriptionData = [
                 'title' => 'Basic',
-                'package_amount' => 0,
+                'package_amount' => 1000,
                 'interval' => 'Unlimited',
                 'user_limit' => 10,
                 'property_limit' => 10,
                 'tenant_limit' => 10,
                 'enabled_logged_history' => 1,
+                'min_units' => 1,
+                'max_units' => 10,
             ];
             \App\Models\Subscription::create($subscriptionData);
         }

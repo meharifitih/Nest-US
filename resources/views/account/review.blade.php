@@ -5,6 +5,25 @@
 @endsection
 
 @section('content')
+{{-- Subscription selection comes first --}}
+@php($subscriptions = \App\Models\Subscription::all())
+@include('subscription.index')
+
+@if(auth()->user()->approval_status == 'pending')
+    <div class="alert alert-warning">
+        {{ __('Your account is pending approval. Please wait for admin review.') }}
+    </div>
+    {{-- Show tutorial videos --}}
+@elseif(auth()->user()->approval_status == 'rejected')
+    <div class="alert alert-danger">
+        {{ __('Your account was rejected.') }}
+        @if(auth()->user()->rejection_reason)
+            <br>
+            {{ __('Reason:') }} {{ auth()->user()->rejection_reason }}
+        @endif
+    </div>
+@endif
+
 <div class="row">
     <div class="col-12">
         <div class="card">

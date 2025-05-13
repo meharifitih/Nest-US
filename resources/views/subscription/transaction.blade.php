@@ -36,24 +36,19 @@
                             <tbody>
                                 @foreach ($transactions as $transaction)
                             <tr>
-                                <td>{{!empty($transaction->users)?$transaction->users->name:''}}</td>
+                                <td>{{!empty($transaction->user)?$transaction->user->name:''}}</td>
                                 <td>{{dateFormat($transaction->created_at)}}</td>
-                                <td>{{!empty($transaction->subscriptions)?$transaction->subscriptions->title:'-'}}</td>
+                                <td>{{!empty($transaction->subscription)?$transaction->subscription->title:'-'}}</td>
                                 <td>{{$settings['CURRENCY_SYMBOL'].$transaction->amount}}</td>
                                 <td>{{$transaction->payment_type}}</td>
                                 <td>
-                                    @if($transaction->payment_status=='Pending')
-                                        <span
-                                            class="d-inline badge text-bg-warning">{{$transaction->payment_status}}</span>
-                                    @elseif($transaction->payment_status=='succeeded' || $transaction->payment_status=='Success')
-                                        <span
-                                            class="d-inline badge text-bg-success">{{$transaction->payment_status}}</span>
+                                    @if($transaction->payment_status=='Pending' || $transaction->payment_status=='pending')
+                                        <span class="d-inline badge text-bg-warning">{{$transaction->payment_status}}</span>
+                                    @elseif($transaction->payment_status=='succeeded' || $transaction->payment_status=='Success' || $transaction->payment_status=='approved')
+                                        <span class="d-inline badge text-bg-success">{{$transaction->payment_status}}</span>
                                     @else
-                                        <span
-                                            class="d-inline badge text-bg-danger">{{$transaction->payment_status}}</span>
+                                        <span class="d-inline badge text-bg-danger">{{$transaction->payment_status}}</span>
                                     @endif
-
-
                                 </td>
                                 <td>
                                     @if($transaction->payment_type=='Stripe')
@@ -61,23 +56,23 @@
                                            data-bs-original-title="{{__('Receipt')}}" href="{{$transaction->receipt}}">
                                             <i data-feather="file"></i></a>
                                     @elseif($transaction->payment_type=='Bank Transfer')
-                                        {!! Form::open(['method' => 'DELETE', 'route' => ['subscription.bank.transfer.action', [$transaction->id,'accept']]]) !!}
-
                                         <a class="text-primary" data-bs-toggle="tooltip" target="_blank"
                                            data-bs-original-title="{{__('Receipt')}}"
                                            href="{{asset('/storage/upload/payment_receipt/'.$transaction->receipt)}}">
                                             <i data-feather="file"></i></a>
-
-                                        @if(\Auth::user()->type=='super admin' && $transaction->payment_status=='Pending')
-                                            <a class="avtar avtar-xs btn-link-secondary text-secondary" data-bs-toggle="tooltip"
-                                               data-bs-original-title="{{__('Accept')}}"
-                                               href="{{route('subscription.bank.transfer.action', [$transaction->id,'accept'])}}">
-                                                <i data-feather="user-check"></i></a>
-
-                                            <a class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
-                                               data-bs-original-title="{{__('Reject')}}"
-                                               href="{{route('subscription.bank.transfer.action', [$transaction->id,'reject'])}}">
-                                                <i data-feather="user-x"></i></a>
+                                        @if(Auth::user()->type=='super admin' && ($transaction->payment_status=='Pending' || $transaction->payment_status=='pending'))
+                                            <form action="{{ route('admin.payments.approve', $transaction->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Approve')}}">
+                                                    <i data-feather="user-check"></i>
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('admin.payments.reject', $transaction->id) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Reject')}}">
+                                                    <i data-feather="user-x"></i>
+                                                </button>
+                                            </form>
                                         @endif
                                     @endif
                                 </td>

@@ -29,6 +29,7 @@ use App\Http\Controllers\InvoicePaymentController;
 use App\Http\Controllers\MaintainerController;
 use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\AccountReviewController;
+use App\Http\Controllers\AdminController;
 
 
 /*
@@ -98,6 +99,7 @@ Route::group(
     ], function (){
 
     Route::resource('subscriptions', SubscriptionController::class);
+    Route::post('subscriptions/{id}/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
     Route::get('coupons/history', [CouponController::class,'history'])->name('coupons.history');
     Route::delete('coupons/history/{id}/destroy', [CouponController::class,'historyDestroy'])->name('coupons.history.destroy');
     Route::get('coupons/apply', [CouponController::class, 'apply'])->name('coupons.apply');
@@ -411,3 +413,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/users/{id}/approve', [AccountReviewController::class, 'approveUser'])->name('users.approve');
     Route::post('/users/{id}/reject', [AccountReviewController::class, 'rejectUser'])->name('users.reject');
 });
+
+// Payment Verification Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('payment-verification', 'PaymentVerificationController@index')->name('payment.verification.index');
+    Route::post('payment-verification/upload', 'PaymentVerificationController@uploadScreenshot')->name('payment.verification.upload');
+    Route::get('payment-verification/approve/{id}', 'PaymentVerificationController@approve')->name('payment.verification.approve');
+    Route::post('payment-verification/reject/{id}', 'PaymentVerificationController@reject')->name('payment.verification.reject');
+});
+
+// Admin routes for managing payments
+Route::get('/admin/payments/pending', [AdminController::class, 'showPendingPayments'])->name('admin.payments.pending');
+Route::post('/admin/payments/approve/{id}', [AdminController::class, 'approvePayment'])->name('admin.payments.approve');
+Route::post('/admin/payments/reject/{id}', [AdminController::class, 'rejectPayment'])->name('admin.payments.reject');

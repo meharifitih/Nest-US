@@ -25,17 +25,23 @@
             {{Form::label('tenant_limit',__('Tenant Limit'),array('class'=>'form-label'))}}
             {{Form::number('tenant_limit',null,array('class'=>'form-control','placeholder'=>__('Enter tenant limit'),'required'=>'required'))}}
         </div>
-        <div class="form-group col-md-6">
-            <div class="form-check form-switch custom-switch-v1 mb-2">
-                <input type="checkbox" class="form-check-input input-secondary" name="enabled_logged_history" id="enabled_logged_history">
-                {{Form::label('enabled_logged_history',__('Show User Logged History'),array('class'=>'form-label'))}}
-              </div>
+        <div class="form-group">
+            {{Form::label('min_units',__('Minimum Units'),array('class'=>'form-label'))}}
+            {{Form::number('min_units',0,array('class'=>'form-control','placeholder'=>__('Enter minimum units'),'required'=>'required'))}}
         </div>
-
+        <div class="form-group">
+            {{Form::label('max_units',__('Maximum Units'),array('class'=>'form-label'))}}
+            {{Form::number('max_units',0,array('class'=>'form-control','placeholder'=>__('Enter maximum units (0 for unlimited)'),'required'=>'required'))}}
+        </div>
+        <div class="form-group">
+            {{Form::label('enabled_logged_history',__('Enable Logged History'),array('class'=>'form-label'))}}
+            {{Form::checkbox('enabled_logged_history',1,false,array('class'=>'form-check-input'))}}
+        </div>
     </div>
 </div>
 <div class="modal-footer">
-    {{Form::submit(__('Create'),array('class'=>'btn btn-secondary btn-rounded'))}}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('Close')}}</button>
+    {{Form::submit(__('Create'),array('class'=>'btn btn-primary'))}}
 </div>
 {{ Form::close() }}
 

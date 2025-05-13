@@ -501,27 +501,27 @@
                             <div class="col-md-6 col-lg-4">
                                 <div class="card price-card ">
                                     <div class="card-body">
-                                        <h2 class="">{{ $subscription->title }}</h2>
+                                        <h2 class="">{{ isset($subscription) ? $subscription->title : '' }}</h2>
                                         <div class="price-price mt-4">
                                             <sup>{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
-                                            {{ $subscription->package_amount }}
-                                            <span>/{{ $subscription->interval }}</span>
+                                            {{ isset($subscription) ? $subscription->package_amount : '' }}
+                                            <span>/{{ isset($subscription) ? $subscription->interval : '' }}</span>
                                         </div>
                                         <ul class="list-group list-group-flush product-list">
                                             <li class="list-group-item enable">{{ __('User Limit') }}
-                                                {{ $subscription->user_limit }}</li>
+                                                {{ isset($subscription) ? $subscription->user_limit : '' }}</li>
                                             <li class="list-group-item enable">{{ __('Property Limit') }}
-                                                {{ $subscription->property_limit }}</li>
+                                                {{ isset($subscription) ? $subscription->property_limit : '' }}</li>
                                             <li class="list-group-item enable">{{ __('Tenant Limit') }}
-                                                {{ $subscription->tenant_limit }}</li>
+                                                {{ isset($subscription) ? $subscription->tenant_limit : '' }}</li>
 
-                                            @if ($subscription->enabled_logged_history)
+                                            @if (isset($subscription) && $subscription->enabled_logged_history)
                                                 <li class="list-group-item enable">{{ __('Enabled Logged History') }}
                                                 </li>
                                             @else
                                                 <li class="list-group-item">{{ __('Disable Logged History') }}</li>
                                             @endif
-                                            @if ($subscription->couponCheck() > 0)
+                                            @if (isset($subscription) && $subscription->couponCheck() > 0)
                                                 <li class="list-group-item enable">
                                                     {{ __('Enabled Coupon Applicable') }}
                                                 </li>

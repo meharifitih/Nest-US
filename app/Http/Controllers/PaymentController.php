@@ -60,7 +60,8 @@ class PaymentController extends Controller
         $data['amount'] = $amount;
         $data['subscription_transactions_id'] = $packageTransId;
         $data['payment_type'] = 'Bank Transfer';
-        $data['status'] = 'Pending';
+        $data['status'] = 'pending';
+        $data['payment_status'] = 'pending';
         PackageTransaction::transactionData($data);
 
         if($subscription->couponCheck()>0 && !empty($request->coupon)){

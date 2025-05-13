@@ -14,6 +14,8 @@ class Subscription extends Model
         'property_limit',
         'tenant_limit',
         'enabled_logged_history',
+        'min_units',
+        'max_units',
     ];
 
     public static $intervals = [
@@ -29,4 +31,11 @@ class Subscription extends Model
         return $packages;
     }
 
+    public function checkUnitLimit($totalUnits)
+    {
+        if ($this->max_units === 0) {
+            return true; // Unlimited units
+        }
+        return $totalUnits <= $this->max_units;
+    }
 }

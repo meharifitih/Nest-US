@@ -53,7 +53,6 @@ class RegisteredUserController extends Controller
         }
         $this->validate($request, $validation);
 
-
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -61,7 +60,8 @@ class RegisteredUserController extends Controller
             'phone_number' => ['required', 'string', 'regex:/^[79]\d{8}$/'],
             'fayda_id' => ['required', 'string', 'max:255', 'unique:users'],
         ]);
-        $userData=[
+
+        $userData = [
             'first_name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -69,7 +69,7 @@ class RegisteredUserController extends Controller
             'fayda_id' => $request->fayda_id,
             'type' => 'owner',
             'lang' => 'english',
-            'subscription' => 1,
+            'subscription' => 0,
             'parent_id' => 1,
             'approval_status' => 'pending',
             'is_active' => 0
@@ -80,22 +80,24 @@ class RegisteredUserController extends Controller
             $userData['type'] = 'super admin';
             $userData['approval_status'] = 'approved';
             $userData['is_active'] = 1;
-        } else {
-            // Auto-approve non-owner users
-            if ($userData['type'] !== 'owner') {
-                $userData['approval_status'] = 'approved';
-                $userData['is_active'] = 1;
-            }
+            $userData['subscription'] = 1;
         }
         
-        $owner_email_verification = getSettingsValByName('owner_email_verification');
         $owner = User::create($userData);
         $userRole = Role::findByName($userData['type']);
         $owner->assignRole($userRole);
-        Auth::login($owner);
-        defaultTenantCreate($owner->id);
-        defaultMaintainerCreate($owner->id);
-        defaultTemplate($owner->id);
+        
+        // Only login if it's super admin
+        if ($userData['type'] === 'super admin') {
+            Auth::login($owner);
+            defaultTenantCreate($owner->id);
+            defaultMaintainerCreate($owner->id);
+            defaultTemplate($owner->id);
+            return redirect(RouteServiceProvider::HOME);
+        }
+
+        // For regular users, send verification email if enabled
+        $owner_email_verification = getSettingsValByName('owner_email_verification');
         if ($owner_email_verification == 'on') {
             $token = sha1($owner->email);
             $url = route('email-verification', $token);
@@ -113,34 +115,35 @@ class RegisteredUserController extends Controller
             $to = $owner->email;
             $response = sendEmailVerification($to, $data);
             if ($response['status'] == 'success') {
-                auth()->logout();
                 return redirect()->route('login')->with('error', __('We have sent an account verification email to your registered email inbox. Please check your email and follow the instructions to verify your account.'));
             } else {
                 $owner->delete();
-                return redirect()->back()->with('error',  $response['message']);
+                return redirect()->back()->with('error', $response['message']);
             }
-        } else {
-            $module = 'owner_create';
-            $setting = settings();
-            if (!empty($owner)) {
-                $data['subject'] = 'New User Created';
-                $data['module'] = $module;
-                $data['password'] = $request->password;
-                $data['name'] = $request->name;
-                $data['email'] = $request->email;
-                $data['url'] = env('APP_URL');
-                $data['logo'] = $setting['company_logo'];
-                $to = $owner->email;
-                commonEmailSend($to, $data);
-            }
-            $owner->email_verified_at = now();
-            $owner->email_verification_token = null;
-            $owner->save();
-            
-            // Redirect to review page instead of home
-            return redirect()->route('account.review');
         }
 
-        
+        // Send welcome email
+        $module = 'owner_create';
+        $setting = settings();
+        if (!empty($owner)) {
+            $data['subject'] = 'New User Created';
+            $data['module'] = $module;
+            $data['password'] = $request->password;
+            $data['name'] = $request->name;
+            $data['email'] = $request->email;
+            $data['url'] = env('APP_URL');
+            $data['logo'] = $setting['company_logo'];
+            $to = $owner->email;
+            commonEmailSend($to, $data);
+        }
+
+        $owner->email_verified_at = now();
+        $owner->email_verification_token = null;
+        $owner->save();
+
+        // Login the user and redirect to subscription selection
+        Auth::login($owner);
+        return redirect()->route('subscriptions.index')
+            ->with('success', __('Registration successful. Please select a subscription package and upload payment proof for approval.'));
     }
 }

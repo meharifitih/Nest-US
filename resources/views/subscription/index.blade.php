@@ -39,6 +39,7 @@
                                 __('User Limit'),
                                 __('Property Limit'),
                                 __('Tenant Limit'),
+                                __('Unit Range'),
                                 __('Enabled Logged History'),
                                 __('Coupon Applicable'),
                             ];
@@ -50,12 +51,12 @@
                                     @foreach ($subscriptions as $subscription)
                                         <th>
                                             <div class="card-body border-start text-center py-5 py-md-5">
-                                                <h3 class="text-primary"><b> {{ $subscription->title }}</b></h3>
+                                                <h3 class="text-primary"><b> {{ isset($subscription) ? $subscription->title : '' }}</b></h3>
                                                 <h3 class="text-muted mb-0 mt-5">
                                                     <b>
                                                         <sup>{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
-                                                        {{ $subscription->package_amount }}
-                                                        <span>/{{ $subscription->interval }}</span>
+                                                        {{ isset($subscription) ? $subscription->package_amount : '' }}
+                                                        <span>/{{ isset($subscription) ? $subscription->interval : '' }}</span>
                                                     </b>
                                                 </h3>
                                             </div>
@@ -71,19 +72,23 @@
                                             <td class="text-center">
                                                 @switch($feature)
                                                     @case(__('User Limit'))
-                                                        {{ $subscription->user_limit }}
+                                                        {{ isset($subscription) ? $subscription->user_limit : '' }}
                                                     @break
 
                                                     @case(__('Property Limit'))
-                                                        {{ $subscription->property_limit }}
+                                                        {{ isset($subscription) ? $subscription->property_limit : '' }}
                                                     @break
 
                                                     @case(__('Tenant Limit'))
-                                                        {{ $subscription->tenant_limit }}
+                                                        {{ isset($subscription) ? $subscription->tenant_limit : '' }}
+                                                    @break
+
+                                                    @case(__('Unit Range'))
+                                                        {{ isset($subscription) ? $subscription->min_units : '' }} - {{ (isset($subscription) && $subscription->max_units == 0) ? 'Unlimited' : (isset($subscription) ? $subscription->max_units : '') }}
                                                     @break
 
                                                     @case(__('Enabled Logged History'))
-                                                        @if ($subscription->enabled_logged_history)
+                                                        @if (isset($subscription) && $subscription->enabled_logged_history)
                                                             <div class="bg-success text-white avtar avtar-xs icon">
                                                                 <i class="ti ti-check f-20"></i>
                                                             </div>
@@ -95,7 +100,7 @@
                                                     @break
 
                                                     @case(__('Coupon Applicable'))
-                                                        @if ($subscription->couponCheck() > 0)
+                                                        @if (isset($subscription) && $subscription->couponCheck() > 0)
                                                             <div class="bg-success text-white avtar avtar-xs icon">
                                                                 <i class="ti ti-check f-20"></i>
                                                             </div>
@@ -117,7 +122,7 @@
                                     <td></td>
                                     @foreach ($subscriptions as $subscription)
                                         <td class="text-center">
-                                            @if (\Auth::user()->type != 'super admin' && \Auth::user()->subscription == $subscription->id)
+                                            @if (\Auth::user()->type != 'super admin' && isset($subscription) && \Auth::user()->subscription == $subscription->id)
                                                 <span class="badge text-bg-success">{{ __('Active') }}</span>
                                                 <br>
                                                 <span>{{ \Auth::user()->subscription_expire_date ? dateFormat(\Auth::user()->subscription_expire_date) : __('Unlimited') }}</span>
@@ -128,23 +133,29 @@
                                                         \Auth::user()->subscription != $subscription->id &&
                                                         $subscription->package_amount > 0)
                                                     <div class="border-start py-4 py-md-5">
-                                                        <a href="{{ route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}"
+                                                        <a href="{{ isset($subscription) ? route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) : '#' }}"
                                                             class="btn btn-outline-primary bg-light text-primary">
                                                             {{ __('Purchase Now') }}
                                                         </a>
                                                     </div>
                                                 @endif
+                                                @if (isset($subscription) && $subscription->package_amount == 0 && \Auth::user()->type == 'owner')
+                                                    <form action="{{ isset($subscription) ? route('subscriptions.subscribe', $subscription->id) : '#' }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success">{{ __('Subscribe Now') }}</button>
+                                                    </form>
+                                                @endif
                                             @endif
 
-                                            {!! Form::open(['method' => 'DELETE', 'route' => ['subscriptions.destroy', $subscription->id]]) !!}
+                                            {!! Form::open(['method' => 'DELETE', 'route' => [isset($subscription) ? 'subscriptions.destroy' : '#', isset($subscription) ? $subscription->id : null]]) !!}
                                             @can('edit pricing packages')
                                                 <a class="avtar avtar-xs btn-link-secondary text-secondary customModal"
                                                     data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}"
                                                     href="#"
-                                                    data-url="{{ route('subscriptions.edit', $subscription->id) }}"
+                                                    data-url="{{ isset($subscription) ? route('subscriptions.edit', $subscription->id) : '#' }}"
                                                     data-title="{{ __('Edit Package') }}"> <i data-feather="edit"></i></a>
                                             @endcan
-                                            @if ($subscription->id != 1)
+                                            @if (isset($subscription) && $subscription->id != 1)
                                                 @can('delete pricing packages')
                                                     <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog"
                                                         data-bs-toggle="tooltip" data-bs-original-title="{{ __('Detete') }}"

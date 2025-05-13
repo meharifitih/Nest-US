@@ -17,41 +17,46 @@ class PackageTransaction extends Model
         'transaction_id',
         'payment_status',
         'payment_type',
-        'receipt',
         'holder_name',
         'card_number',
         'card_expiry_month',
         'card_expiry_year',
+        'receipt',
+        'payment_screenshot',
+        'status',
+        'rejection_reason',
     ];
 
-    public static function transactionData($paymentData)
+    public static function transactionData($data)
     {
-        return PackageTransaction::create(
-            [
-                'user_id' =>  isset($paymentData['user_id'])?$paymentData['user_id']:parentId(),
-                'holder_name' =>  isset($paymentData['holder_name'])?$paymentData['holder_name']:null,
-                'subscription_transactions_id' =>  isset($paymentData['subscription_transactions_id'])?$paymentData['subscription_transactions_id']:null,
-                'subscription_id' => isset($paymentData['subscription_id'])?$paymentData['subscription_id']:null,
-                'amount' => isset($paymentData['amount'])?$paymentData['amount']:0,
-                'transaction_id' => isset($paymentData['transaction_id']) ? $paymentData['transaction_id'] : null,
-                'payment_status' => isset($paymentData['status']) ? $paymentData['status'] : 'Success',
-                'payment_type' => isset( $paymentData['payment_type'])? $paymentData['payment_type']:null,
-                'receipt' => isset($paymentData['receipt_url']) ? $paymentData['receipt_url'] : null,
-                'card_number' => isset($paymentData['payment_method_details']['card']['last4']) ? $paymentData['payment_method_details']['card']['last4'] : '',
-                'card_expiry_month' => isset($paymentData['payment_method_details']['card']['exp_month']) ? $paymentData['payment_method_details']['card']['exp_month'] : '',
-                'card_expiry_year' => isset($paymentData['payment_method_details']['card']['exp_year']) ? $paymentData['payment_method_details']['card']['exp_year'] : '',
-            ]
-        );
+        $transaction = new PackageTransaction();
+        $transaction->user_id = $data['user_id'] ?? \Auth::user()->id;
+        $transaction->subscription_id = $data['subscription_id'];
+        $transaction->subscription_transactions_id = $data['subscription_transactions_id'];
+        $transaction->amount = $data['amount'];
+        $transaction->transaction_id = $data['transaction_id'] ?? null;
+        $transaction->payment_status = $data['payment_status'] ?? 'pending';
+        $transaction->payment_type = $data['payment_type'] ?? 'manual';
+        $transaction->holder_name = $data['holder_name'] ?? null;
+        $transaction->card_number = $data['card_number'] ?? null;
+        $transaction->card_expiry_month = $data['card_expiry_month'] ?? null;
+        $transaction->card_expiry_year = $data['card_expiry_year'] ?? null;
+        $transaction->receipt = $data['receipt'] ?? null;
+        $transaction->payment_screenshot = $data['payment_screenshot'] ?? null;
+        $transaction->status = $data['status'] ?? 'pending';
+        $transaction->rejection_reason = $data['rejection_reason'] ?? null;
+        $transaction->save();
 
+        return $transaction;
     }
 
-    public function users()
+    public function user()
     {
-        return $this->hasOne('App\Models\User','id','user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
-    public function subscriptions()
+    public function subscription()
     {
-        return $this->hasOne('App\Models\Subscription','id','subscription_id');
+        return $this->belongsTo('App\Models\Subscription', 'subscription_id');
     }
 }

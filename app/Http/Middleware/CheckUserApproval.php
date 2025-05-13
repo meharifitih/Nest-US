@@ -25,12 +25,26 @@ class CheckUserApproval
             
             // For owner users, check approval status
             if ($user->approval_status !== 'approved') {
-                // Allow access to review page and logout
-                if ($request->route()->getName() === 'account.review' || 
-                    $request->route()->getName() === 'logout') {
+                // Allow access to payment/subscription/review/logout routes
+                $allowedRoutes = [
+                    'subscriptions.index',
+                    'subscriptions.show',
+                    'subscriptions.store',
+                    'subscriptions.subscribe',
+                    'subscription.bank.transfer',
+                    'subscription.stripe.payment',
+                    'subscription.paypal',
+                    'subscription.flutterwave',
+                    'payment.verification.upload',
+                    'logout',
+                    'profile.edit',
+                    'profile.update',
+                    'password.update',
+                    'account.review',
+                ];
+                if (in_array($request->route()->getName(), $allowedRoutes)) {
                     return $next($request);
                 }
-                
                 // Redirect to review page for all other routes
                 return redirect()->route('account.review');
             }

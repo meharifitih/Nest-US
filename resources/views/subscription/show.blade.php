@@ -2,6 +2,7 @@
 @section('page-title')
     {{ __('Subscription') }}
 @endsection
+
 @push('script-page')
     <script src="https://js.stripe.com/v3/"></script>
     <script>
@@ -132,7 +133,7 @@
                 }
             });
         @endif
-    </script>SubscriptionLeftDay
+    </script>
 @endpush
 @section('breadcrumb')
     <ul class="breadcrumb mb-0">
@@ -178,7 +179,7 @@
                                         <b class="discoutedPrice">
                                             {{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}{{ $subscription->package_amount }}</b>
                                     </td>
-                                    <td>{{ $subscription->interval }} </td>
+                                    <td>{{ isset($subscription) ? $subscription->interval : '' }} </td>
                                     <td>{{ $subscription->user_limit }} </td>
                                     <td>{{ $subscription->property_limit }}</td>
                                     <td>{{ $subscription->tenant_limit }}</td>
@@ -476,4 +477,66 @@
             </div>
         </div>
     </div>
+
+    <div class="row pricing-grid">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ __('Payment Screenshot Upload') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="payment_screenshot">{{ __('Payment Screenshot') }}</label>
+                                <input type="file" class="form-control" id="payment_screenshot" name="payment_screenshot" accept="image/*" required>
+                                <small class="form-text text-muted">{{ __('Please upload a screenshot of your payment.') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary" id="submit_payment">{{ __('Submit Payment') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('script-page')
+    <script>
+        $(document).ready(function() {
+            $('#submit_payment').click(function(e) {
+                e.preventDefault();
+                
+                var formData = new FormData();
+                formData.append('payment_screenshot', $('#payment_screenshot')[0].files[0]);
+                formData.append('subscription_id', '{{ $subscription->id }}');
+                formData.append('_token', '{{ csrf_token() }}');
+
+                $.ajax({
+                    url: '{{ route('payment.verification.upload') }}',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            toastrs('success', response.message, 'success');
+                            setTimeout(function() {
+                                window.location.href = '{{ route('subscriptions.index') }}';
+                            }, 2000);
+                        } else {
+                            toastrs('error', response.error, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastrs('error', xhr.responseJSON.error, 'error');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

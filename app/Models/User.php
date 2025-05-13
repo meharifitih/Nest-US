@@ -141,6 +141,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function SubscriptionLeftDay()
     {
         $Subscription = Subscription::find($this->subscription);
+        if (!$Subscription) {
+            return null; // or return a default value/message
+        }
         if ($Subscription->interval == 'Unlimited') {
             $return = '<span class="text-success">'.__('Unlimited Days Left').'</span>';
         } else {
