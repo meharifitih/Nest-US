@@ -203,8 +203,11 @@
                                         {{ Form::model($loginUser, ['route' => ['setting.account'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
                                         <div class="d-flex align-items-center mb-3">
                                             <div class="flex-shrink-0">
-                                                <img src="{{ !empty($users->profile) ? $profile . '/' . $users->profile : $profile . '/avatar.png' }}"
-                                                    alt="user-image" class="img-fluid rounded-circle wid-80" />
+                                                <img src="{{ !empty($users->profile) ? asset(Storage::url('upload/profile/' . $users->profile)) : asset(Storage::url('upload/profile/avatar.png')) }}"
+                                                    alt="user-image"
+                                                    class="img-fluid rounded-circle wid-80"
+                                                    onerror="this.onerror=null;this.src='{{ asset(Storage::url('upload/profile/avatar.png')) }}';"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">

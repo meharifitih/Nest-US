@@ -516,32 +516,32 @@
                             <div class="col-md-6 col-lg-4">
                                 <div class="card price-card ">
                                     <div class="card-body">
-                                        <h2 class=""><?php echo e($subscription->title); ?></h2>
+                                        <h2 class=""><?php echo e(isset($subscription) ? $subscription->title : ''); ?></h2>
                                         <div class="price-price mt-4">
                                             <sup><?php echo e(subscriptionPaymentSettings()['CURRENCY_SYMBOL']); ?></sup>
-                                            <?php echo e($subscription->package_amount); ?>
+                                            <?php echo e(isset($subscription) ? $subscription->package_amount : ''); ?>
 
-                                            <span>/<?php echo e($subscription->interval); ?></span>
+                                            <span>/<?php echo e(isset($subscription) ? $subscription->interval : ''); ?></span>
                                         </div>
                                         <ul class="list-group list-group-flush product-list">
                                             <li class="list-group-item enable"><?php echo e(__('User Limit')); ?>
 
-                                                <?php echo e($subscription->user_limit); ?></li>
+                                                <?php echo e(isset($subscription) ? $subscription->user_limit : ''); ?></li>
                                             <li class="list-group-item enable"><?php echo e(__('Property Limit')); ?>
 
-                                                <?php echo e($subscription->property_limit); ?></li>
+                                                <?php echo e(isset($subscription) ? $subscription->property_limit : ''); ?></li>
                                             <li class="list-group-item enable"><?php echo e(__('Tenant Limit')); ?>
 
-                                                <?php echo e($subscription->tenant_limit); ?></li>
+                                                <?php echo e(isset($subscription) ? $subscription->tenant_limit : ''); ?></li>
 
-                                            <?php if($subscription->enabled_logged_history): ?>
+                                            <?php if(isset($subscription) && $subscription->enabled_logged_history): ?>
                                                 <li class="list-group-item enable"><?php echo e(__('Enabled Logged History')); ?>
 
                                                 </li>
                                             <?php else: ?>
                                                 <li class="list-group-item"><?php echo e(__('Disable Logged History')); ?></li>
                                             <?php endif; ?>
-                                            <?php if($subscription->couponCheck() > 0): ?>
+                                            <?php if(isset($subscription) && $subscription->couponCheck() > 0): ?>
                                                 <li class="list-group-item enable">
                                                     <?php echo e(__('Enabled Coupon Applicable')); ?>
 

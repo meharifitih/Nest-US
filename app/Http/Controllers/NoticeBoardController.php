@@ -49,7 +49,7 @@ class NoticeBoardController extends Controller
                 if (!file_exists($directory)) {
                     mkdir($directory, 0777, true);
                 }
-                $request->file('attachment')->storeAs('upload/applicant/attachment/', $noteFileName);
+                $request->file('attachment')->storeAs('upload/applicant/attachment', $noteFileName, 'public');
             }
 
             $note = new NoticeBoard();
@@ -111,7 +111,7 @@ class NoticeBoardController extends Controller
                 if (!file_exists($directory)) {
                     mkdir($directory, 0777, true);
                 }
-                $request->file('attachment')->storeAs('upload/applicant/attachment/', $noteFileName);
+                $request->file('attachment')->storeAs('upload/applicant/attachment', $noteFileName, 'public');
                 $note->attachment = !empty($request->attachment) ? $noteFileName : '';
             }
 

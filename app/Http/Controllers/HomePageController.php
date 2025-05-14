@@ -101,7 +101,7 @@ class HomePageController extends Controller
                 mkdir($dir, 0777, true);
             }
 
-            $section_footer_image->storeAs('upload/homepage/', $fileNameToStore);
+            $section_footer_image->storeAs('upload/homepage', $fileNameToStore, 'public');
             $content_value['section_footer_image_path'] = 'upload/homepage/' . $fileNameToStore;
         } else {
             $content_value['section_footer_image_path'] = !empty($old_content_value['section_footer_image_path']) ? $old_content_value['section_footer_image_path'] : '';
@@ -119,7 +119,7 @@ class HomePageController extends Controller
                 mkdir($dir, 0777, true);
             }
 
-            $section_main_image->storeAs('upload/homepage/', $fileNameToStore);
+            $section_main_image->storeAs('upload/homepage', $fileNameToStore, 'public');
             $content_value['section_main_image_path'] = 'upload/homepage/' . $fileNameToStore;
         } else {
             $content_value['section_main_image_path'] = !empty($old_content_value['section_main_image_path']) ? $old_content_value['section_main_image_path'] : '';
@@ -138,7 +138,7 @@ class HomePageController extends Controller
                     mkdir($dir, 0777, true);
                 }
 
-                $box_image_path->storeAs('upload/homepage/', $fileNameToStore);
+                $box_image_path->storeAs('upload/homepage', $fileNameToStore, 'public');
                 $content_value['box_image_' . $i . '_path'] = 'upload/homepage/' . $fileNameToStore;
             } else {
                 $content_value['box_image_' . $i . '_path'] = !empty($old_content_value['box_image_' . $i . '_path']) ? $old_content_value['box_image_' . $i . '_path'] : '';
@@ -158,7 +158,7 @@ class HomePageController extends Controller
                     mkdir($dir, 0777, true);
                 }
 
-                $box_image_path->storeAs('upload/homepage/', $fileNameToStore);
+                $box_image_path->storeAs('upload/homepage', $fileNameToStore, 'public');
                 $content_value['Box' . $ik . '_image_path'] = 'upload/homepage/' . $fileNameToStore;
             } else {
                 $content_value['Box' . $ik . '_image_path'] = !empty($old_content_value['Box' . $ik . '_image_path']) ? $old_content_value['Box' . $ik . '_image_path'] : '';
@@ -178,7 +178,7 @@ class HomePageController extends Controller
                     mkdir($dir, 0777, true);
                 }
 
-                $box_image_path->storeAs('upload/homepage/', $fileNameToStore);
+                $box_image_path->storeAs('upload/homepage', $fileNameToStore, 'public');
                 $content_value['Sec4_box' . $is4 . '_image_path'] = 'upload/homepage/' . $fileNameToStore;
             } else {
                 $content_value['Sec4_box' . $is4 . '_image_path'] = !empty($old_content_value['Sec4_box' . $is4 . '_image_path']) ? $old_content_value['Sec4_box' . $is4 . '_image_path'] : '';
@@ -199,7 +199,7 @@ class HomePageController extends Controller
                         mkdir($dir, 0777, true);
                     }
 
-                    $box_image_path->storeAs('upload/homepage/', $fileNameToStore);
+                    $box_image_path->storeAs('upload/homepage', $fileNameToStore, 'public');
                     $content_value['Sec6_box' . $is6 . '_image_path'] = 'upload/homepage/' . $fileNameToStore;
                 } else {
                     $content_value['Sec6_box' . $is6 . '_image_path'] = !empty($old_content_value['Sec6_box' . $is6 . '_image_path']) ? $old_content_value['Sec6_box' . $is6 . '_image_path'] : '';
@@ -220,7 +220,7 @@ class HomePageController extends Controller
                     mkdir($dir, 0777, true);
                 }
 
-                $box_image_path->storeAs('upload/homepage/', $fileNameToStore);
+                $box_image_path->storeAs('upload/homepage', $fileNameToStore, 'public');
                 $content_value['Sec7_box' . $is7 . '_image_path'] = 'upload/homepage/' . $fileNameToStore;
             } else {
                 $content_value['Sec7_box' . $is7 . '_image_path'] = !empty($old_content_value['Sec7_box' . $is7 . '_image_path']) ? $old_content_value['Sec7_box' . $is7 . '_image_path'] : '';

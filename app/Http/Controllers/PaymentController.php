@@ -45,7 +45,7 @@ class PaymentController extends Controller
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
-            $request->file('payment_receipt')->storeAs('upload/payment_receipt/', $recieptFileName);
+            $request->file('payment_receipt')->storeAs('upload/payment_receipt', $recieptFileName, 'public');
             $data['receipt_url'] = $recieptFileName;
         }
 

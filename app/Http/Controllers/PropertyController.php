@@ -96,11 +96,7 @@ class PropertyController extends Controller
                 $thumbnailFilename = pathinfo($thumbnailFilenameWithExt, PATHINFO_FILENAME);
                 $thumbnailExtension = $request->file('thumbnail')->getClientOriginalExtension();
                 $thumbnailFileName = $thumbnailFilename . '_' . time() . '.' . $thumbnailExtension;
-                $dir = storage_path('app/public/upload/thumbnail');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('thumbnail')->storeAs('public/upload/thumbnail/', $thumbnailFileName);
+                $request->file('thumbnail')->storeAs('upload/thumbnail', $thumbnailFileName, 'public');
                 $thumbnail = new PropertyImage();
                 $thumbnail->property_id = $property->id;
                 $thumbnail->image = $thumbnailFileName;
@@ -114,11 +110,7 @@ class PropertyController extends Controller
                     $propertyFilename = pathinfo($propertyFilenameWithExt, PATHINFO_FILENAME);
                     $propertyExtension = $file->getClientOriginalExtension();
                     $propertyFileName = $propertyFilename . '_' . time() . '.' . $propertyExtension;
-                    $dir = storage_path('app/public/upload/property');
-                    if (!file_exists($dir)) {
-                        mkdir($dir, 0777, true);
-                    }
-                    $file->storeAs('public/upload/property/', $propertyFileName);
+                    $file->storeAs('upload/property', $propertyFileName, 'public');
 
                     $propertyImage = new PropertyImage();
                     $propertyImage->property_id = $property->id;
@@ -251,11 +243,7 @@ class PropertyController extends Controller
                 $thumbnailFilename = pathinfo($thumbnailFilenameWithExt, PATHINFO_FILENAME);
                 $thumbnailExtension = $request->file('thumbnail')->getClientOriginalExtension();
                 $thumbnailFileName = $thumbnailFilename . '_' . time() . '.' . $thumbnailExtension;
-                $dir = storage_path('app/public/upload/thumbnail');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('thumbnail')->storeAs('public/upload/thumbnail/', $thumbnailFileName);
+                $request->file('thumbnail')->storeAs('upload/thumbnail', $thumbnailFileName, 'public');
                 $thumbnail = PropertyImage::where('property_id', $property->id)->where('type', 'thumbnail')->first();
                 if ($thumbnail) {
                     $thumbnail->image = $thumbnailFileName;
@@ -275,11 +263,7 @@ class PropertyController extends Controller
                     $propertyFilename = pathinfo($propertyFilenameWithExt, PATHINFO_FILENAME);
                     $propertyExtension = $file->getClientOriginalExtension();
                     $propertyFileName = $propertyFilename . '_' . time() . '.' . $propertyExtension;
-                    $dir = storage_path('app/public/upload/property');
-                    if (!file_exists($dir)) {
-                        mkdir($dir, 0777, true);
-                    }
-                    $file->storeAs('public/upload/property/', $propertyFileName);
+                    $file->storeAs('upload/property', $propertyFileName, 'public');
 
                     $propertyImage = new PropertyImage();
                     $propertyImage->property_id = $property->id;

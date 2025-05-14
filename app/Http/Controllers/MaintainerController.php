@@ -83,11 +83,7 @@ class MaintainerController extends Controller
                 $maintainerFilename = pathinfo($maintainerFilenameWithExt, PATHINFO_FILENAME);
                 $maintainerExtension = $request->file('profile')->getClientOriginalExtension();
                 $maintainerFileName = $maintainerFilename . '_' . time() . '.' . $maintainerExtension;
-                $dir = storage_path('upload/profile');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('profile')->storeAs('upload/profile/', $maintainerFileName);
+                $request->file('profile')->storeAs('upload/profile', $maintainerFileName, 'public');
                 $user->profile = $maintainerFileName;
                 $user->save();
             }
@@ -180,11 +176,7 @@ class MaintainerController extends Controller
                 $maintainerFilename = pathinfo($maintainerFilenameWithExt, PATHINFO_FILENAME);
                 $maintainerExtension = $request->file('profile')->getClientOriginalExtension();
                 $maintainerFileName = $maintainerFilename . '_' . time() . '.' . $maintainerExtension;
-                $dir = storage_path('upload/profile');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('profile')->storeAs('upload/profile/', $maintainerFileName);
+                $request->file('profile')->storeAs('upload/profile', $maintainerFileName, 'public');
                 $user->profile = $maintainerFileName;
                 $user->save();
             }

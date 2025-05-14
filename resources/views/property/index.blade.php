@@ -119,7 +119,7 @@
                         <div class="col-sm-6 col-md-4 col-xxl-3">
                             <div class="card product-card">
                                 <div class="card-img-top">
-                                    <img src="{{ asset(Storage::url('upload/thumbnail')) . '/' . $thumbnail }}"
+                                    <img src="{{ asset(Storage::url('upload/thumbnail/' . $thumbnail)) }}"
                                         alt="{{ $property->name }}" class="img-prod" />
 
                                 </div>

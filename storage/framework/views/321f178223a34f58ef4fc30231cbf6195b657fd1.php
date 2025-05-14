@@ -59,7 +59,7 @@
                                         <a class="pc-link" href="<?php echo e(route('role.index')); ?>"><?php echo e(__('Roles')); ?> </a>
                                     </li>
                                 <?php endif; ?>
-                                <?php if($pricing_feature_settings == 'off' || $subscription->enabled_logged_history == 1): ?>
+                                <?php if($pricing_feature_settings == 'off' || (isset($subscription) && $subscription->enabled_logged_history == 1)): ?>
                                     <?php if(Gate::check('manage logged history')): ?>
                                         <li
                                             class="pc-item  <?php echo e(in_array($routeName, ['logged.history']) ? 'active' : ''); ?>">

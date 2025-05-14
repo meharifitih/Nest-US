@@ -57,8 +57,6 @@
                                 <tr>
                                     <th><?php echo e(__('User')); ?></th>
                                     <th><?php echo e(__('Email')); ?></th>
-                                    <th><?php echo e(__('Phone Number')); ?></th>
-                                    <th><?php echo e(__('Fayda ID')); ?></th>
                                     <?php if(\Auth::user()->type == 'super admin'): ?>
                                         <th><?php echo e(__('Active Package')); ?></th>
                                         <th><?php echo e(__('Package Due Date')); ?></th>
@@ -79,8 +77,6 @@
                                                 class="text-body font-weight-semibold"><?php echo e($user->name); ?></a>
                                         </td>
                                         <td><?php echo e($user->email); ?> </td>
-                                        <td><?php echo e(!empty($user->phone_number) ? $user->phone_number : '-'); ?> </td>
-                                        <td><?php echo e(!empty($user->fayda_id) ? $user->fayda_id : '-'); ?> </td>
                                         <?php if(\Auth::user()->type == 'super admin'): ?>
                                             <td><?php echo e(!empty($user->subscriptions) ? $user->subscriptions->title : '-'); ?>
 
@@ -94,8 +90,6 @@
 
                                                 </span>
                                             </td>
-                                        <?php else: ?>
-                                            <td><?php echo e(ucfirst($user->type)); ?> </td>
                                         <?php endif; ?>
                                         <td>
                                             <div class="cart-action">

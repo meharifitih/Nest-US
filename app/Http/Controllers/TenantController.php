@@ -102,11 +102,7 @@ class TenantController extends Controller
                 $tenantFilename = pathinfo($tenantFilenameWithExt, PATHINFO_FILENAME);
                 $tenantExtension = $request->file('profile')->getClientOriginalExtension();
                 $tenantFileName = $tenantFilename . '_' . time() . '.' . $tenantExtension;
-                $dir = storage_path('upload/profile');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('profile')->storeAs('upload/profile/', $tenantFileName);
+                $request->file('profile')->storeAs('upload/profile', $tenantFileName, 'public');
                 $user->profile = $tenantFileName;
                 $user->save();
             }
@@ -133,11 +129,7 @@ class TenantController extends Controller
                     $tenantFilename = pathinfo($tenantFilenameWithExt, PATHINFO_FILENAME);
                     $tenantExtension = $file->getClientOriginalExtension();
                     $tenantFileName = $tenantFilename . '_' . time() . '.' . $tenantExtension;
-                    $dir = storage_path('upload/tenant');
-                    if (!file_exists($dir)) {
-                        mkdir($dir, 0777, true);
-                    }
-                    $file->storeAs('upload/tenant/', $tenantFileName);
+                    $file->storeAs('upload/tenant', $tenantFileName, 'public');
 
                     $tenantImage = new TenantDocument();
                     $tenantImage->property_id = $request->property;
@@ -244,11 +236,7 @@ class TenantController extends Controller
                 $tenantFilename = pathinfo($tenantFilenameWithExt, PATHINFO_FILENAME);
                 $tenantExtension = $request->file('profile')->getClientOriginalExtension();
                 $tenantFileName = $tenantFilename . '_' . time() . '.' . $tenantExtension;
-                $dir = storage_path('upload/profile');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('profile')->storeAs('upload/profile/', $tenantFileName);
+                $request->file('profile')->storeAs('upload/profile', $tenantFileName, 'public');
                 $user->profile = $tenantFileName;
                 $user->save();
             }
@@ -273,11 +261,7 @@ class TenantController extends Controller
                     $tenantFilename = pathinfo($tenantFilenameWithExt, PATHINFO_FILENAME);
                     $tenantExtension = $file->getClientOriginalExtension();
                     $tenantFileName = $tenantFilename . '_' . time() . '.' . $tenantExtension;
-                    $dir = storage_path('upload/tenant');
-                    if (!file_exists($dir)) {
-                        mkdir($dir, 0777, true);
-                    }
-                    $file->storeAs('upload/tenant/', $tenantFileName);
+                    $file->storeAs('upload/tenant', $tenantFileName, 'public');
 
                     $tenantImage = new TenantDocument();
                     $tenantImage->property_id = $request->property;

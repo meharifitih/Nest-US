@@ -58,7 +58,7 @@ class SettingController extends Controller
                 mkdir($dir, 0777, true);
             }
 
-            $request->file('profile')->storeAs('upload/profile/', $fileNameToStore);
+            $request->file('profile')->storeAs('upload/profile', $fileNameToStore, 'public');
         }
 
         if (!empty($request->profile)) {
@@ -200,21 +200,21 @@ class SettingController extends Controller
 
             if ($request->logo) {
                 $superadminLogoName = 'logo.png';
-                $request->file('logo')->storeAs('upload/logo/', $superadminLogoName);
+                $request->file('logo')->storeAs('upload/logo', $superadminLogoName, 'public');
             }
 
             if ($request->landing_logo) {
                 $superadminLandLogoName = 'landing_logo.png';
-                $request->file('landing_logo')->storeAs('upload/logo/', $superadminLandLogoName);
+                $request->file('landing_logo')->storeAs('upload/logo', $superadminLandLogoName, 'public');
             }
 
             if ($request->favicon) {
                 $superadminFavicon = 'favicon.png';
-                $request->file('favicon')->storeAs('upload/logo/', $superadminFavicon);
+                $request->file('favicon')->storeAs('upload/logo', $superadminFavicon, 'public');
             }
             if ($request->light_logo) {
                 $superadminLightLogo = 'light_logo.png';
-                $request->file('light_logo')->storeAs('upload/logo/', $superadminLightLogo);
+                $request->file('light_logo')->storeAs('upload/logo', $superadminLightLogo, 'public');
             }
 
             if (isset($request->landing_page)) {
@@ -316,7 +316,7 @@ class SettingController extends Controller
 
             if ($request->logo) {
                 $ownerLogoName = parentId() . '_logo.png';
-                $request->file('logo')->storeAs('upload/logo/', $ownerLogoName);
+                $request->file('logo')->storeAs('upload/logo', $ownerLogoName, 'public');
 
                 \DB::insert(
                     'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
@@ -331,7 +331,7 @@ class SettingController extends Controller
 
             if ($request->favicon) {
                 $ownerFaviconName = parentId() . '_favicon.png';
-                $request->file('favicon')->storeAs('upload/logo/', $ownerFaviconName);
+                $request->file('favicon')->storeAs('upload/logo', $ownerFaviconName, 'public');
 
                 \DB::insert(
                     'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
@@ -346,7 +346,7 @@ class SettingController extends Controller
 
             if ($request->light_logo) {
                 $ownerLightLogoName = parentId() . '_light_logo.png';
-                $request->file('light_logo')->storeAs('upload/logo/', $ownerLightLogoName);
+                $request->file('light_logo')->storeAs('upload/logo', $ownerLightLogoName, 'public');
 
                 \DB::insert(
                     'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
@@ -731,7 +731,7 @@ class SettingController extends Controller
             $seoFileName = $seoFilename . '_' . time() . '.' . $supportExtension;
 
 
-            $request->file('meta_seo_image')->storeAs('upload/seo/', $seoFileName);
+            $request->file('meta_seo_image')->storeAs('upload/seo', $seoFileName, 'public');
 
 
             \DB::insert(

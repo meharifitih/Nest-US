@@ -175,6 +175,23 @@
                                         </a>
                                     </li>
                                 <?php endif; ?>
+                                <?php if(\Auth::user()->type == 'super admin'): ?>
+                                    <li class="nav-item">
+                                        <a class="nav-link <?php echo e(!empty($activeTab) && $activeTab == 'tutorial_videos' ? ' active ' : ''); ?>"
+                                            id="profile-tab-tutorial-videos" data-bs-toggle="tab" href="#tutorial_videos" role="tab"
+                                            aria-selected="true">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="ti ti-video me-2 f-20"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-2">
+                                                    <h5 class="mb-0"><?php echo e(__('Tutorial Videos')); ?></h5>
+                                                    <small class="text-muted"><?php echo e(__('Manage tutorial video links')); ?></small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
                         </div>
                         <div class="col-lg-8">
@@ -187,8 +204,11 @@
 
                                         <div class="d-flex align-items-center mb-3">
                                             <div class="flex-shrink-0">
-                                                <img src="<?php echo e(!empty($users->profile) ? $profile . '/' . $users->profile : $profile . '/avatar.png'); ?>"
-                                                    alt="user-image" class="img-fluid rounded-circle wid-80" />
+                                                <img src="<?php echo e(!empty($users->profile) ? asset(Storage::url('upload/profile/' . $users->profile)) : asset(Storage::url('upload/profile/avatar.png'))); ?>"
+                                                    alt="user-image"
+                                                    class="img-fluid rounded-circle wid-80"
+                                                    onerror="this.onerror=null;this.src='<?php echo e(asset(Storage::url('upload/profile/avatar.png'))); ?>';"
+                                                />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -1009,6 +1029,45 @@
                                         <?php echo e(Form::close()); ?>
 
 
+                                    </div>
+                                <?php endif; ?>
+                                <?php if(\Auth::user()->type == 'super admin'): ?>
+                                    <div class="tab-pane <?php echo e(!empty($activeTab) && $activeTab == 'tutorial_videos' ? ' active show ' : ''); ?>"
+                                        id="tutorial_videos" role="tabpanel" aria-labelledby="tutorial_videos">
+                                        <form method="POST" action="<?php echo e(route('setting.tutorial_videos')); ?>">
+                                            <?php echo csrf_field(); ?>
+                                            <div id="video-links-list">
+                                                <?php
+                                                    $tutorialVideos = isset($settings['tutorial_videos']) ? json_decode($settings['tutorial_videos'], true) : [];
+                                                ?>
+                                                <?php $__currentLoopData = $tutorialVideos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $video): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <div class="input-group mb-2 video-link-row">
+                                                        <input type="text" name="video_links[]" class="form-control" value="<?php echo e($video); ?>" placeholder="<?php echo e(__('Enter video link')); ?>" required />
+                                                        <button type="button" class="btn btn-danger remove-video-link">&times;</button>
+                                                    </div>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary mb-3" id="add-video-link"><?php echo e(__('Add Video Link')); ?></button>
+                                            <div>
+                                                <button type="submit" class="btn btn-primary"><?php echo e(__('Save Video Links')); ?></button>
+                                            </div>
+                                        </form>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                document.getElementById('add-video-link').onclick = function() {
+                                                    const row = document.createElement('div');
+                                                    row.className = 'input-group mb-2 video-link-row';
+                                                    row.innerHTML = `<input type="text" name="video_links[]" class="form-control" placeholder="<?php echo e(__('Enter video link')); ?>" required />
+                                                        <button type="button" class="btn btn-danger remove-video-link">&times;</button>`;
+                                                    document.getElementById('video-links-list').appendChild(row);
+                                                };
+                                                document.getElementById('video-links-list').addEventListener('click', function(e) {
+                                                    if (e.target.classList.contains('remove-video-link')) {
+                                                        e.target.closest('.video-link-row').remove();
+                                                    }
+                                                });
+                                            });
+                                        </script>
                                     </div>
                                 <?php endif; ?>
                             </div>

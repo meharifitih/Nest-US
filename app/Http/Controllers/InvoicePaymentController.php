@@ -179,7 +179,7 @@ class InvoicePaymentController extends Controller
             if (!file_exists($directory)) {
                 mkdir($directory, 0777, true);
             }
-            $request->file('receipt')->storeAs('upload/receipt/', $recieptFileName);
+            $request->file('receipt')->storeAs('upload/receipt', $recieptFileName, 'public');
             $payment['receipt'] = $recieptFileName;
         }
 
