@@ -34,7 +34,7 @@ class AdminController extends Controller
         // Optionally, send a notification to the user about the approval
         // Notification::send($user, new PaymentApprovedNotification());
 
-        return redirect()->route('admin.payments.pending')->with('success', 'Payment approved successfully.');
+        return redirect()->route('users.index')->with('success', 'Payment approved successfully.');
     }
 
     public function rejectPayment($id)
@@ -44,11 +44,13 @@ class AdminController extends Controller
         
         // Update the payment status to rejected
         $payment->status = 'rejected';
+        $payment->payment_status = 'rejected';
         
         // Optionally, set a rejection reason
         $user = $payment->user;
         $user->approval_status = 'rejected';
-        $user->rejection_reason = 'Payment rejected'; // Set a reason if needed
+        $user->is_active = 0;
+        $user->rejection_reason = 'Payment rejected by admin.';
         
         // Save changes
         $payment->save();
@@ -57,7 +59,7 @@ class AdminController extends Controller
         // Optionally, send a notification to the user about the rejection
         // Notification::send($user, new PaymentRejectedNotification());
 
-        return redirect()->route('admin.payments.pending')->with('error', 'Payment rejected.');
+        return redirect()->route('users.index')->with('error', 'Payment rejected and user notified.');
     }
 
     public function showPendingPayments()

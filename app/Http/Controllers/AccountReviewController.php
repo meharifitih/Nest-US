@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\PackageTransaction;
 
 class AccountReviewController extends Controller
 {
     public function showReviewPage()
     {
-        $user = Auth::user();
+        $user = auth()->user();
+        $latestTransaction = PackageTransaction::with('subscription')
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
         
         // Skip review page for super admin users
         if ($user->type === 'super admin') {
@@ -48,7 +53,7 @@ class AccountReviewController extends Controller
         // Remove any nulls (invalid entries)
         $tutorialVideos = array_filter($tutorialVideos);
         
-        return view('account.review', compact('tutorialVideos'));
+        return view('account.review', compact('user', 'latestTransaction', 'tutorialVideos'));
     }
 
     public function approveUser($id)

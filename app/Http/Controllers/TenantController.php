@@ -72,7 +72,7 @@ class TenantController extends Controller
             $authUser = \App\Models\User::find($ids);
             $totalTenant = $authUser->totalTenant();
             $subscription = Subscription::find($authUser->subscription);
-            if ($totalTenant >= $subscription->tenant_limit && $subscription->tenant_limit != 0) {
+            if ($subscription && !$subscription->checkTenantLimit($totalTenant + 1)) {
                 return response()->json([
                     'status' => 'error',
                     'msg' => __('Your tenant limit is over, please upgrade your subscription.'),

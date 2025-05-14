@@ -69,9 +69,7 @@ class PaymentController extends Controller
             $couhis['package']=$subscription->id;
             CouponHistory::couponData($couhis);
         }
-        return redirect()
-            ->back()
-            ->with('success', __('Subscription payment successfully completed.'));
+        return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
 
     }
 
@@ -96,9 +94,7 @@ class PaymentController extends Controller
         $order = PackageTransaction::transactionData($data);
         $assignPlan = assignManuallySubscription($subscriptionId,$user_id);
 
-        return redirect()
-            ->back()
-            ->with('success', __('Subscription payment successfully completed.'));
+        return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
 
     }
 
@@ -124,9 +120,7 @@ class PaymentController extends Controller
 
         }
 
-        return redirect()
-            ->back()
-            ->with('success', __('Subscription payment status is '.$status));
+        return redirect()->route('dashboard')->with('success', __('Subscription payment status is '.$status));
     }
     public function subscriptionPaypal(Request $request, $id)
     {
@@ -240,9 +234,7 @@ class PaymentController extends Controller
 
                  assignSubscription($subscription->id);
 
-                return redirect()
-                    ->back()
-                    ->with('success', __('Subscription payment successfully completed.'));
+                return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
             } else {
                 return redirect()
                     ->back()
@@ -299,9 +291,7 @@ class PaymentController extends Controller
                     }
                     assignSubscription($subscription->id);
 
-                    return redirect()
-                        ->back()
-                        ->with('success', __('Subscription payment successfully completed.'));
+                    return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
                 } else {
                     return redirect()
                         ->back()

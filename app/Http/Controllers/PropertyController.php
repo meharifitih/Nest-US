@@ -72,7 +72,7 @@ class PropertyController extends Controller
             $authUser = \App\Models\User::find($ids);
             $totalProperty = $authUser->totalProperty();
             $subscription = Subscription::find($authUser->subscription);
-            if ($totalProperty >= $subscription->property_limit && $subscription->property_limit != 0) {
+            if ($subscription && !$subscription->checkPropertyLimit($totalProperty + 1)) {
                 return response()->json([
                     'status' => 'error',
                     'msg' => __('Your property limit is over, please upgrade your subscription.'),
@@ -129,6 +129,14 @@ class PropertyController extends Controller
             }
 
             if (!empty($request->name) && !empty($request->bedroom) && !empty($request->kitchen)) {
+                $totalUnits = PropertyUnit::where('parent_id', parentId())->count();
+                if ($subscription && !$subscription->checkUnitLimit($totalUnits + 1)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'msg' => __('You have reached the maximum unit limit for your subscription. Please upgrade your package.'),
+                        'id' => 0,
+                    ]);
+                }
                 $unit = new PropertyUnit();
                 $unit->name = $request->name;
                 $unit->bedroom = $request->bedroom;
@@ -422,6 +430,14 @@ class PropertyController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
+            $user = \Auth::user();
+            $subscription = Subscription::find($user->subscription);
+            if ($subscription) {
+                $totalUnits = PropertyUnit::where('parent_id', parentId())->count();
+                if (!$subscription->checkUnitLimit($totalUnits + 1)) {
+                    return redirect()->back()->with('error', __('You have reached the maximum unit limit for your subscription. Please upgrade your package.'));
+                }
+            }
             $unit = new PropertyUnit();
             $unit->name = $request->name;
             $unit->property_id = $request->property_id;

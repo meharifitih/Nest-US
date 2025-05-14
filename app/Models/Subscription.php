@@ -38,4 +38,20 @@ class Subscription extends Model
         }
         return $totalUnits <= $this->max_units;
     }
+
+    public function checkPropertyLimit($totalProperties)
+    {
+        if ($this->property_limit === 0) {
+            return true; // Unlimited properties
+        }
+        return $totalProperties <= $this->property_limit;
+    }
+
+    public function checkTenantLimit($totalTenants)
+    {
+        if ($this->tenant_limit === 0) {
+            return true; // Unlimited tenants
+        }
+        return $totalTenants <= $this->tenant_limit;
+    }
 }
