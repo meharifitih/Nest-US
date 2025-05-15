@@ -42,12 +42,12 @@
                                 <td>{{$settings['CURRENCY_SYMBOL'].$transaction->amount}}</td>
                                 <td>{{$transaction->payment_type}}</td>
                                 <td>
-                                    @if($transaction->payment_status=='Pending' || $transaction->payment_status=='pending')
-                                        <span class="d-inline badge text-bg-warning">{{$transaction->payment_status}}</span>
-                                    @elseif($transaction->payment_status=='succeeded' || $transaction->payment_status=='Success' || $transaction->payment_status=='approved')
-                                        <span class="d-inline badge text-bg-success">{{$transaction->payment_status}}</span>
+                                    @if($transaction->payment_status == 'completed')
+                                        <span class="badge bg-success">completed</span>
+                                    @elseif($transaction->payment_status == 'pending')
+                                        <span class="badge bg-warning">pending</span>
                                     @else
-                                        <span class="d-inline badge text-bg-danger">{{$transaction->payment_status}}</span>
+                                        <span class="badge bg-secondary">{{$transaction->payment_status}}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -56,10 +56,15 @@
                                            data-bs-original-title="{{__('Receipt')}}" href="{{$transaction->receipt}}">
                                             <i data-feather="file"></i></a>
                                     @elseif($transaction->payment_type=='Bank Transfer')
-                                        <a class="text-primary" data-bs-toggle="tooltip" target="_blank"
-                                           data-bs-original-title="{{__('Receipt')}}"
-                                           href="{{asset('/storage/upload/payment_receipt/'.$transaction->receipt)}}">
-                                            <i data-feather="file"></i></a>
+                                        @if(!empty($transaction->receipt))
+                                            <a class="text-primary" data-bs-toggle="tooltip" target="_blank"
+                                               data-bs-original-title="{{__('Receipt')}}"
+                                               href="{{ asset('storage/upload/payment_receipt/' . $transaction->receipt) }}">
+                                                <i data-feather="file"></i>
+                                            </a>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                         @if(Auth::user()->type=='super admin' && ($transaction->payment_status=='Pending' || $transaction->payment_status=='pending'))
                                             <form action="{{ route('admin.payments.approve', $transaction->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf

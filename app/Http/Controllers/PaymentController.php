@@ -37,16 +37,13 @@ class PaymentController extends Controller
             $recieptFilename = pathinfo($recieptFilenameWithExt, PATHINFO_FILENAME);
             $recieptExtension = $request->file('payment_receipt')->getClientOriginalExtension();
             $recieptFileName = $recieptFilename . '_' . time() . '.' . $recieptExtension;
-
             $dir = storage_path('upload/payment_receipt');
             $image_path = $dir . $recieptFilenameWithExt;
-
-
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
             $request->file('payment_receipt')->storeAs('upload/payment_receipt', $recieptFileName, 'public');
-            $data['receipt_url'] = $recieptFileName;
+            $data['receipt'] = $recieptFileName;
         }
 
         $coupon = $request->coupon;
