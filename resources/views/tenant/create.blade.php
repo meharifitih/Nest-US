@@ -36,11 +36,9 @@
             var fd = new FormData();
             var file = document.getElementById('profile').files[0];
 
-
             var files = $('#demo-upload').get(0).dropzone.getAcceptedFiles();
             $.each(files, function(key, file) {
-                fd.append('tenant_images[' + key + ']', $('#demo-upload')[0].dropzone
-                    .getAcceptedFiles()[key]); // attach dropzone image element
+                fd.append('tenant_images[' + key + ']', $('#demo-upload')[0].dropzone.getAcceptedFiles()[key]);
             });
             fd.append('profile', file);
             var other_data = $('#tenant_form').serializeArray();
@@ -59,24 +57,24 @@
                 success: function(data) {
                     if (data.status == "success") {
                         $('#tenant-submit').attr('disabled', true);
-                        toastrs(data.status, data.msg, data.status);
-                        var url = '{{ route('tenant.index') }}';
-                        setTimeout(() => {
-                            window.location.href = url;
-                        }, "1000");
-
+                        toastrs('Success!', data.msg, 'success');
+                        setTimeout(function() {
+                            window.location.href = "{{ route('tenant.index') }}";
+                        }, 1000);
                     } else {
-                        toastrs('Error', data.msg, 'error');
+                        toastrs('Error', data.msg || 'Unknown error', 'error');
                         $('#tenant-submit').attr('disabled', false);
                     }
                 },
-                error: function(data) {
+                error: function(xhr) {
                     $('#tenant-submit').attr('disabled', false);
-                    if (data.error) {
-                        toastrs('Error', data.error, 'error');
-                    } else {
-                        toastrs('Error', data, 'error');
+                    var msg = 'Error';
+                    if (xhr.responseJSON && xhr.responseJSON.msg) {
+                        msg = xhr.responseJSON.msg;
+                    } else if (xhr.responseText) {
+                        msg = xhr.responseText;
                     }
+                    toastrs('Error', msg, 'error');
                 },
             });
         });
@@ -117,6 +115,36 @@
 
             });
         });
+
+        $(document).ready(function() {
+            // Handle property change to load units
+            $('#property').change(function() {
+                var propertyId = $(this).val();
+                if(propertyId) {
+                    $.ajax({
+                        url: "{{ route('get.units') }}",
+                        type: "POST",
+                        data: {
+                            property_id: propertyId,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(data) {
+                            $('#unit').empty();
+                            $('#unit').append('<option value="">{{ __("Select Unit") }}</option>');
+                            $.each(data, function(key, value) {
+                                var selected = value.id == "{{ old('unit') }}" ? 'selected' : '';
+                                $('#unit').append('<option value="' + value.id + '" ' + selected + '>' + value.name + '</option>');
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Trigger property change if there's an old value
+            if($('#property').val()) {
+                $('#property').trigger('change');
+            }
+        });
     </script>
 @endpush
 
@@ -143,28 +171,28 @@
 
                         <div class="row">
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('first_name', __('First Name'), ['class' => 'form-label']) }}
-                                {{ Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('Enter First Name')]) }}
+                                <label for="first_name" class="form-label">{{ __('First Name') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name') }}" required>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('last_name', __('Last Name'), ['class' => 'form-label']) }}
-                                {{ Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Last Name')]) }}
+                                <label for="last_name" class="form-label">{{ __('Last Name') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name') }}" required>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('email', __('Email'), ['class' => 'form-label']) }}
-                                {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('Enter Email')]) }}
+                                <label for="email" class="form-label">{{ __('Email') }} <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('password', __('Password'), ['class' => 'form-label']) }}
                                 {{ Form::password('password', ['class' => 'form-control', 'placeholder' => __('Enter Password')]) }}
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('phone_number', __('Phone Number'), ['class' => 'form-label']) }}
-                                {{ Form::text('phone_number', null, ['class' => 'form-control', 'placeholder' => __('Enter Phone Number')]) }}
+                                <label for="phone_number" class="form-label">{{ __('Phone Number') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" required>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('family_member', __('Total Family Member'), ['class' => 'form-label']) }}
-                                {{ Form::number('family_member', null, ['class' => 'form-control', 'placeholder' => __('Enter Total Family Member')]) }}
+                                <label for="family_member" class="form-label">{{ __('Family Members') }}</label>
+                                <input type="number" class="form-control" id="family_member" name="family_member" value="{{ old('family_member') }}">
                             </div>
                             <div class="form-group">
                                 {{ Form::label('profile', __('Profile'), ['class' => 'form-label']) }}
@@ -182,26 +210,26 @@
                     </div>
                     <div class="card-body">
 
-                        <div class="row">
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
-                                {{ Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Enter Country')]) }}
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="sub_city" class="form-label">{{ __('Sub City') }}</label>
+                                <input type="text" class="form-control" id="sub_city" name="sub_city" value="{{ old('sub_city') }}">
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
-                                {{ Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('Enter State')]) }}
+                            <div class="col-md-4">
+                                <label for="woreda" class="form-label">{{ __('Woreda') }}</label>
+                                <input type="text" class="form-control" id="woreda" name="woreda" value="{{ old('woreda') }}">
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
-                                {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
+                            <div class="col-md-4">
+                                <label for="house_number" class="form-label">{{ __('House Number') }}</label>
+                                <input type="text" class="form-control" id="house_number" name="house_number" value="{{ old('house_number') }}">
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('zip_code', __('Zip Code'), ['class' => 'form-label']) }}
-                                {{ Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => __('Enter Zip Code')]) }}
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">{{ __('Location') }}</label>
+                                <input type="text" class="form-control" id="location" name="location" value="{{ old('location') }}">
                             </div>
-                            <div class="form-group ">
-                                {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}
-                                {{ Form::textarea('address', null, ['class' => 'form-control', 'rows' => 5, 'placeholder' => __('Enter Address')]) }}
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">{{ __('City') }}</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}">
                             </div>
                         </div>
 
@@ -217,24 +245,29 @@
 
                         <div class="row">
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('property', __('Property'), ['class' => 'form-label']) }}
-                                {{ Form::select('property', $property, null, ['class' => 'form-control hidesearch', 'id' => 'property']) }}
+                                <label for="property" class="form-label">{{ __('Property') }} <span class="text-danger">*</span></label>
+                                <select class="form-control" id="property" name="property" required>
+                                    <option value="">{{ __('Select Property') }}</option>
+                                    @foreach($properties as $property)
+                                        <option value="{{ $property->id }}" {{ old('property') == $property->id ? 'selected' : '' }}>{{ $property->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('unit', __('Unit'), ['class' => 'form-label']) }}
+                                <label for="unit" class="form-label">{{ __('Unit') }} <span class="text-danger">*</span></label>
                                 <div class="unit_div">
-                                    <select class="form-control hidesearch unit" id="unit" name="unit">
+                                    <select class="form-control hidesearch unit" id="unit" name="unit" required>
                                         <option value="">{{ __('Select Unit') }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('lease_start_date', __('Start Date'), ['class' => 'form-label']) }}
-                                {{ Form::date('lease_start_date', null, ['class' => 'form-control', 'placeholder' => __('Enter lease start date')]) }}
+                                <label for="lease_start_date" class="form-label">{{ __('Lease Start Date') }}</label>
+                                <input type="date" class="form-control" id="lease_start_date" name="lease_start_date" value="{{ old('lease_start_date') }}">
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('lease_end_date', __('End Date'), ['class' => 'form-label']) }}
-                                {{ Form::date('lease_end_date', null, ['class' => 'form-control', 'placeholder' => __('Enter lease end date')]) }}
+                                <label for="lease_end_date" class="form-label">{{ __('Lease End Date') }}</label>
+                                <input type="date" class="form-control" id="lease_end_date" name="lease_end_date" value="{{ old('lease_end_date') }}">
                             </div>
                         </div>
 

@@ -87,7 +87,7 @@
                                 </div>
                                 <div class="card-body">
                                     {{-- <p class="mb-4">
-                                        Hello,I’m Anshan Handgun Creative Graphic Designer & User Experience
+                                        Hello,I'm Anshan Handgun Creative Graphic Designer & User Experience
                                         Designer based in Website, I create
                                         digital Products a more Beautiful and usable place. Morbid accusant ipsum.
                                         Nam nec tellus at.
@@ -100,38 +100,55 @@
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Total Family Member') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->family_member) ? $tenant->family_member : '-' }}</td>
+                                                    <td>{{ $tenant->family_member ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('Country') }}</b></td>
+                                                    <td><b class="text-header">{{ __('Sub-city') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->country) ? $tenant->country : '-' }}</td>
+                                                    <td>{{ $tenant->sub_city ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('State') }}</b></td>
+                                                    <td><b class="text-header">{{ __('Woreda') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->state) ? $tenant->state : '-' }}</td>
+                                                    <td>{{ $tenant->woreda ?? '-' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b class="text-header">{{ __('House Number') }}</b></td>
+                                                    <td>:</td>
+                                                    <td>{{ $tenant->house_number ?? '-' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b class="text-header">{{ __('Location') }}</b></td>
+                                                    <td>:</td>
+                                                    <td>{{ $tenant->location ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('City') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->city) ? $tenant->city : '-' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><b class="text-header">{{ __('Zip Code') }}</b></td>
-                                                    <td>:</td>
-                                                    <td>{{ !empty($tenant->zip_code) ? $tenant->zip_code :'-' }}</td>
+                                                    <td>{{ $tenant->city ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Property') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->properties) ? $tenant->properties->name : '-' }}
-                                                    </td>
+                                                    <td>{{ $tenant->units && $tenant->units->property ? $tenant->units->property->name : '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Unit') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->units) ? $tenant->units->name : '-' }}</td>
+                                                    <td>
+                                                        @if($tenant->units)
+                                                            <b>{{ $tenant->units->name }}</b><br>
+                                                            <small>
+                                                                {{ __('Bedrooms') }}: {{ $tenant->units->bedroom ?? '-' }},
+                                                                {{ __('Kitchens') }}: {{ $tenant->units->kitchen ?? '-' }},
+                                                                {{ __('Baths') }}: {{ $tenant->units->baths ?? '-' }}<br>
+                                                                {{ __('Rent') }}: {{ $tenant->units->rent ?? '-' }} {{ $tenant->units->rent_type ?? '' }}<br>
+                                                                {{ __('Notes') }}: {{ $tenant->units->notes ?? '-' }}
+                                                            </small>
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Lease Start Date') }}</b></td>
@@ -158,7 +175,7 @@
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Address') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ !empty($tenant->address) ? $tenant->address : '-' }}</td>
+                                                    <td>{{ $tenant->address ?? '-' }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

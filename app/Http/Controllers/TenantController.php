@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use App\Notifications\PasswordChangeNotification;
 
 class TenantController extends Controller
 {
@@ -47,81 +48,57 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users',
-                    'password' => 'required',
                     'phone_number' => 'required',
-                    'family_member' => 'required',
-                    'country' => 'required',
-                    'state' => 'required',
-                    'city' => 'required',
-                    'zip_code' => 'required',
-                    'address' => 'required',
                     'property' => 'required',
                     'unit' => 'required',
-                    'lease_start_date' => 'required',
-                    'lease_end_date' => 'required',
                 ]
             );
+
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
                 return response()->json([
                     'status' => 'error',
                     'msg' => $messages->first(),
-                ]);
-            }
-            $ids = parentId();
-            $authUser = \App\Models\User::find($ids);
-            $totalTenant = $authUser->totalTenant();
-            $subscription = Subscription::find($authUser->subscription);
-            if ($subscription && !$subscription->checkTenantLimit($totalTenant + 1)) {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => __('Your tenant limit is over, please upgrade your subscription.'),
-                    'id' => 0,
+                    'old_input' => $request->all()
                 ]);
             }
 
-            $userRole = Role::where('parent_id', parentId())->where('name', 'tenant')->first();
-            $setting = settings();
+            // Generate a random password
+            $password = str_random(8);
 
             $user = new User();
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->password = \Hash::make($request->password);
+            $user->password = Hash::make($password);
             $user->phone_number = $request->phone_number;
-            $user->type = $userRole->name;
+            $user->type = 'tenant';
             $user->email_verified_at = now();
             $user->profile = 'avatar.png';
             $user->lang = 'english';
             $user->parent_id = parentId();
             $user->save();
+
+            $userRole = Role::where('name', 'tenant')->first();
             $user->assignRole($userRole);
 
-            if ($request->profile != 'undefined') {
-                $tenantFilenameWithExt = $request->file('profile')->getClientOriginalName();
-                $tenantFilename = pathinfo($tenantFilenameWithExt, PATHINFO_FILENAME);
-                $tenantExtension = $request->file('profile')->getClientOriginalExtension();
-                $tenantFileName = $tenantFilename . '_' . time() . '.' . $tenantExtension;
-                $request->file('profile')->storeAs('upload/profile', $tenantFileName, 'public');
-                $user->profile = $tenantFileName;
-                $user->save();
-            }
+            // Send password notification
+            $user->notify(new PasswordChangeNotification($password));
 
             $tenant = new Tenant();
             $tenant->user_id = $user->id;
             $tenant->family_member = $request->family_member;
-            $tenant->country = $request->country;
-            $tenant->state = $request->state;
+            $tenant->sub_city = $request->sub_city;
+            $tenant->woreda = $request->woreda;
+            $tenant->house_number = $request->house_number;
+            $tenant->location = $request->location;
             $tenant->city = $request->city;
-            $tenant->zip_code = $request->zip_code;
-            $tenant->address = $request->address;
             $tenant->property = $request->property;
             $tenant->unit = $request->unit;
             $tenant->lease_start_date = $request->lease_start_date;
             $tenant->lease_end_date = $request->lease_end_date;
             $tenant->parent_id = parentId();
             $tenant->save();
-
 
             if (!empty($request->tenant_images)) {
                 foreach ($request->tenant_images as $file) {
@@ -140,28 +117,9 @@ class TenantController extends Controller
                 }
             }
 
-            $module = 'tenant_create';
-            $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-            $notification->password=$request->password;
-            $errorMessage='';
-            if (!empty($notification) && $notification->enabled_email == 1) {
-                $notification_responce = MessageReplace($notification, $user->id);
-                $datas['subject'] = $notification_responce['subject'];
-                $datas['message'] = $notification_responce['message'];
-                $datas['module'] = $module;
-                $datas['logo'] =  $setting['company_logo'];
-                $to = $user->email;
-                $response = commonEmailSend($to, $datas);
-                    if ($response['status'] == 'error') {
-                        $errorMessage=$response['message'];
-                    }
-            }
-
-
             return response()->json([
                 'status' => 'success',
-                'msg' => __('Tenant successfully created.'). '</br>' . $errorMessage,
-
+                'msg' => __('Tenant successfully created.'),
             ]);
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
@@ -172,6 +130,7 @@ class TenantController extends Controller
     public function show(Tenant $tenant)
     {
         if (\Auth::user()->can('show tenant')) {
+            $tenant->load(['user', 'units.property']);
             return view('tenant.show', compact('tenant'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
@@ -204,11 +163,11 @@ class TenantController extends Controller
                     'email' => 'required|email|unique:users,email,' . $tenant->user_id,
                     'phone_number' => 'required',
                     'family_member' => 'required',
-                    'country' => 'required',
-                    'state' => 'required',
+                    'sub_city' => 'required',
+                    'woreda' => 'required',
+                    'house_number' => 'required',
+                    'location' => 'required',
                     'city' => 'required',
-                    'zip_code' => 'required',
-                    'address' => 'required',
                     'property' => 'required',
                     'unit' => 'required',
                     'lease_start_date' => 'required',
@@ -242,11 +201,11 @@ class TenantController extends Controller
             }
 
             $tenant->family_member = $request->family_member;
-            $tenant->country = $request->country;
-            $tenant->state = $request->state;
+            $tenant->sub_city = $request->sub_city;
+            $tenant->woreda = $request->woreda;
+            $tenant->house_number = $request->house_number;
+            $tenant->location = $request->location;
             $tenant->city = $request->city;
-            $tenant->zip_code = $request->zip_code;
-            $tenant->address = $request->address;
             $tenant->property = $request->property;
             $tenant->unit = $request->unit;
             $tenant->lease_start_date = $request->lease_start_date;

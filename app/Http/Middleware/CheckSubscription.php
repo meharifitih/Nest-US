@@ -17,6 +17,11 @@ class CheckSubscription
                 return $next($request);
             }
 
+            // Skip subscription check for tenants and maintainers
+            if (!in_array($user->type, ['owner', 'super admin'])) {
+                return $next($request);
+            }
+
             // Define allowed routes for unapproved users
             $allowedRoutes = [
                 'subscriptions.index',

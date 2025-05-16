@@ -47,4 +47,9 @@ class PropertyUnit extends Model
     {
         return Tenant::where('unit',$this->id)->first();
     }
+
+    public function property()
+    {
+        return $this->belongsTo(\App\Models\Property::class, 'property_id');
+    }
 }

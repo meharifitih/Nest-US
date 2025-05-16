@@ -196,12 +196,34 @@
                                                             <div class="mb-1 row">
                                                                 <label
                                                                     class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                                    {{ __('Address') }} :
+                                                                    {{ __('Woreda') }} :
 
                                                                 </label>
                                                                 <div
                                                                     class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                                    {{ $property->address }}
+                                                                    {{ $property->woreda }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-1 row">
+                                                                <label
+                                                                    class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                                                    {{ __('Sub-city') }} :
+
+                                                                </label>
+                                                                <div
+                                                                    class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
+                                                                    {{ $property->sub_city }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-1 row">
+                                                                <label
+                                                                    class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                                                    {{ __('House Number') }} :
+
+                                                                </label>
+                                                                <div
+                                                                    class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
+                                                                    {{ $property->house_number }}
                                                                 </div>
                                                             </div>
                                                             <div class="mb-1 row">
@@ -212,18 +234,18 @@
                                                                 </label>
                                                                 <div
                                                                     class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                                    {{ $property->city . ', ' . $property->state . ', ' . $property->country }}
+                                                                    {{ $property->location }}
                                                                 </div>
                                                             </div>
                                                             <div class="mb-1 row">
                                                                 <label
                                                                     class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                                    {{ __('Zip Code') }} :
+                                                                    {{ __('City') }} :
 
                                                                 </label>
                                                                 <div
                                                                     class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                                    {{ $property->zip_code }}
+                                                                    {{ $property->city }}
                                                                 </div>
                                                             </div>
 
@@ -395,7 +417,7 @@
                                                         <tr>
                                                             <th>{{ __('File Name') }}</th>
                                                             <th>{{ __('Status') }}</th>
-                                                            <th>{{ __('Upload Date') }}</th>
+                                                            <th>{{ __('Date') }}</th>
                                                             <th>{{ __('Error') }}</th>
                                                         </tr>
                                                     </thead>

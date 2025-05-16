@@ -12,19 +12,20 @@ class Property extends Model
         'name',
         'description',
         'type',
-        'country',
-        'state',
+        'location',
+        'description',
+        'house_number',
+        'woreda',
+        'sub_city',
         'city',
-        'zip_code',
-        'address',
         'parent_id',
         'is_active',
     ];
 
     public static $Type=[
         ''=> 'Select Type',
-        'own_property'=> 'Own Property',
-        'lease_property'=>'Lease Property',
+        'apartment'=> 'Apartment',
+        'commercial'=>'Commercial',
     ];
 
     public function thumbnail(){

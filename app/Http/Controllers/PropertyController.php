@@ -50,11 +50,10 @@ class PropertyController extends Controller
                     'name' => 'required',
                     'description' => 'required',
                     'type' => 'required',
-                    'country' => 'required',
-                    'state' => 'required',
-                    'city' => 'required',
-                    'zip_code' => 'required',
-                    'address' => 'required',
+                    'location' => 'required',
+                    'house_number' => 'required',
+                    'woreda' => 'required',
+                    'sub_city' => 'required',
                     'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                 ]
             );
@@ -81,13 +80,12 @@ class PropertyController extends Controller
             }
             $property = new Property();
             $property->name = $request->name;
+            $property->location = $request->location;
             $property->description = $request->description;
+            $property->house_number = $request->house_number;
+            $property->woreda = $request->woreda;
+            $property->sub_city = $request->sub_city;
             $property->type = $request->type;
-            $property->country = $request->country;
-            $property->state = $request->state;
-            $property->city = $request->city;
-            $property->zip_code = $request->zip_code;
-            $property->address = $request->address;
             $property->parent_id = parentId();
             $property->save();
 
@@ -119,43 +117,6 @@ class PropertyController extends Controller
                     $propertyImage->save();
                 }
             }
-
-            if (!empty($request->name) && !empty($request->bedroom) && !empty($request->kitchen)) {
-                $totalUnits = PropertyUnit::where('parent_id', parentId())->count();
-                if ($subscription && !$subscription->checkUnitLimit($totalUnits + 1)) {
-                    return response()->json([
-                        'status' => 'error',
-                        'msg' => __('You have reached the maximum unit limit for your subscription. Please upgrade your package.'),
-                        'id' => 0,
-                    ]);
-                }
-                $unit = new PropertyUnit();
-                $unit->name = $request->name;
-                $unit->bedroom = $request->bedroom;
-                $unit->kitchen = $request->kitchen;
-                $unit->baths = !empty($request->baths) ? $request->baths : 0;
-                $unit->rent = !empty($request->rent) ? $request->rent : 0;
-                $unit->rent_type = $request->rent_type;
-                if ($request->rent_type == 'custom') {
-                    $unit->start_date = $request->start_date;
-                    $unit->end_date = $request->end_date;
-                    $unit->payment_due_date = $request->payment_due_date;
-                } else {
-                    $unit->rent_duration = $request->rent_duration;
-                }
-
-                $unit->deposit_type = !empty($request->deposit_type) ? $request->deposit_type : null;
-                $unit->deposit_amount = !empty($request->deposit_amount) ? $request->deposit_amount : 0;
-                $unit->late_fee_type = !empty($request->late_fee_type) ? $request->late_fee_type : null;
-                $unit->late_fee_amount = !empty($request->late_fee_amount) ? $request->late_fee_amount : 0;
-                $unit->incident_receipt_amount = !empty($request->incident_receipt_amount) ? $request->incident_receipt_amount : 0;
-                $unit->notes = $request->notes;
-                $unit->property_id = $property->id;
-                $unit->parent_id = parentId();
-
-                $unit->save();
-            }
-
 
             return response()->json([
                 'status' => 'success',
@@ -201,12 +162,10 @@ class PropertyController extends Controller
                     'name' => 'required',
                     'description' => 'required',
                     'type' => 'required',
-                    'country' => 'required',
-                    'state' => 'required',
-                    'city' => 'required',
-                    'zip_code' => 'required',
-                    'address' => 'required',
-
+                    'location' => 'required',
+                    'house_number' => 'required',
+                    'woreda' => 'required',
+                    'sub_city' => 'required',
                 ]
 
             );
@@ -223,13 +182,12 @@ class PropertyController extends Controller
 
 
             $property->name = $request->name;
+            $property->location = $request->location;
             $property->description = $request->description;
+            $property->house_number = $request->house_number;
+            $property->woreda = $request->woreda;
+            $property->sub_city = $request->sub_city;
             $property->type = $request->type;
-            $property->country = $request->country;
-            $property->state = $request->state;
-            $property->city = $request->city;
-            $property->zip_code = $request->zip_code;
-            $property->address = $request->address;
             $property->save();
 
             if (!empty($request->thumbnail)) {
@@ -560,7 +518,11 @@ class PropertyController extends Controller
                 $excelUpload->parent_id = parentId();
                 $excelUpload->save();
 
-                Excel::import(new TenantsImport($property->id), $file);
+                // Import with batch size and chunking
+                Excel::import(new TenantsImport($property->id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+                    'batchSize' => 100,
+                    'chunkSize' => 100,
+                ]);
 
                 $excelUpload->status = 'completed';
                 $excelUpload->save();
@@ -568,6 +530,23 @@ class PropertyController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'msg' => __('Tenant information successfully imported.')
+                ]);
+            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+                $failures = $e->failures();
+                $errors = [];
+                foreach ($failures as $failure) {
+                    $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+                }
+                
+                if (isset($excelUpload)) {
+                    $excelUpload->status = 'failed';
+                    $excelUpload->error_log = implode("\n", $errors);
+                    $excelUpload->save();
+                }
+
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => __('Validation errors: ') . implode(', ', $errors)
                 ]);
             } catch (\Exception $e) {
                 if (isset($excelUpload)) {
@@ -617,14 +596,25 @@ class PropertyController extends Controller
                     'password' => 'password123',
                     'phone_number' => '+1234567890',
                     'family_member' => 2,
-                    'country' => 'USA',
-                    'state' => 'California',
-                    'city' => 'Los Angeles',
-                    'zip_code' => '90001',
-                    'address' => '123 Main St',
+                    'sub_city' => 'Bole',
+                    'woreda' => '01',
+                    'house_number' => '123',
+                    'location' => 'Main Road',
+                    'city' => 'Addis Ababa',
                     'unit_name' => 'Unit 101',
+                    'bedroom' => 2,
+                    'kitchen' => 1,
+                    'baths' => 1,
+                    'rent' => 5000,
+                    'rent_type' => 'monthly',
+                    'deposit_type' => 'fixed',
+                    'deposit_amount' => 1000,
+                    'late_fee_type' => 'fixed',
+                    'late_fee_amount' => 100,
+                    'incident_receipt_amount' => 0,
+                    'notes' => 'Nice unit',
                     'lease_start_date' => '2024-01-01',
-                    'lease_end_date' => '2024-12-31'
+                    'lease_end_date' => '2024-12-31',
                 ]
             ];
 

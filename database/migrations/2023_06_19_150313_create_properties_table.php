@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->string('type')->nullable();
-            $table->string('country')->nullable();
-            $table->string('state')->nullable();
+            $table->string('location')->nullable();
+            $table->string('house_number')->nullable();
+            $table->string('woreda')->nullable();
+            $table->text('sub_city')->nullable();
             $table->string('city')->nullable();
-            $table->string('zip_code')->nullable();
-            $table->text('address')->nullable();
             $table->string('map_link')->nullable();
             $table->integer('parent_id')->default(0);
             $table->integer('is_active')->default(1);

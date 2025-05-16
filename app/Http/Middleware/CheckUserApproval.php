@@ -18,8 +18,8 @@ class CheckUserApproval
                 return $next($request);
             }
             
-            // Allow non-owner users to access everything
-            if ($user->type !== 'owner') {
+            // Allow non-owner users (tenants, maintainers) to access everything
+            if (!in_array($user->type, ['owner', 'super admin'])) {
                 return $next($request);
             }
             

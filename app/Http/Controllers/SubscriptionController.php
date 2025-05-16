@@ -17,7 +17,6 @@ class SubscriptionController extends Controller
     {
         if (\Auth::user()->can('manage pricing packages')) {
             $subscriptions = Subscription::get();
-
             return view('subscription.index', compact('subscriptions'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));

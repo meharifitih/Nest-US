@@ -17,16 +17,17 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->default(0);
             $table->integer('family_member')->nullable();
-            $table->text('address')->nullable();
-            $table->string('country')->nullable();
-            $table->string('state')->nullable();
-            $table->string('city')->nullable();
-            $table->string('zip_code')->nullable();
+            $table->text('sub_city')->nullable();
+            $table->string('location')->nullable();
+            $table->string('description')->nullable();
+            $table->string('house_number')->nullable();
+            $table->string('woreda')->nullable();
             $table->integer('property')->default(0);
             $table->integer('unit')->default(0);
             $table->date('lease_start_date')->nullable();
             $table->date('lease_end_date')->nullable();
             $table->integer('parent_id')->default(0);
+            $table->string('city')->nullable();
             $table->timestamps();
         });
     }

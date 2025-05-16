@@ -204,14 +204,6 @@
                                 {{ __('Property Images') }}
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="profile-tab-3" data-bs-toggle="tab" href="#profile-3" role="tab"
-                                aria-selected="true">
-                                <i class="material-icons-two-tone me-2">layers</i>
-                                {{ __('Unit') }}
-                            </a>
-                        </li>
-
                     </ul>
                 </div>
                 <div class="card-body">
@@ -224,86 +216,65 @@
                                             <h5> {{ __('Add Property Details') }}</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <div class="mb-3">
-                                                        <div class="form-group ">
-                                                            {{ Form::label('type', __('Type'), ['class' => 'form-label']) }}
-                                                            {{ Form::select('type', $types, null, ['class' => 'form-control basic-select', 'required' => 'required']) }}
-                                                        </div>
+                                            <div class="row g-3 mb-4">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        {{ Form::label('type', __('Type'), ['class' => 'form-label']) }}
+                                                        {{ Form::select('type', $types, null, ['class' => 'form-control basic-select', 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('name', __('Name'), ['class' => 'form-label']) }}
-                                                            {{ Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Name'), 'required' => 'required']) }}
-                                                        </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        {{ Form::label('name', __('Name'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Name'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('thumbnail', __('Thumbnail Image'), ['class' => 'form-label']) }}
-                                                            {{ Form::file('thumbnail', ['class' => 'form-control']) }}
-                                                        </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        {{ Form::label('thumbnail', __('Thumbnail Image'), ['class' => 'form-label']) }}
+                                                        {{ Form::file('thumbnail', ['class' => 'form-control']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12">
-                                                    <div class="mb-3">
-                                                        <div class="form-group ">
-                                                            {{ Form::label('description', __('Description'), ['class' => 'form-label']) }}
-                                                            {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => 4, 'placeholder' => __('Enter Property Description'), 'required' => 'required']) }}
-                                                        </div>
-
+                                            </div>
+                                            <div class="row g-3 mb-4">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Location'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
-                                                            {{ Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Country'), 'required' => 'required']) }}
-                                                        </div>
-
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        {{ Form::label('description', __('Description'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Description'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
-                                                            {{ Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('Enter Property State'), 'required' => 'required']) }}
-                                                        </div>
-
+                                            </div>
+                                            <div class="row g-3 mb-4">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        {{ Form::label('house_number', __('House Number'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('house_number', null, ['class' => 'form-control', 'placeholder' => __('Enter House Number'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
-                                                            {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter Property City'), 'required' => 'required']) }}
-                                                        </div>
-
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        {{ Form::label('woreda', __('Woreda'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('woreda', null, ['class' => 'form-control', 'placeholder' => __('Enter Woreda'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-3">
-                                                    <div class="mb-3">
-                                                        <div class="form-group">
-                                                            {{ Form::label('zip_code', __('Zip Code'), ['class' => 'form-label']) }}
-                                                            {{ Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => __('Enter Property Zip Code'), 'required' => 'required']) }}
-                                                        </div>
-
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        {{ Form::label('sub_city', __('Sub-city'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('sub_city', null, ['class' => 'form-control', 'placeholder' => __('Enter Sub-city'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12">
-                                                    <div class="mb-3">
-                                                        <div class="form-group ">
-                                                            {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}
-                                                            {{ Form::textarea('address', null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => __('Enter Property Address'), 'required' => 'required']) }}
-                                                        </div>
-
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
+                                                        {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter City'), 'required' => 'required']) }}
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
@@ -314,8 +285,6 @@
                                     data-next-tab="#profile-2">
                                     {{ __('Next') }}
                                 </button>
-
-
                             </div>
                         </div>
                         <div class="tab-pane" id="profile-2" role="tabpanel" aria-labelledby="profile-tab-2">
@@ -347,118 +316,17 @@
                                                                 aria-hidden="true"></i></div>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="text-end mt-3">
-                                <button type="button" class="btn btn-secondary btn-rounded nextButton"
-                                    data-next-tab="#profile-2">
-                                    {{ __('Next') }}
-                                </button>
-                            </div>
-                        </div>
-
-
-
-                        <div class="tab-pane show " id="profile-3" role="tabpanel" aria-labelledby="profile-tab-3">
-                            <div class="card border">
-                                <div class="card-header">
-                                    <h5>{{ __('Add Unit') }}</h5>
-                                </div>
-                               
-
-                                <div class="card-body">
-                                    <div class="row unit_list">
-                                        <div class="form-group col-md-4">
-                                            {{ Form::label('unitname', __('Name'), ['class' => 'form-label']) }}
-                                            {{ Form::text('unitname', null, ['class' => 'form-control', 'placeholder' => __('Enter unit name'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            {{ Form::label('bedroom', __('Bedroom'), ['class' => 'form-label']) }}
-                                            {{ Form::number('bedroom', null, ['class' => 'form-control', 'placeholder' => __('Enter number of bedroom'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            {{ Form::label('kitchen', __('Kitchen'), ['class' => 'form-label']) }}
-                                            {{ Form::number('kitchen', null, ['class' => 'form-control', 'placeholder' => __('Enter number of kitchen'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            {{ Form::label('baths', __('Bath'), ['class' => 'form-label']) }}
-                                            {{ Form::number('baths', null, ['class' => 'form-control', 'placeholder' => __('Enter number of bath'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            {{ Form::label('rent', __('Rent'), ['class' => 'form-label']) }}
-                                            {{ Form::number('rent', null, ['class' => 'form-control', 'placeholder' => __('Enter unit rent'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            {{ Form::label('rent_type', __('Rent Type'), ['class' => 'form-label']) }}
-                                            {{ Form::select('rent_type', $rentTypes, null, ['class' => 'form-control hidesearch', 'id' => 'rent_type', 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-6 rent_type monthly">
-                                            {{ Form::label('rent_duration', __('Rent Duration'), ['class' => 'form-label']) }}
-                                            {{ Form::number('rent_duration', null, ['class' => 'form-control', 'placeholder' => __('Enter day of month between 1 to 30')]) }}
-                                        </div>
-                                        <div class="form-group col-md-6 rent_type yearly d-none">
-                                            {{ Form::label('rent_duration', __('Rent Duration'), ['class' => 'form-label']) }}
-                                            {{ Form::number('rent_duration', null, ['class' => 'form-control', 'placeholder' => __('Enter month of year between 1 to 12'), 'disabled']) }}
-                                        </div>
-                                        <div class="form-group col-md-2 rent_type custom d-none">
-                                            {{ Form::label('start_date', __('Start Date'), ['class' => 'form-label']) }}
-                                            {{ Form::date('start_date', null, ['class' => 'form-control', 'disabled']) }}
-                                        </div>
-                                        <div class="form-group col-md-2 rent_type custom d-none">
-                                            {{ Form::label('end_date', __('End Date'), ['class' => 'form-label']) }}
-                                            {{ Form::date('end_date', null, ['class' => 'form-control', 'disabled']) }}
-                                        </div>
-                                        <div class="form-group col-md-2 rent_type custom d-none">
-                                            {{ Form::label('payment_due_date', __('Payment Due Date'), ['class' => 'form-label']) }}
-                                            {{ Form::date('payment_due_date', null, ['class' => 'form-control', 'disabled']) }}
-                                        </div>
-                                        <div class="form-group col-md-4">
-                                            {{ Form::label('deposit_type', __('Deposit Type'), ['class' => 'form-label']) }}
-                                            {{ Form::select('deposit_type', $unitTypes, null, ['class' => 'form-control hidesearch', 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            {{ Form::label('deposit_amount', __('Deposit Amount'), ['class' => 'form-label']) }}
-                                            {{ Form::number('deposit_amount', null, ['class' => 'form-control', 'placeholder' => __('Enter deposit amount'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            {{ Form::label('late_fee_type', __('Late Fee Type'), ['class' => 'form-label']) }}
-                                            {{ Form::select('late_fee_type', $unitTypes, null, ['class' => 'form-control hidesearch', 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            {{ Form::label('late_fee_amount', __('Late Fee Amount'), ['class' => 'form-label']) }}
-                                            {{ Form::number('late_fee_amount', null, ['class' => 'form-control', 'placeholder' => __('Enter late fee amount'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            {{ Form::label('incident_receipt_amount', __('Incident Receipt Amount'), ['class' => 'form-label']) }}
-                                            {{ Form::number('incident_receipt_amount', null, ['class' => 'form-control', 'placeholder' => __('Enter incident receipt amount'), 'required' => 'required']) }}
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            {{ Form::label('notes', __('Notes'), ['class' => 'form-label']) }}
-                                            {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => __('Enter notes')]) }}
-                                        </div>
-                                    </div>
-
-
-
-                                </div>
-                            </div>
-
-
-                            <div class="col-lg-12 mb-2">
                                 <div class="group-button text-end">
-                                    {{ Form::submit(__('Create'), ['class' => 'btn btn-secondary btn-rounded nextButton', 'id' => 'property-submit']) }}
+                                    {{ Form::submit(__('Create'), ['class' => 'btn btn-secondary btn-rounded', 'id' => 'property-submit']) }}
                                 </div>
                             </div>
-
                         </div>
-
-
-
-
                     </div>
                 </div>
             </div>
