@@ -287,6 +287,7 @@ Route::group(
         Route::put('property/{pid}/unit/{id}/update', [PropertyController::class, 'unitUpdate'])->name('unit.update');
         Route::delete('property/{pid}/unit/{id}/destroy', [PropertyController::class, 'unitDestroy'])->name('unit.destroy');
         Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
+        Route::get('get-units', [PropertyController::class, 'getUnits'])->name('get.units');
     }
 );
 

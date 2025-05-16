@@ -644,4 +644,11 @@ class PropertyController extends Controller
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
     }
+
+    public function getUnits(Request $request)
+    {
+        $propertyId = $request->input('property_id');
+        $units = PropertyUnit::where('property_id', $propertyId)->get();
+        return response()->json($units);
+    }
 }

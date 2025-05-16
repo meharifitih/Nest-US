@@ -30,9 +30,8 @@ class TenantController extends Controller
     public function create()
     {
         if (\Auth::user()->can('create tenant')) {
-            $property = Property::where('parent_id', parentId())->get()->pluck('name', 'id');
-            $property->prepend(__('Select Property'), 0);
-            return view('tenant.create', compact('property'));
+            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            return view('tenant.create', compact('properties'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -64,7 +63,7 @@ class TenantController extends Controller
             }
 
             // Generate a random password
-            $password = str_random(8);
+            $password = \Illuminate\Support\Str::random(8);
 
             $user = new User();
             $user->first_name = $request->first_name;
