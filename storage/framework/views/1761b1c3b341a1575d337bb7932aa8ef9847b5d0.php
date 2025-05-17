@@ -78,6 +78,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
             </div>
+            <input type="hidden" name="type" value="owner" />
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email"
                     placeholder="<?php echo e(__('Email address')); ?>" required />

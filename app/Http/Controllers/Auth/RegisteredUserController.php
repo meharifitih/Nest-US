@@ -45,12 +45,9 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $google_recaptcha = getSettingsValByName('google_recaptcha');
-        if($google_recaptcha == 'on')
-        {
-            $validation['g-recaptcha-response'] = 'required|captcha';
-        }else{
-            $validation = [];
-        }
+        $validation = $google_recaptcha == 'on'
+            ? ['g-recaptcha-response' => 'required|captcha']
+            : [];
         $this->validate($request, $validation);
 
         $request->validate([
@@ -59,19 +56,44 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone_number' => ['required', 'string', 'regex:/^[79]\d{8}$/'],
             'fayda_id' => ['required', 'string', 'max:255', 'unique:users'],
+            'type' => ['required', 'string', 'in:tenant,maintainer,owner,super admin'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'type' => $request->type,
-            'parent_id' => parentId(),
-            'approval_status' => in_array($request->type, ['tenant', 'maintainer']) ? 'approved' : 'pending',
-            'is_active' => in_array($request->type, ['tenant', 'maintainer']) ? 1 : 0,
-        ]);
+        $parentId = parentId();
+        if (is_null($parentId)) {
+            $parentId = 1; // fallback to super admin or system user if needed
+        }
 
-        $user->assignRole($request->type);
+        try {
+            $user = User::create([
+                'first_name' => $request->name,
+                'last_name' => '',
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'type' => $request->type,
+                'phone_number' => $request->phone_number,
+                'fayda_id' => $request->fayda_id,
+                'profile' => 'avatar.png',
+                'lang' => 'english',
+                'subscription' => null,
+                'subscription_expire_date' => null,
+                'parent_id' => $parentId,
+                'is_active' => in_array($request->type, ['tenant', 'maintainer']) ? 1 : 0,
+                'approval_status' => in_array($request->type, ['tenant', 'maintainer']) ? 'approved' : 'pending',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'User registration failed: ' . $e->getMessage());
+        }
+
+        // Assign role only if it exists
+        $role = \Spatie\Permission\Models\Role::where('name', $request->type)->first();
+        if ($user && $role) {
+            $user->assignRole($role);
+        }
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'User registration failed.');
+        }
 
         if (in_array($request->type, ['tenant', 'maintainer'])) {
             Auth::login($user);
@@ -79,7 +101,6 @@ class RegisteredUserController extends Controller
                 ->with('success', __('Registration successful. You can now login.'));
         }
 
-        // For regular users, send verification email if enabled
         $owner_email_verification = getSettingsValByName('owner_email_verification');
         if ($owner_email_verification == 'on') {
             $token = sha1($user->email);
@@ -92,30 +113,30 @@ class RegisteredUserController extends Controller
                 'module' => 'email_verification',
                 'subject' => 'Email Verification',
                 'email' => $user->email,
-                'name' => $user->name,
+                'name' => $user->first_name,
                 'url' => $url,
             ];
             $to = $user->email;
             $response = sendEmailVerification($to, $data);
-            if ($response['status'] == 'success') {
+            if (isset($response['status']) && $response['status'] == 'success') {
                 return redirect()->route('login')->with('error', __('We have sent an account verification email to your registered email inbox. Please check your email and follow the instructions to verify your account.'));
             } else {
                 $user->delete();
-                return redirect()->back()->with('error', $response['message']);
+                $msg = isset($response['message']) ? $response['message'] : 'Unknown error sending verification email.';
+                return redirect()->back()->with('error', $msg);
             }
         }
 
-        // Send welcome email
+        // Send welcome email (no password)
         $module = 'owner_create';
         $setting = settings();
         if (!empty($user)) {
             $data['subject'] = 'New User Created';
             $data['module'] = $module;
-            $data['password'] = $request->password;
-            $data['name'] = $request->name;
-            $data['email'] = $request->email;
+            $data['name'] = $user->first_name;
+            $data['email'] = $user->email;
             $data['url'] = env('APP_URL');
-            $data['logo'] = $setting['company_logo'];
+            $data['logo'] = isset($setting['company_logo']) ? $setting['company_logo'] : '';
             $to = $user->email;
             commonEmailSend($to, $data);
         }
@@ -124,7 +145,6 @@ class RegisteredUserController extends Controller
         $user->email_verification_token = null;
         $user->save();
 
-        // Login the user and redirect to subscription selection
         Auth::login($user);
         return redirect()->route('subscriptions.index')
             ->with('success', __('Registration successful. Please select a subscription package and upload payment proof for approval.'));

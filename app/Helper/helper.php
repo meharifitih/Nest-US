@@ -273,10 +273,14 @@ if (!function_exists('priceFormat')) {
 if (!function_exists('parentId')) {
     function parentId()
     {
-        if (\Auth::user()->type == 'owner' || \Auth::user()->type == 'super admin') {
-            return \Auth::user()->id;
+        $user = \Auth::user();
+        if (!$user) {
+            return null;
+        }
+        if ($user->type == 'owner' || $user->type == 'super admin') {
+            return $user->id;
         } else {
-            return \Auth::user()->parent_id;
+            return $user->parent_id;
         }
     }
 }

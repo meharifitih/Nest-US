@@ -69,6 +69,7 @@
                     </span>
                 @enderror
             </div>
+            <input type="hidden" name="type" value="owner" />
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email"
                     placeholder="{{ __('Email address') }}" required />
