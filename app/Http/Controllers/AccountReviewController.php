@@ -12,6 +12,9 @@ class AccountReviewController extends Controller
     public function showReviewPage()
     {
         $user = auth()->user();
+        if ($user->type === 'tenant' || $user->type === 'maintainer') {
+            return redirect()->route('dashboard');
+        }
         $latestTransaction = PackageTransaction::with('subscription')
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
