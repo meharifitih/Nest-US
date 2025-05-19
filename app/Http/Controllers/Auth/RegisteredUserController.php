@@ -128,10 +128,10 @@ class RegisteredUserController extends Controller
         }
 
         // Send welcome email (no password)
-        $module = 'owner_create';
+        $module = 'welcome';
         $setting = settings();
         if (!empty($user)) {
-            $data['subject'] = 'New User Created';
+            $data['subject'] = 'Welcome to Smart Tenant!';
             $data['module'] = $module;
             $data['name'] = $user->first_name;
             $data['email'] = $user->email;

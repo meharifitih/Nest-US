@@ -77,7 +77,7 @@ class AccountReviewController extends Controller
 
         // Send email notification to user
         $data = [
-            'subject' => 'Account Approved',
+            'subject' => 'Your Account Has Been Approved!',
             'module' => 'account_approved',
             'name' => $user->name,
             'email' => $user->email,

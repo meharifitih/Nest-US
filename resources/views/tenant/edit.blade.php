@@ -191,20 +191,24 @@
 
                         <div class="row">
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
-                                {{ Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Enter Country')]) }}
+                                {{ Form::label('sub_city', __('Sub City'), ['class' => 'form-label']) }}
+                                {{ Form::text('sub_city', null, ['class' => 'form-control', 'placeholder' => __('Enter Sub City')]) }}
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('state', __('State'), ['class' => 'form-label']) }}
-                                {{ Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('Enter State')]) }}
+                                {{ Form::label('woreda', __('Woreda'), ['class' => 'form-label']) }}
+                                {{ Form::text('woreda', null, ['class' => 'form-control', 'placeholder' => __('Enter Woreda')]) }}
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6">
+                                {{ Form::label('house_number', __('House Number'), ['class' => 'form-label']) }}
+                                {{ Form::text('house_number', null, ['class' => 'form-control', 'placeholder' => __('Enter House Number')]) }}
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6">
+                                {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
+                                {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
                                 {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
-                            </div>
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('zip_code', __('Zip Code'), ['class' => 'form-label']) }}
-                                {{ Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => __('Enter Zip Code')]) }}
                             </div>
                             <div class="form-group ">
                                 {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}

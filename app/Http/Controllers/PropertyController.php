@@ -282,15 +282,11 @@ class PropertyController extends Controller
                 [
                     'name' => 'required',
                     'bedroom' => 'required',
-                    'kitchen' => 'required',
                     'baths' => 'required',
                     'rent' => 'required',
                     'rent_type' => 'required',
-                    'deposit_type' => 'required',
-                    'deposit_amount' => 'required',
-                    'late_fee_type' => 'required',
-                    'late_fee_amount' => 'required',
-                    'incident_receipt_amount' => 'required',
+                    'start_date' => 'required',
+                    'end_date' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -311,23 +307,11 @@ class PropertyController extends Controller
             $unit = new PropertyUnit();
             $unit->name = $request->name;
             $unit->bedroom = $request->bedroom;
-            $unit->kitchen = $request->kitchen;
             $unit->baths = $request->baths;
             $unit->rent = $request->rent;
             $unit->rent_type = $request->rent_type;
-            if ($request->rent_type == 'custom') {
-                $unit->start_date = $request->start_date;
-                $unit->end_date = $request->end_date;
-                $unit->payment_due_date = $request->payment_due_date;
-            } else {
-                $unit->rent_duration = $request->rent_duration;
-            }
-
-            $unit->deposit_type = $request->deposit_type;
-            $unit->deposit_amount = $request->deposit_amount;
-            $unit->late_fee_type = $request->late_fee_type;
-            $unit->late_fee_amount = $request->late_fee_amount;
-            $unit->incident_receipt_amount = $request->incident_receipt_amount;
+            $unit->start_date = $request->start_date;
+            $unit->end_date = $request->end_date;
             $unit->notes = $request->notes;
             $unit->property_id = $property_id;
             $unit->parent_id = parentId();
@@ -427,43 +411,26 @@ class PropertyController extends Controller
                 [
                     'name' => 'required',
                     'bedroom' => 'required',
-                    'kitchen' => 'required',
                     'baths' => 'required',
                     'rent' => 'required',
                     'rent_type' => 'required',
-                    'deposit_type' => 'required',
-                    'deposit_amount' => 'required',
-                    'late_fee_type' => 'required',
-                    'late_fee_amount' => 'required',
-                    'incident_receipt_amount' => 'required',
+                    'start_date' => 'required',
+                    'end_date' => 'required',
                 ]
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
             $unit = PropertyUnit::find($unit_id);
             $unit->name = $request->name;
             $unit->bedroom = $request->bedroom;
-            $unit->kitchen = $request->kitchen;
             $unit->baths = $request->baths;
             $unit->rent = $request->rent;
             $unit->rent_type = $request->rent_type;
-            if ($request->rent_type == 'custom') {
-                $unit->start_date = $request->start_date;
-                $unit->end_date = $request->end_date;
-                $unit->payment_due_date = $request->payment_due_date;
-            } else {
-                $unit->rent_duration = $request->rent_duration;
-            }
-
-            $unit->deposit_type = $request->deposit_type;
-            $unit->deposit_amount = $request->deposit_amount;
-            $unit->late_fee_type = $request->late_fee_type;
-            $unit->late_fee_amount = $request->late_fee_amount;
-            $unit->incident_receipt_amount = $request->incident_receipt_amount;
+            $unit->start_date = $request->start_date;
+            $unit->end_date = $request->end_date;
             $unit->notes = $request->notes;
             $unit->save();
             return redirect()->back()->with('success', __('Unit successfully updated.'));
@@ -592,10 +559,9 @@ class PropertyController extends Controller
                 [
                     'first_name' => 'John',
                     'last_name' => 'Doe',
-                    'email' => 'john@example.com',
-                    'password' => 'password123',
-                    'phone_number' => '+1234567890',
-                    'family_member' => 2,
+                    'email' => 'john@email.com',
+                    'phone_number' => '1234567890',
+                    'family_member' => 3,
                     'sub_city' => 'Bole',
                     'woreda' => '01',
                     'house_number' => '123',
@@ -603,18 +569,12 @@ class PropertyController extends Controller
                     'city' => 'Addis Ababa',
                     'unit_name' => 'Unit 101',
                     'bedroom' => 2,
-                    'kitchen' => 1,
                     'baths' => 1,
                     'rent' => 5000,
                     'rent_type' => 'monthly',
-                    'deposit_type' => 'fixed',
-                    'deposit_amount' => 1000,
-                    'late_fee_type' => 'fixed',
-                    'late_fee_amount' => 100,
-                    'incident_receipt_amount' => 0,
-                    'notes' => 'Nice unit',
                     'lease_start_date' => '2024-01-01',
-                    'lease_end_date' => '2024-12-31',
+                    'lease_end_date' => '2025-01-01',
+                    'notes' => 'Test tenant',
                 ]
             ];
 

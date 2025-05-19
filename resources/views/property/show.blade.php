@@ -314,9 +314,6 @@
                                                     <p class="mb-1">{{ __('Bedroom') }} :
                                                         <span class="text-muted">{{ $unit->bedroom }}</span>
                                                     </p>
-                                                    <p class="mb-1">{{ __('Kitchen') }} :
-                                                        <span class="text-muted">{{ $unit->kitchen }}</span>
-                                                    </p>
                                                     <p class="mb-1">{{ __('Bath') }} :
                                                         <span class="text-muted">{{ $unit->baths }}</span>
                                                     </p>
@@ -326,41 +323,11 @@
                                                     <p class="mb-1">{{ __('Rent') }} :
                                                         <span class="text-muted">{{ priceFormat($unit->rent) }}</span>
                                                     </p>
-                                                     @if ($unit->rent_type == 'custom')
-                                                        <p class="mb-1">{{ __('Start Date') }} :
-                                                            <span class="text-muted">{{ $unit->start_date }}</span>
-                                                        </p>
-                                                        <p class="mb-1">{{ __('End Date') }} :
-                                                            <span class="text-muted">{{ $unit->end_date }}</span>
-                                                        </p>
-                                                        <p class="mb-1">{{ __('Payment Due Date') }} :
-                                                            <span class="text-muted">{{ $unit->payment_due_date }}</span>
-                                                        </p>
-                                                    @else
-                                                        <p class="mb-1">{{ __('Rent Duration') }} :
-                                                            <span class="text-muted">{{ $unit->rent_duration }}</span>
-                                                        </p>
-                                                    @endif
-
-                                                    <p class="mb-1">{{ __('Deposit Type') }} :
-                                                        <span class="text-muted">{{ $unit->deposit_type }}</span>
+                                                    <p class="mb-1">{{ __('Rent Start Date') }} :
+                                                        <span class="text-muted">{{ $unit->start_date ? dateFormat($unit->start_date) : '-' }}</span>
                                                     </p>
-                                                    <p class="mb-1">{{ __('Deposit Amount') }} :
-                                                        <span class="text-muted">
-                                                            {{ $unit->deposit_type == 'fixed' ? priceFormat($unit->deposit_amount) : $unit->deposit_amount . '%' }}
-                                                        </span>
-                                                    </p>
-                                                    <p class="mb-1">{{ __('Late Fee Type') }} :
-                                                        <span class="text-muted">{{ $unit->late_fee_type }}</span>
-                                                    </p>
-                                                    <p class="mb-1">{{ __('Late Fee Amount') }} :
-                                                        <span class="text-muted">
-                                                            {{ $unit->late_fee_type == 'fixed' ? priceFormat($unit->late_fee_amount) : $unit->late_fee_amount . '%' }}
-                                                        </span>
-                                                    </p>
-                                                    <p class="mb-1">{{ __('Incident Receipt Amount') }} :
-                                                        <span
-                                                            class="text-muted">{{ priceFormat($unit->incident_receipt_amount) }}</span>
+                                                    <p class="mb-1">{{ __('Rent End Date') }} :
+                                                        <span class="text-muted">{{ $unit->end_date ? dateFormat($unit->end_date) : '-' }}</span>
                                                     </p>
                                                 </div>
 
