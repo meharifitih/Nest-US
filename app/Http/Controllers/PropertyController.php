@@ -339,20 +339,13 @@ class PropertyController extends Controller
                     'name' => 'required',
                     'property_id' => 'required',
                     'bedroom' => 'required',
-                    'kitchen' => 'required',
                     'baths' => 'required',
                     'rent' => 'required',
                     'rent_type' => 'required',
-                    'deposit_type' => 'required',
-                    'deposit_amount' => 'required',
-                    'late_fee_type' => 'required',
-                    'late_fee_amount' => 'required',
-                    'incident_receipt_amount' => 'required',
                 ]
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
@@ -368,23 +361,11 @@ class PropertyController extends Controller
             $unit->name = $request->name;
             $unit->property_id = $request->property_id;
             $unit->bedroom = $request->bedroom;
-            $unit->kitchen = $request->kitchen;
             $unit->baths = $request->baths;
             $unit->rent = $request->rent;
             $unit->rent_type = $request->rent_type;
-            if ($request->rent_type == 'custom') {
-                $unit->start_date = $request->start_date;
-                $unit->end_date = $request->end_date;
-                $unit->payment_due_date = $request->payment_due_date;
-            } else {
-                $unit->rent_duration = $request->rent_duration;
-            }
-
-            $unit->deposit_type = $request->deposit_type;
-            $unit->deposit_amount = $request->deposit_amount;
-            $unit->late_fee_type = $request->late_fee_type;
-            $unit->late_fee_amount = $request->late_fee_amount;
-            $unit->incident_receipt_amount = $request->incident_receipt_amount;
+            $unit->start_date = $request->start_date;
+            $unit->end_date = $request->end_date;
             $unit->notes = $request->notes;
             $unit->parent_id = parentId();
             $unit->save();
