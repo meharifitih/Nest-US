@@ -658,12 +658,13 @@ class SettingController extends Controller
         unset($settings['_token']);
 
         foreach ($settings as $key => $val) {
-            \DB::insert(
-                'INSERT INTO settings (value, name, parent_id) VALUES (?, ?, ?) ON CONFLICT (name, parent_id) DO UPDATE SET value = EXCLUDED.value',
+            \App\Models\Setting::updateOrInsert(
                 [
-                    $val,
-                    $key,
-                    parentId(),
+                    'name' => $key,
+                    'parent_id' => parentId(),
+                ],
+                [
+                    'value' => $val
                 ]
             );
         }

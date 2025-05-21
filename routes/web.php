@@ -324,6 +324,7 @@ Route::group(
         Route::get('invoice/{id}/reminder', [InvoiceController::class, 'invoicePaymentRemind'])->name('invoice.reminder');
         Route::post('invoice/{id}/reminder', [InvoiceController::class, 'invoicePaymentRemindData'])->name('invoice.sendEmail');
         Route::resource('invoice', InvoiceController::class);
+        Route::post('/invoice/{invoice}/mark-paid', [App\Http\Controllers\InvoiceController::class, 'markPaid'])->name('invoice.markPaid');
     }
 );
 

@@ -17,6 +17,16 @@
                         <div class="col">
                             <h5>{{ __('Invoice List') }}</h5>
                         </div>
+                        <div class="col-auto">
+                            <form method="GET" action="">
+                                <select name="type_filter" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Types</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type->id }}" {{ request('type_filter') == $type->id ? 'selected' : '' }}>{{ $type->title }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </div>
                         @if (Gate::check('create invoice'))
                             <div class="col-auto">
                                 <a href="{{ route('invoice.create') }}" class="btn btn-secondary"> <i
@@ -37,6 +47,8 @@
                                     <th>{{ __('End Date') }}</th>
                                     <th>{{ __('Amount') }}</th>
                                     <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Tenant') }}</th>
+                                    <th>{{ __('Type') }}</th>
                                     @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
                                         <th class="text-right">{{ __('Action') }}</th>
                                     @endif
@@ -52,7 +64,9 @@
                                         <td>{{ dateFormat($invoice->end_date) }} </td>
                                         <td>{{ priceFormat($invoice->getInvoiceSubTotalAmount()) }}</td>
                                         <td>
-                                            @if ($invoice->status == 'open')
+                                            @if ($invoice->status == 'pending')
+                                                <span class="badge bg-light-warning">Pending</span>
+                                            @elseif ($invoice->status == 'open')
                                                 <span
                                                     class="badge bg-light-info">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
                                             @elseif($invoice->status == 'paid')
@@ -62,6 +76,13 @@
                                                 <span
                                                     class="badge bg-light-warning">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
                                             @endif
+                                        </td>
+                                        <td>{{ !empty($invoice->tenants()) && !empty($invoice->tenants()->user) ? $invoice->tenants()->user->name : '-' }}</td>
+                                        <td>
+                                            @php
+                                                $type = $invoice->types->first();
+                                                echo $type && $type->types ? $type->types->title : '-';
+                                            @endphp
                                         </td>
                                         @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
                                             <td>
@@ -86,7 +107,9 @@
                                                             data-bs-original-title="{{ __('Detete') }}" href="#"> <i
                                                                 data-feather="trash-2"></i></a>
                                                     @endcan
-
+                                                    @if (auth()->user()->type == 'tenant' && $invoice->status == 'open')
+                                                        <a href="{{ route('invoice.payment.create', $invoice->id) }}" class="btn btn-primary btn-sm">Pay Now</a>
+                                                    @endif
                                                     {!! Form::close() !!}
                                                 </div>
 

@@ -16,7 +16,7 @@ class GenerateRentInvoices extends Command
 
     public function handle()
     {
-        $units = PropertyUnit::whereHas('tenants')->get();
+        $units = PropertyUnit::with(['tenants.user', 'property'])->whereHas('tenants')->get();
         $now = Carbon::now();
 
         foreach ($units as $unit) {
@@ -114,6 +114,50 @@ class GenerateRentInvoices extends Command
 
         if ($existingInvoice) return;
 
+        // Ensure unit is fresh from database to get latest rent value
+        $unit = PropertyUnit::find($unit->id);
+        
+        // Defensive: ensure rent is loaded and numeric
+        $rent = floatval($unit->rent);
+        
+        // Log rent value for debugging
+        \Log::info('Creating invoice for unit', [
+            'unit_id' => $unit->id,
+            'rent' => $rent,
+            'rent_type' => $unit->rent_type,
+            'start_date' => $startDate->format('Y-m-d'),
+            'end_date' => $endDate->format('Y-m-d')
+        ]);
+
+        if ($rent <= 0) {
+            \Log::error('Unit rent is zero or not set for unit ID: ' . $unit->id, [
+                'unit' => $unit->toArray(),
+                'tenant' => $tenant->toArray()
+            ]);
+            return; // Don't create invoice if rent is zero
+        }
+
+        // Calculate rent amount based on rent type
+        $rentAmount = $rent;
+        switch ($unit->rent_type) {
+            case 'quarterly':
+                $rentAmount = $rent * 3;
+                break;
+            case 'six_months':
+                $rentAmount = $rent * 6;
+                break;
+            case 'yearly':
+                $rentAmount = $rent * 12;
+                break;
+        }
+
+        // Log final rent amount
+        \Log::info('Final rent amount calculated', [
+            'unit_id' => $unit->id,
+            'rent_amount' => $rentAmount,
+            'rent_type' => $unit->rent_type
+        ]);
+
         $invoice = new Invoice();
         $invoice->invoice_id = $this->generateInvoiceNumber();
         $invoice->property_id = $unit->property_id;
@@ -127,25 +171,26 @@ class GenerateRentInvoices extends Command
         // Add rent item
         $invoiceItem = new InvoiceItem();
         $invoiceItem->invoice_id = $invoice->id;
-        $invoiceItem->invoice_type = 'rent';
-        $invoiceItem->amount = $unit->rent;
+        $invoiceItem->invoice_type = 1;
+        $invoiceItem->amount = $rentAmount;
         $invoiceItem->description = 'Rent for ' . $startDate->format('M Y') . ' to ' . $endDate->format('M Y');
         $invoiceItem->save();
 
-        // Send email notification to tenant
-        if ($tenant->email) {
+        // Send email notification to tenant's user
+        $user = $tenant->user;
+        if ($user && $user->email) {
             $data = [
-                'name' => $tenant->name,
+                'name' => $user->name,
                 'invoice_id' => $invoice->invoice_id,
-                'amount' => $unit->rent,
+                'amount' => $rentAmount,
                 'due_date' => $endDate->format('Y-m-d'),
-                'property_name' => $unit->property->name,
+                'property_name' => $unit->property ? $unit->property->name : '',
                 'unit_name' => $unit->name,
                 'period' => $startDate->format('M Y') . ' to ' . $endDate->format('M Y')
             ];
 
-            \Mail::send('emails.invoice_created', $data, function($message) use ($tenant, $invoice) {
-                $message->to($tenant->email, $tenant->name)
+            \Mail::send('emails.invoice_created', $data, function($message) use ($user, $invoice) {
+                $message->to($user->email, $user->name)
                     ->subject('New Rent Invoice #' . $invoice->invoice_id . ' Generated');
             });
         }

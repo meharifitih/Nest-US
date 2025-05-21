@@ -18,14 +18,21 @@ class InvoiceController extends Controller
     public function index()
     {
         if (\Auth::user()->can('manage invoice')) {
+            $typeFilter = request('type_filter');
             if (\Auth::user()->type == 'tenant') {
                 $tenant = Tenant::where('user_id', \Auth::user()->id)->first();
-                $invoices = Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->where('parent_id', parentId())->get();
+                $query = Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->where('parent_id', parentId());
             } else {
-                $invoices = Invoice::where('parent_id', parentId())->get();
+                $query = Invoice::where('parent_id', parentId());
             }
-
-            return view('invoice.index', compact('invoices'));
+            if ($typeFilter) {
+                $query = $query->whereHas('types', function($q) use ($typeFilter) {
+                    $q->where('invoice_type', $typeFilter);
+                });
+            }
+            $invoices = $query->get();
+            $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'invoice')->get();
+            return view('invoice.index', compact('invoices', 'types'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -58,7 +65,9 @@ class InvoiceController extends Controller
                     'unit_id' => 'required',
                     'invoice_month' => 'required',
                     'end_date' => 'required',
-                    'invoice_type' => 'required',
+                    'types' => 'required|array|min:1',
+                    'types.*.invoice_type' => 'required',
+                    'types.*.amount' => 'required|numeric|min:1',
                 ]
             );
             if ($validator->fails()) {
@@ -276,7 +285,9 @@ class InvoiceController extends Controller
             $payment->parent_id = parentId();
             $payment->save();
             $invoice = Invoice::find($invoice_id);
-            if ($invoice->getInvoiceDueAmount() <= 0) {
+            if (auth()->user()->type == 'tenant' && !empty($request->receipt)) {
+                $status = 'pending';
+            } elseif ($invoice->getInvoiceDueAmount() <= 0) {
                 $status = 'paid';
             } else {
                 $status = 'partial_paid';
@@ -367,5 +378,15 @@ class InvoiceController extends Controller
         }
 
         return redirect()->back()->with('success', __('Email successfully sent.') . '</br>' . $errorMessage);
+    }
+
+    public function markPaid(Invoice $invoice)
+    {
+        if (auth()->user()->type == 'owner') {
+            $invoice->status = 'paid';
+            $invoice->save();
+            return redirect()->back()->with('success', 'Invoice marked as paid.');
+        }
+        return redirect()->back()->with('error', 'Permission Denied!');
     }
 }

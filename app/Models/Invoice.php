@@ -22,6 +22,7 @@ class Invoice extends Model
     ];
 
     public static $status = [
+        'pending' => 'Pending',
         'open' => 'Open',
         'paid' => 'Paid',
         'partial_paid' => 'Partial Paid',
