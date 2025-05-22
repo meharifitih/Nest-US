@@ -10,11 +10,16 @@ use Illuminate\Http\Request;
 class ExpenseController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         if (\Auth::user()->can('manage expense')) {
-            $expenses = Expense::where('parent_id', parentId())->get();
-            return view('expense.index', compact('expenses'));
+            $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'expense')->pluck('title', 'id');
+            $expenses = Expense::where('parent_id', parentId())
+                ->when($request->expense_type_filter, function($query) use ($request) {
+                    $query->where('expense_type', $request->expense_type_filter);
+                })
+                ->get();
+            return view('expense.index', compact('expenses', 'types'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

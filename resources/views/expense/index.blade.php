@@ -26,6 +26,16 @@
                         <div class="col">
                             <h5>{{ __('Expense List') }}</h5>
                         </div>
+                        <div class="col-auto">
+                            <form method="GET" action="">
+                                <select name="expense_type_filter" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Expense Types</option>
+                                    @foreach($types as $id => $title)
+                                        <option value="{{ $id }}" {{ request('expense_type_filter') == $id ? 'selected' : '' }}>{{ $title }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </div>
                         @if (Gate::check('create expense'))
                             <div class="col-auto">
                                 <a class="btn btn-secondary customModal" href="#" data-size="lg" data-url="{{ route('expense.create') }}"

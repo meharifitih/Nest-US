@@ -194,6 +194,11 @@
                                             href="<?php echo e(route('expense.index')); ?>"><?php echo e(__('Expense')); ?></a>
                                     </li>
                                 <?php endif; ?>
+                                <?php if(Auth::user()->hasRole('owner') || Auth::user()->hasRole('tenant')): ?>
+                                    <li class="pc-item <?php echo e(in_array($routeName, ['hoa.index', 'hoa.create', 'hoa.show']) ? 'active' : ''); ?>">
+                                        <a class="pc-link" href="<?php echo e(route('hoa.index')); ?>"><?php echo e(__('HOA')); ?></a>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
                         </li>
 

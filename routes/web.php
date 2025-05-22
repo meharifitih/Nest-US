@@ -30,6 +30,7 @@ use App\Http\Controllers\MaintainerController;
 use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\AccountReviewController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HoaController;
 
 
 /*
@@ -428,3 +429,16 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/payments/pending', [AdminController::class, 'showPendingPayments'])->name('admin.payments.pending');
 Route::post('/admin/payments/approve/{id}', [AdminController::class, 'approvePayment'])->name('admin.payments.approve');
 Route::post('/admin/payments/reject/{id}', [AdminController::class, 'rejectPayment'])->name('admin.payments.reject');
+
+// HOA Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/hoa', [HoaController::class, 'index'])->name('hoa.index');
+    Route::get('/hoa/create', [HoaController::class, 'create'])->name('hoa.create');
+    Route::post('/hoa', [HoaController::class, 'store'])->name('hoa.store');
+    Route::get('/hoa/{hoa}', [HoaController::class, 'show'])->name('hoa.show');
+    Route::get('/hoa/{hoa}/edit', [HoaController::class, 'edit'])->name('hoa.edit');
+    Route::put('/hoa/{hoa}', [HoaController::class, 'update'])->name('hoa.update');
+    Route::delete('/hoa/{hoa}', [HoaController::class, 'destroy'])->name('hoa.destroy');
+    Route::post('/hoa/{hoa}/mark-as-paid', [HoaController::class, 'markAsPaid'])->name('hoa.mark-as-paid');
+    Route::get('/hoa/unit/{unit_id}/tenant', [HoaController::class, 'getTenantForUnit'])->name('hoa.unit.tenant');
+});

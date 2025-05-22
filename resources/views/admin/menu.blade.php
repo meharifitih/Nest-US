@@ -194,6 +194,11 @@
                                             href="{{ route('expense.index') }}">{{ __('Expense') }}</a>
                                     </li>
                                 @endif
+                                @if (Auth::user()->hasRole('owner') || Auth::user()->hasRole('tenant'))
+                                    <li class="pc-item {{ in_array($routeName, ['hoa.index', 'hoa.create', 'hoa.show']) ? 'active' : '' }}">
+                                        <a class="pc-link" href="{{ route('hoa.index') }}">{{ __('HOA') }}</a>
+                                    </li>
+                                @endif
                             </ul>
                         </li>
 
