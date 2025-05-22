@@ -92,7 +92,9 @@ class Invoice extends Model
         $payment->parent_id = parentId();
         $payment->save();
         $invoice = Invoice::find($data['invoice_id']);
-        if ($invoice->getInvoiceDueAmount() <= 0) {
+        if (auth()->check() && auth()->user()->type == 'tenant') {
+            $status = 'pending';
+        } else if ($invoice->getInvoiceDueAmount() <= 0) {
             $status = 'paid';
         } else {
             $status = 'partial_paid';

@@ -126,9 +126,7 @@ class InvoiceController extends Controller
         if (\Auth::user()->can('show invoice')) {
             $invoiceNumber = $invoice->invoice_id;
             $tenant = Tenant::where('property', $invoice->property_id)->where('unit', $invoice->unit_id)->first();
-
             $invoicePaymentSettings = invoicePaymentSettings($invoice->parent_id);
-
             $notification = Notification::where('parent_id', parentId())->where('module', 'payment_reminder')->first();
             return view('invoice.show', compact('invoiceNumber', 'invoice', 'tenant', 'invoicePaymentSettings', 'notification'));
         } else {
@@ -285,9 +283,9 @@ class InvoiceController extends Controller
             $payment->parent_id = parentId();
             $payment->save();
             $invoice = Invoice::find($invoice_id);
-            if (auth()->user()->type == 'tenant' && !empty($request->receipt)) {
+            if (auth()->user()->type == 'tenant') {
                 $status = 'pending';
-            } elseif ($invoice->getInvoiceDueAmount() <= 0) {
+            } else if ($invoice->getInvoiceDueAmount() <= 0) {
                 $status = 'paid';
             } else {
                 $status = 'partial_paid';

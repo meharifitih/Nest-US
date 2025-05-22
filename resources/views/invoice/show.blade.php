@@ -243,15 +243,14 @@
                                         <h6>
                                             {{ __('Status') }}
                                             <span class="text-muted f-w-400">
-                                                @if ($invoice->status == 'unpaid')
-                                                    <span
-                                                        class="badge text-bg-danger">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+                                                @if ($invoice->status == 'open')
+                                                    <span class="badge bg-light-info">Open</span>
+                                                @elseif($invoice->status == 'pending')
+                                                    <span class="badge bg-light-warning">Pending</span>
                                                 @elseif($invoice->status == 'paid')
-                                                    <span
-                                                        class="badge text-bg-success">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+                                                    <span class="badge bg-light-success">Paid</span>
                                                 @elseif($invoice->status == 'partial_paid')
-                                                    <span
-                                                        class="badge text-bg-warning">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+                                                    <span class="badge bg-light-warning">Partial Paid</span>
                                                 @endif
                                             </span>
                                         </h6>
@@ -691,6 +690,13 @@
             @csrf
             <button type="submit" class="btn btn-success">Mark as Paid</button>
         </form>
+    @endif
+
+    @if(auth()->user()->type == 'owner' && $invoice->status == 'open')
+        <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
+            <span class="badge bg-light-info me-2">Open</span>
+            <span>This invoice is currently open and awaiting tenant action.</span>
+        </div>
     @endif
 
 

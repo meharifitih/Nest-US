@@ -84,11 +84,23 @@
                                                 echo $type && $type->types ? $type->types->title : '-';
                                             @endphp
                                         </td>
-                                        @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
+                                        @if (auth()->user()->type == 'tenant')
+                                            <td>
+                                                <div class="cart-action">
+                                                    @if ($invoice->status == 'open')
+                                                        <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-primary btn-sm">Pay Now</a>
+                                                    @else
+                                                        <a class="avtar avtar-xs btn-link-warning text-warning"
+                                                            href="{{ route('invoice.show', $invoice->id) }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('View') }}"> <i data-feather="eye"></i></a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        @else
                                             <td>
                                                 <div class="cart-action">
                                                     {!! Form::open(['method' => 'DELETE', 'route' => ['invoice.destroy', $invoice->id]]) !!}
-
                                                     @can('show invoice')
                                                         <a class="avtar avtar-xs btn-link-warning text-warning"
                                                             href="{{ route('invoice.show', $invoice->id) }}"
@@ -107,12 +119,8 @@
                                                             data-bs-original-title="{{ __('Detete') }}" href="#"> <i
                                                                 data-feather="trash-2"></i></a>
                                                     @endcan
-                                                    @if (auth()->user()->type == 'tenant' && $invoice->status == 'open')
-                                                        <a href="{{ route('invoice.payment.create', $invoice->id) }}" class="btn btn-primary btn-sm">Pay Now</a>
-                                                    @endif
                                                     {!! Form::close() !!}
                                                 </div>
-
                                             </td>
                                         @endif
                                     </tr>
