@@ -169,11 +169,18 @@ class GenerateRentInvoices extends Command
         $invoice->save();
 
         // Add rent item
+        $rentType = \App\Models\Type::firstOrCreate(
+            [
+                'type' => 'invoice',
+                'title' => 'Rent',
+                'parent_id' => $unit->parent_id
+            ]
+        );
         $invoiceItem = new InvoiceItem();
         $invoiceItem->invoice_id = $invoice->id;
-        $invoiceItem->invoice_type = 1;
+        $invoiceItem->invoice_type = $rentType->id;
         $invoiceItem->amount = $rentAmount;
-        $invoiceItem->description = 'Rent for ' . $startDate->format('M Y') . ' to ' . $endDate->format('M Y');
+        $invoiceItem->description = ucfirst($unit->rent_type) . ' Rent for ' . $startDate->format('M Y') . ' to ' . $endDate->format('M Y');
         $invoiceItem->save();
 
         // Send email notification to tenant's user
