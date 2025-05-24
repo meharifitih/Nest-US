@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'parent_id',
         'is_active',
         'approval_status',
+        'business_license',
     ];
 
 

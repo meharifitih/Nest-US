@@ -235,6 +235,31 @@
                                                     {{ Form::file('profile', ['class' => 'form-control']) }}
                                                 </div>
                                             </div>
+                                            @if (\Auth::user()->type == 'owner')
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        {{ Form::label('business_license', __('Business License'), ['class' => 'form-label']) }}
+                                                        @if(!empty($loginUser->business_license))
+                                                            <div style="margin-bottom: 10px;">
+                                                                <a href="{{ asset(Storage::url('upload/business_license/' . $loginUser->business_license)) }}" target="_blank" style="font-weight: bold; color: #007bff;">
+                                                                    {{ __('View Uploaded License') }}
+                                                                </a>
+                                                                @if(Str::endsWith(strtolower($loginUser->business_license), ['jpg','jpeg','png']))
+                                                                    <div style="margin-top: 10px;">
+                                                                        <img src="{{ asset(Storage::url('upload/business_license/' . $loginUser->business_license)) }}" alt="Business License" style="max-width: 200px; border: 1px solid #eee; border-radius: 4px; box-shadow: 0 2px 8px #eee;">
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <div style="margin-top: 10px;">
+                                                                <label style="font-size: 0.95em; color: #555;">{{ __('Replace License:') }}</label>
+                                                                {{ Form::file('business_license', ['class' => 'form-control']) }}
+                                                            </div>
+                                                        @else
+                                                            {{ Form::file('business_license', ['class' => 'form-control', 'required' => 'required']) }}
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                         <div class="row mt-3">
                                             <div class="col-6"></div>

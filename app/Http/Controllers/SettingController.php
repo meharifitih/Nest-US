@@ -33,6 +33,7 @@ class SettingController extends Controller
             [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $user->id,
+                'business_license' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ]
         );
         if ($validator->fails()) {
@@ -67,8 +68,29 @@ class SettingController extends Controller
         $user->first_name = $request->name;
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
-        $user->save();
 
+        if ($request->hasFile('business_license') && $loginUser->type == 'owner') {
+            $filenameWithExt = $request->file('business_license')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('business_license')->getClientOriginalExtension();
+            $fileNameToStoreLicense = $filename . '_' . time() . '.' . $extension;
+
+            $dir = storage_path('uploads/business_license/');
+            $license_path = $dir . $loginUser->business_license;
+
+            if (\File::exists($license_path)) {
+                \File::delete($license_path);
+            }
+
+            if (!file_exists($dir)) {
+                mkdir($dir, 0777, true);
+            }
+
+            $request->file('business_license')->storeAs('upload/business_license', $fileNameToStoreLicense, 'public');
+            $user->business_license = $fileNameToStoreLicense;
+        }
+
+        $user->save();
 
         return redirect()->back()->with('success', 'User profile settings successfully updated.')->with('tab', 'user_profile_settings');
     }
@@ -871,15 +893,26 @@ class SettingController extends Controller
         $videoLinks = $request->input('video_links', []);
         $jsonLinks = json_encode($videoLinks);
 
-        // Use PostgreSQL upsert syntax
-        \DB::insert(
-            'INSERT INTO settings (value, name, parent_id) VALUES (?, ?, ?) ON CONFLICT (name, parent_id) DO UPDATE SET value = EXCLUDED.value',
+        // Manual update then insert to avoid ON CONFLICT error
+        $updated = \DB::update(
+            'UPDATE settings SET value = ? WHERE name = ? AND parent_id = ?',
             [
                 $jsonLinks,
                 'tutorial_videos',
                 parentId(),
             ]
         );
+
+        if (!$updated) {
+            \DB::insert(
+                'INSERT INTO settings (value, name, parent_id) VALUES (?, ?, ?)',
+                [
+                    $jsonLinks,
+                    'tutorial_videos',
+                    parentId(),
+                ]
+            );
+        }
 
         return redirect()->back()->with('success', __('Tutorial video links updated!'))->with('tab', 'tutorial_videos');
     }

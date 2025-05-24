@@ -38,7 +38,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CheckSubscription::class,
             \App\Http\Middleware\CheckUserApproval::class,
-            \App\Http\Middleware\Verify2FA::class
+            \App\Http\Middleware\Verify2FA::class,
         ],
 
         'api' => [

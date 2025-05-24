@@ -83,9 +83,9 @@
                                                 </a>
                                                 <a href="#" class="list-group-item list-group-item-action">
                                                     <div class="d-flex align-items-center">
-                                                        <!-- <div class="flex-shrink-0">
+                                                        <div class="flex-shrink-0">
                                                             <i class="material-icons-two-tone f-20">badge</i>
-                                                        </div> -->
+                                                        </div>
                                                         <div class="flex-grow-1 mx-3">
                                                             <h5 class="m-0">{{ __('Fayda ID') }}</h5>
                                                         </div>
@@ -120,6 +120,21 @@
                                                         </div>
                                                     </div>
                                                 </a>
+                                                @if (\Auth::user()->type == 'super admin' && $user->type == 'owner' && !empty($user->business_license))
+                                                    <a href="{{ asset(Storage::url('upload/business_license/' . $user->business_license)) }}" target="_blank" class="list-group-item list-group-item-action">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="flex-shrink-0">
+                                                                <i class="material-icons-two-tone f-20">description</i>
+                                                            </div>
+                                                            <div class="flex-grow-1 mx-3">
+                                                                <h5 class="m-0">{{ __('Business License') }}</h5>
+                                                            </div>
+                                                            <div class="flex-shrink-0">
+                                                                <span class="badge bg-info">{{ __('View') }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -157,7 +172,10 @@
                                                                     @if ($transaction->payment_status == 'Pending')
                                                                         <span
                                                                             class="d-inline badge text-bg-warning">{{ $transaction->payment_status }}</span>
-                                                                    @elseif($transaction->payment_status == 'succeeded' || $transaction->payment_status=='Success')
+                                                                    @elseif(strtolower($transaction->payment_status) == 'completed')
+                                                                        <span
+                                                                            class="d-inline badge text-bg-success">{{ $transaction->payment_status }}</span>
+                                                                    @elseif($transaction->payment_status=='succeeded' || $transaction->payment_status=='Success')
                                                                         <span
                                                                             class="d-inline badge text-bg-success">{{ $transaction->payment_status }}</span>
                                                                     @else

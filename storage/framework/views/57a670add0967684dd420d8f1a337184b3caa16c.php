@@ -244,6 +244,35 @@
 
                                                 </div>
                                             </div>
+                                            <?php if(\Auth::user()->type == 'owner'): ?>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <?php echo e(Form::label('business_license', __('Business License'), ['class' => 'form-label'])); ?>
+
+                                                        <?php if(!empty($loginUser->business_license)): ?>
+                                                            <div style="margin-bottom: 10px;">
+                                                                <a href="<?php echo e(asset(Storage::url('upload/business_license/' . $loginUser->business_license))); ?>" target="_blank" style="font-weight: bold; color: #007bff;">
+                                                                    <?php echo e(__('View Uploaded License')); ?>
+
+                                                                </a>
+                                                                <?php if(Str::endsWith(strtolower($loginUser->business_license), ['jpg','jpeg','png'])): ?>
+                                                                    <div style="margin-top: 10px;">
+                                                                        <img src="<?php echo e(asset(Storage::url('upload/business_license/' . $loginUser->business_license))); ?>" alt="Business License" style="max-width: 200px; border: 1px solid #eee; border-radius: 4px; box-shadow: 0 2px 8px #eee;">
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                            <div style="margin-top: 10px;">
+                                                                <label style="font-size: 0.95em; color: #555;"><?php echo e(__('Replace License:')); ?></label>
+                                                                <?php echo e(Form::file('business_license', ['class' => 'form-control'])); ?>
+
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <?php echo e(Form::file('business_license', ['class' => 'form-control', 'required' => 'required'])); ?>
+
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="row mt-3">
                                             <div class="col-6"></div>
