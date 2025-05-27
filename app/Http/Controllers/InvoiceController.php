@@ -11,9 +11,16 @@ use App\Models\Tenant;
 use App\Models\Type;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\WhatsAppService;
 
 class InvoiceController extends Controller
 {
+    protected $whatsappService;
+
+    public function __construct(WhatsAppService $whatsappService)
+    {
+        $this->whatsappService = $whatsappService;
+    }
 
     public function index()
     {
@@ -120,6 +127,35 @@ class InvoiceController extends Controller
                     $errorMessage = $response['message'];
                 }
             }
+
+            // Send WhatsApp notification to tenant
+            $tenant = $invoice->tenants();
+            if ($tenant && $tenant->user && $tenant->user->phone) {
+                $message = "Dear {$tenant->user->name},\n\n";
+                $message .= "A new invoice has been generated for your property.\n";
+                $message .= "Invoice Number: " . invoicePrefix() . $invoice->invoice_id . "\n";
+                $message .= "Amount: " . priceFormat($invoice->getInvoiceDueAmount()) . "\n";
+                $message .= "Due Date: " . $invoice->end_date . "\n\n";
+                $message .= "Please make the payment before the due date.\n\n";
+                $message .= "Thank you,\n" . settings()['company_name'];
+
+                $this->whatsappService->sendMessage($tenant->user->phone, $message);
+            }
+
+            // Send WhatsApp notification to property owner
+            $property = Property::find($invoice->property_id);
+            if ($property && $property->owner && $property->owner->phone) {
+                $message = "Dear {$property->owner->name},\n\n";
+                $message .= "A new invoice has been generated for your property.\n";
+                $message .= "Property: {$property->name}\n";
+                $message .= "Invoice Number: " . invoicePrefix() . $invoice->invoice_id . "\n";
+                $message .= "Amount: " . priceFormat($invoice->getInvoiceDueAmount()) . "\n";
+                $message .= "Due Date: " . $invoice->end_date . "\n\n";
+                $message .= "Thank you,\n" . settings()['company_name'];
+
+                $this->whatsappService->sendMessage($property->owner->phone, $message);
+            }
+
             return redirect()->route('invoice.index')->with('success', __('Invoice successfully created.') . '</br>' . $errorMessage);
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
@@ -297,6 +333,21 @@ class InvoiceController extends Controller
                 $status = 'partial_paid';
             }
             Invoice::statusChange($invoice->id, $status);
+
+            // Send WhatsApp notification to property owner about payment
+            $property = Property::find($invoice->property_id);
+            if ($property && $property->owner && $property->owner->phone) {
+                $message = "Dear {$property->owner->name},\n\n";
+                $message .= "Payment received for invoice #" . invoicePrefix() . $invoice->invoice_id . "\n";
+                $message .= "Property: {$property->name}\n";
+                $message .= "Amount: " . priceFormat($request->amount) . "\n";
+                $message .= "Payment Date: " . $request->payment_date . "\n";
+                $message .= "Payment Method: " . $payment->payment_type . "\n\n";
+                $message .= "Thank you,\n" . settings()['company_name'];
+
+                $this->whatsappService->sendMessage($property->owner->phone, $message);
+            }
+
             return redirect()->back()->with('success', __('Invoice payment successfully added.'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
