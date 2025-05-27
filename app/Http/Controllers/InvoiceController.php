@@ -30,6 +30,12 @@ class InvoiceController extends Controller
                     $q->where('invoice_type', $typeFilter);
                 });
             }
+            // Exclude rent invoices
+            $query = $query->whereDoesntHave('types', function($q) {
+                $q->whereHas('types', function($q2) {
+                    $q2->where('type', 'rent');
+                });
+            });
             $invoices = $query->get();
             $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'invoice')->get();
             return view('invoice.index', compact('invoices', 'types'));

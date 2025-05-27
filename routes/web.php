@@ -442,3 +442,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/hoa/{hoa}/mark-as-paid', [HoaController::class, 'markAsPaid'])->name('hoa.mark-as-paid');
     Route::get('/hoa/unit/{unit_id}/tenant', [HoaController::class, 'getTenantForUnit'])->name('hoa.unit.tenant');
 });
+
+Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');
+Route::get('rent/create', [App\Http\Controllers\RentController::class, 'create'])->name('rent.create');
+Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name('rent.store');

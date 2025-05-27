@@ -21,5 +21,6 @@ class Type extends Model
         'issue'=>'Maintenance Issue',
         'maintainer_type'=>'Maintainer Type',
         'hoa'=>'HOA',
+        'rent'=>'Rent',
     ];
 }

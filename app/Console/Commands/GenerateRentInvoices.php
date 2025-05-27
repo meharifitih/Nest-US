@@ -171,7 +171,7 @@ class GenerateRentInvoices extends Command
         // Add rent item
         $rentType = \App\Models\Type::firstOrCreate(
             [
-                'type' => 'invoice',
+                'type' => 'rent',
                 'title' => 'Rent',
                 'parent_id' => $unit->parent_id
             ]
