@@ -6,12 +6,20 @@ use App\Models\Coupon;
 use App\Models\CouponHistory;
 use App\Models\PackageTransaction;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Stripe;
+use App\Services\WhatsAppService;
 
 class SubscriptionController extends Controller
 {
+    protected $whatsappService;
+
+    public function __construct(WhatsAppService $whatsappService)
+    {
+        $this->whatsappService = $whatsappService;
+    }
 
     public function index()
     {
@@ -242,6 +250,66 @@ class SubscriptionController extends Controller
         $user->subscription_expire_date = null; // or set as needed
         $user->save();
 
+        // Send WhatsApp notification to super admin
+        $superAdmins = User::where('type', 'super admin')->get();
+        foreach ($superAdmins as $admin) {
+            if (!empty($admin->phone)) {
+                // Format phone number
+                $phone = preg_replace('/[^0-9+]/', '', $admin->phone);
+                if (substr($phone, 0, 1) !== '+') {
+                    $phone = '+' . $phone;
+                }
+
+                $message = "🔔 *System Notification*\n\n";
+                $message .= "New subscription payment received:\n\n";
+                $message .= "📋 *Payment Details:*\n";
+                $message .= "Owner: {$user->name}\n";
+                $message .= "Email: {$user->email}\n";
+                $message .= "Plan: {$subscription->title}\n";
+                $message .= "Amount: " . priceFormat($subscription->package_amount) . "\n";
+                $message .= "Payment Method: Free Package\n\n";
+                $message .= "Please review and approve the payment.\n\n";
+                $message .= "Best regards,\n" . settings()['company_name'];
+
+                $response = $this->whatsappService->sendMessage($phone, $message);
+                
+                if ($response['status'] === 'error') {
+                    \Log::error('Failed to send WhatsApp notification to super admin', [
+                        'error' => $response['message'],
+                        'admin_id' => $admin->id,
+                        'phone' => $phone
+                    ]);
+                }
+            } else {
+                \Log::warning('Super admin has no phone number', [
+                    'admin_id' => $admin->id,
+                    'email' => $admin->email
+                ]);
+            }
+        }
+
         return redirect()->route('subscriptions.index')->with('success', __('Subscribed successfully! Please wait for admin approval.'));
+    }
+
+    public function subscriptionBankTransferAction($id, $status)
+    {
+        // ... existing code ...
+
+        if ($status == 'approve') {
+            // Send WhatsApp notification to owner
+            $owner = User::find($subscription->user_id);
+            if ($owner && $owner->phone) {
+                $message = "🔔 *System Notification*\n\n";
+                $message .= "Your subscription payment has been approved!\n";
+                $message .= "Plan: {$subscription->name}\n";
+                $message .= "Amount: " . priceFormat($subscription->package_amount) . "\n";
+                $message .= "Status: Active\n\n";
+                $message .= "Best regards,\n" . settings()['company_name'];
+
+                $this->whatsappService->sendMessage($owner->phone, $message);
+            }
+        }
+
+        // ... rest of the existing code ...
     }
 }
