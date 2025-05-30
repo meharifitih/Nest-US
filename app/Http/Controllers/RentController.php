@@ -7,7 +7,10 @@ use App\Models\InvoiceItem;
 use App\Models\Property;
 use App\Models\Tenant;
 use App\Models\Type;
+use App\Models\User;
+use App\Models\PropertyUnit;
 use Illuminate\Http\Request;
+use App\Services\WhatsAppService;
 
 class RentController extends Controller
 {
@@ -78,6 +81,50 @@ class RentController extends Controller
             $invoiceItem->description = $types[$i]['description'];
             $invoiceItem->save();
         }
+
+        // Send WhatsApp notification to tenant
+        $tenant = Tenant::where('unit', $invoice->unit_id)->first();
+        if ($tenant) {
+            $user = User::find($tenant->user_id);
+            if ($user && !empty($user->phone_number)) {
+                // Format phone number
+                $phone = preg_replace('/[^0-9+]/', '', $user->phone_number);
+                if (substr($phone, 0, 1) !== '+') {
+                    $phone = '+' . $phone;
+                }
+
+                $property = Property::find($invoice->property_id);
+                $unit = PropertyUnit::find($invoice->unit_id);
+
+                $message = "🔔 *System Notification*\n\n";
+                $message .= "New rent invoice has been generated:\n\n";
+                $message .= "📋 *Invoice Details:*\n";
+                $message .= "Invoice #: " . invoicePrefix() . $invoice->invoice_id . "\n";
+                $message .= "Property: {$property->name}\n";
+                $message .= "Unit: {$unit->name}\n";
+                $message .= "Month: " . date('F Y', strtotime($invoice->invoice_month)) . "\n";
+                $message .= "Due Date: " . date('d M Y', strtotime($invoice->end_date)) . "\n";
+                $message .= "Amount: " . priceFormat($invoice->getInvoiceSubTotalAmount()) . "\n\n";
+                $message .= "Please make the payment before the due date.\n\n";
+                $message .= "Best regards,\n" . settings()['company_name'];
+
+                $response = app(WhatsAppService::class)->sendMessage($phone, $message);
+                
+                if ($response['status'] === 'error') {
+                    \Log::error('Failed to send WhatsApp notification to tenant', [
+                        'error' => $response['message'],
+                        'user_id' => $user->id,
+                        'phone' => $phone
+                    ]);
+                } else {
+                    \Log::info('WhatsApp notification sent to tenant', [
+                        'user_id' => $user->id,
+                        'phone' => $phone
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('rent.index')->with('success', __('Rent invoice successfully created.'));
     }
 

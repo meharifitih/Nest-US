@@ -253,9 +253,9 @@ class SubscriptionController extends Controller
         // Send WhatsApp notification to super admin
         $superAdmins = User::where('type', 'super admin')->get();
         foreach ($superAdmins as $admin) {
-            if (!empty($admin->phone)) {
+            if (!empty($admin->phone_number)) {
                 // Format phone number
-                $phone = preg_replace('/[^0-9+]/', '', $admin->phone);
+                $phone = preg_replace('/[^0-9+]/', '', $admin->phone_number);
                 if (substr($phone, 0, 1) !== '+') {
                     $phone = '+' . $phone;
                 }
@@ -279,16 +279,16 @@ class SubscriptionController extends Controller
                         'admin_id' => $admin->id,
                         'phone' => $phone
                     ]);
+                } else {
+                    \Log::info('WhatsApp notification sent to super admin', [
+                        'admin_id' => $admin->id,
+                        'phone' => $phone
+                    ]);
                 }
-            } else {
-                \Log::warning('Super admin has no phone number', [
-                    'admin_id' => $admin->id,
-                    'email' => $admin->email
-                ]);
             }
         }
 
-        return redirect()->route('subscriptions.index')->with('success', __('Subscribed successfully! Please wait for admin approval.'));
+        return redirect()->route('subscriptions.index')->with('success', __('Subscription activated successfully.'));
     }
 
     public function subscriptionBankTransferAction($id, $status)
