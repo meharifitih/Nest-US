@@ -10,17 +10,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Stripe;
-use App\Services\WhatsAppService;
 
 class SubscriptionController extends Controller
 {
-    protected $whatsappService;
-
-    public function __construct(WhatsAppService $whatsappService)
-    {
-        $this->whatsappService = $whatsappService;
-    }
-
     public function index()
     {
         if (\Auth::user()->can('manage pricing packages')) {
@@ -31,14 +23,11 @@ class SubscriptionController extends Controller
         }
     }
 
-
     public function create()
     {
         $intervals = Subscription::$intervals;
-
         return view('subscription.create', compact('intervals'));
     }
-
 
     public function store(Request $request)
     {
@@ -78,7 +67,6 @@ class SubscriptionController extends Controller
         }
     }
 
-
     public function show($ids)
     {
         if (\Auth::user()->type == 'owner' || \Auth::user()->can('buy pricing packages')) {
@@ -92,14 +80,12 @@ class SubscriptionController extends Controller
         }
     }
 
-
     public function edit(subscription $subscription)
     {
         $intervals = Subscription::$intervals;
 
         return view('subscription.edit', compact('intervals', 'subscription'));
     }
-
 
     public function update(Request $request, subscription $subscription)
     {
@@ -137,7 +123,6 @@ class SubscriptionController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
-
 
     public function destroy(subscription $subscription)
     {
@@ -232,7 +217,6 @@ class SubscriptionController extends Controller
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
-
     }
 
     public function subscribe($id)
@@ -249,44 +233,6 @@ class SubscriptionController extends Controller
         $user->subscription = $subscription->id;
         $user->subscription_expire_date = null; // or set as needed
         $user->save();
-
-        // Send WhatsApp notification to super admin
-        $superAdmins = User::where('type', 'super admin')->get();
-        foreach ($superAdmins as $admin) {
-            if (!empty($admin->phone_number)) {
-                // Format phone number
-                $phone = preg_replace('/[^0-9+]/', '', $admin->phone_number);
-                if (substr($phone, 0, 1) !== '+') {
-                    $phone = '+' . $phone;
-                }
-
-                $message = "🔔 *System Notification*\n\n";
-                $message .= "New subscription payment received:\n\n";
-                $message .= "📋 *Payment Details:*\n";
-                $message .= "Owner: {$user->name}\n";
-                $message .= "Email: {$user->email}\n";
-                $message .= "Plan: {$subscription->title}\n";
-                $message .= "Amount: " . priceFormat($subscription->package_amount) . "\n";
-                $message .= "Payment Method: Free Package\n\n";
-                $message .= "Please review and approve the payment.\n\n";
-                $message .= "Best regards,\n" . settings()['company_name'];
-
-                $response = $this->whatsappService->sendMessage($phone, $message);
-                
-                if ($response['status'] === 'error') {
-                    \Log::error('Failed to send WhatsApp notification to super admin', [
-                        'error' => $response['message'],
-                        'admin_id' => $admin->id,
-                        'phone' => $phone
-                    ]);
-                } else {
-                    \Log::info('WhatsApp notification sent to super admin', [
-                        'admin_id' => $admin->id,
-                        'phone' => $phone
-                    ]);
-                }
-            }
-        }
 
         return redirect()->route('subscriptions.index')->with('success', __('Subscription activated successfully.'));
     }

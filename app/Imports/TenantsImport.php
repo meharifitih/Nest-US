@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use App\Notifications\PasswordChangeNotification;
 use Illuminate\Support\Str;
+use App\Traits\PhoneNumberFormatter;
 
 class TenantsImport implements ToModel, WithHeadingRow
 {
+    use PhoneNumberFormatter;
+
     protected $propertyId;
 
     public function __construct($propertyId)
@@ -41,6 +44,11 @@ class TenantsImport implements ToModel, WithHeadingRow
             throw new \Exception("Email already exists: {$row['email']}");
         }
 
+        // Validate phone number format
+        if (!$this->isValidPhoneNumber($row['phone_number'])) {
+            throw new \Exception("Invalid phone number format: {$row['phone_number']}. Phone number must be in the format +251XXXXXXXXX (e.g. +251912345678).");
+        }
+
         // Find or create user role
         $userRole = Role::where('name', 'tenant')->first();
         if (!$userRole) {
@@ -56,7 +64,7 @@ class TenantsImport implements ToModel, WithHeadingRow
         $user->last_name = $row['last_name'] ?? '';
         $user->email = $row['email'] ?? '';
         $user->password = Hash::make($password);
-        $user->phone_number = $row['phone_number'] ?? '';
+        $user->phone_number = $this->formatPhoneNumber($row['phone_number']);
         $user->type = $userRole->name;
         $user->email_verified_at = now();
         $user->profile = 'avatar.png';

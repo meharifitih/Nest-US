@@ -11,18 +11,10 @@ use App\Models\Tenant;
 use App\Models\Type;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Services\WhatsAppService;
 use App\Models\PropertyUnit;
 
 class InvoiceController extends Controller
 {
-    protected $whatsappService;
-
-    public function __construct(WhatsAppService $whatsappService)
-    {
-        $this->whatsappService = $whatsappService;
-    }
-
     public function index()
     {
         if (\Auth::user()->can('manage invoice')) {
@@ -77,31 +69,29 @@ class InvoiceController extends Controller
                 [
                     'property_id' => 'required',
                     'unit_id' => 'required',
-                    'invoice_month' => 'required',
-                    'end_date' => 'required',
-                    'types' => 'required|array|min:1',
-                    'types.*.invoice_type' => 'required',
-                    'types.*.amount' => 'required|numeric|min:1',
+                    'invoice_date' => 'required',
+                    'due_date' => 'required',
+                    'type' => 'required',
+                    'amount' => 'required',
                 ]
             );
+
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
             $invoice = new Invoice();
-            $invoice->invoice_id = $request->invoice_id;
+            $invoice->invoice_id = $this->invoiceNumber();
             $invoice->property_id = $request->property_id;
             $invoice->unit_id = $request->unit_id;
-            $invoice->invoice_month = $request->invoice_month . '-01';
-            $invoice->end_date = $request->end_date;
-            $invoice->notes = $request->notes;
-            $invoice->status = 'open';
+            $invoice->invoice_date = $request->invoice_date;
+            $invoice->due_date = $request->due_date;
+            $invoice->end_date = $request->due_date;
             $invoice->parent_id = parentId();
             $invoice->save();
-            $types = $request->types;
 
+            $types = $request->type;
             for ($i = 0; $i < count($types); $i++) {
                 $invoiceItem = new InvoiceItem();
                 $invoiceItem->invoice_id = $invoice->id;
@@ -127,34 +117,6 @@ class InvoiceController extends Controller
                 if ($response['status'] == 'error') {
                     $errorMessage = $response['message'];
                 }
-            }
-
-            // Send WhatsApp notification to tenant
-            $tenant = $invoice->tenants();
-            if ($tenant && $tenant->user && $tenant->user->phone) {
-                $message = "🔔 *System Notification*\n\n";
-                $message .= "A new invoice has been generated for your property.\n";
-                $message .= "Invoice Number: " . invoicePrefix() . $invoice->invoice_id . "\n";
-                $message .= "Amount: " . priceFormat($invoice->getInvoiceDueAmount()) . "\n";
-                $message .= "Due Date: " . $invoice->end_date . "\n\n";
-                $message .= "Please make the payment before the due date.\n\n";
-                $message .= "Best regards,\n" . settings()['company_name'];
-
-                $this->whatsappService->sendMessage($tenant->user->phone, $message);
-            }
-
-            // Send WhatsApp notification to property owner
-            $property = Property::find($invoice->property_id);
-            if ($property && $property->owner && $property->owner->phone) {
-                $message = "🔔 *System Notification*\n\n";
-                $message .= "A new invoice has been generated for your property.\n";
-                $message .= "Property: {$property->name}\n";
-                $message .= "Invoice Number: " . invoicePrefix() . $invoice->invoice_id . "\n";
-                $message .= "Amount: " . priceFormat($invoice->getInvoiceDueAmount()) . "\n";
-                $message .= "Due Date: " . $invoice->end_date . "\n\n";
-                $message .= "Best regards,\n" . settings()['company_name'];
-
-                $this->whatsappService->sendMessage($property->owner->phone, $message);
             }
 
             return redirect()->route('invoice.index')->with('success', __('Invoice successfully created.') . '</br>' . $errorMessage);
@@ -478,47 +440,6 @@ class InvoiceController extends Controller
         if (auth()->user()->type == 'owner') {
             $invoice->status = 'paid';
             $invoice->save();
-
-            // Send WhatsApp notification to tenant about payment approval
-            $tenant = $invoice->tenants();
-            if ($tenant && $tenant->user && !empty($tenant->user->phone_number)) {
-                // Format phone number
-                $phone = preg_replace('/[^0-9+]/', '', $tenant->user->phone_number);
-                if (substr($phone, 0, 1) !== '+') {
-                    $phone = '+' . $phone;
-                }
-
-                $property = Property::find($invoice->property_id);
-                $unit = PropertyUnit::find($invoice->unit_id);
-
-                $message = "🔔 *System Notification*\n\n";
-                $message .= "Your payment has been approved!\n\n";
-                $message .= "📋 *Payment Details:*\n";
-                $message .= "Invoice #: " . invoicePrefix() . $invoice->invoice_id . "\n";
-                $message .= "Property: {$property->name}\n";
-                $message .= "Unit: {$unit->name}\n";
-                $message .= "Amount: " . priceFormat($invoice->getInvoiceSubTotalAmount()) . "\n";
-                $message .= "Status: Paid\n";
-                $message .= "Approved By: " . auth()->user()->name . "\n\n";
-                $message .= "Thank you for your payment.\n\n";
-                $message .= "Best regards,\n" . settings()['company_name'];
-
-                $response = $this->whatsappService->sendMessage($phone, $message);
-                
-                if ($response['status'] === 'error') {
-                    \Log::error('Failed to send WhatsApp notification to tenant', [
-                        'error' => $response['message'],
-                        'user_id' => $tenant->user->id,
-                        'phone' => $phone
-                    ]);
-                } else {
-                    \Log::info('WhatsApp notification sent to tenant', [
-                        'user_id' => $tenant->user->id,
-                        'phone' => $phone
-                    ]);
-                }
-            }
-
             return redirect()->back()->with('success', 'Invoice marked as paid.');
         }
         return redirect()->back()->with('error', 'Permission Denied!');

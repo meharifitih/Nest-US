@@ -34,9 +34,9 @@
             {{Form::label('phone_number',__('User Phone Number'),array('class'=>'form-label')) }}
             <div class="input-group">
                 <span class="input-group-text">+251</span>
-                <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ (strlen($user->phone_number) === 12 && substr($user->phone_number, 0, 3) === '251') ? substr($user->phone_number, 3) : ($user->phone_number ?? '') }}" placeholder="Enter user phone number (e.g. 912345678)" required />
+                <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ preg_replace('/^\+251/', '', $user->phone_number) }}" placeholder="912345678" required />
             </div>
-            <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+            <small class="text-muted">Phone will be saved as +251XXXXXXXXX. Enter 9 digits starting with 9 or 7.</small>
             <span id="phone_error" class="text-danger" style="display: none;"></span>
         </div>
 

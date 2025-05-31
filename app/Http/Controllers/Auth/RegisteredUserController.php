@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Traits\PhoneNumberFormatter;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
+    use PhoneNumberFormatter;
+
     /**
      * Display the registration view.
      *
@@ -71,7 +74,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type' => $request->type,
-                'phone_number' => $request->phone_number,
+                'phone_number' => '+251' . $request->phone_number,
                 'fayda_id' => $request->fayda_id,
                 'profile' => 'avatar.png',
                 'lang' => 'english',

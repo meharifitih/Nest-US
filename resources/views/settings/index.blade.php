@@ -226,7 +226,12 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     {{ Form::label('phone_number', __('Phone Number'), ['class' => 'form-label']) }}
-                                                    {{ Form::number('phone_number', null, ['class' => 'form-control', 'placeholder' => __('Enter your Phone Number')]) }}
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">+251</span>
+                                                        <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ preg_replace('/^\\+251/', '', $loginUser->phone_number ?? old('phone_number')) }}" placeholder="Enter phone number (e.g. 912345678)" required>
+                                                    </div>
+                                                    <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                                                    <span id="phone_error" class="text-danger" style="display: none;"></span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -964,3 +969,28 @@
         </div>
     </div>
 @endsection
+
+@push('script-page')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('phone_number');
+    const phoneError = document.getElementById('phone_error');
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 0) {
+            const firstDigit = value.charAt(0);
+            if (firstDigit !== '9' && firstDigit !== '7') {
+                phoneError.textContent = 'Phone number must start with 9 or 7';
+                phoneError.style.display = 'block';
+            } else {
+                phoneError.style.display = 'none';
+            }
+        }
+        if (value.length > 9) {
+            value = value.slice(0, 9);
+        }
+        e.target.value = value;
+    });
+});
+</script>
+@endpush

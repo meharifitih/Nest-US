@@ -541,7 +541,7 @@ class PropertyController extends Controller
                     'first_name' => 'John',
                     'last_name' => 'Doe',
                     'email' => 'john@email.com',
-                    'phone_number' => '1234567890',
+                    'phone_number' => '251912345678',
                     'family_member' => 3,
                     'sub_city' => 'Bole',
                     'woreda' => '01',

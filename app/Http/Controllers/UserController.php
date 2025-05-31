@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\PackageTransaction;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Traits\PhoneNumberFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,7 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use PhoneNumberFormatter;
 
     public function index()
     {
@@ -60,12 +62,10 @@ class UserController extends Controller
                 }
 
                 $phone = preg_replace('/\D/', '', $request->phone_number);
-                if (strlen($phone) === 12 && substr($phone, 0, 3) === '251') {
-                    // already correct
-                } elseif (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                    $phone = '251' . $phone;
+                if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
+                    $phone = '+251' . $phone;
                 } else {
-                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7, or 12 digits starting with 251');
+                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
                 }
 
                 $user = new User();
@@ -164,12 +164,10 @@ class UserController extends Controller
                 $user->last_name = $request->last_name;
                 $user->email = $request->email;
                 $phone = preg_replace('/\D/', '', $request->phone_number);
-                if (strlen($phone) === 12 && substr($phone, 0, 3) === '251') {
-                    // already correct
-                } elseif (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                    $phone = '251' . $phone;
+                if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
+                    $phone = '+251' . $phone;
                 } else {
-                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7, or 12 digits starting with 251');
+                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
                 }
                 $user->fayda_id = $request->fayda_id;
                 $user->password = \Hash::make($request->password);
@@ -303,12 +301,10 @@ class UserController extends Controller
                 $user->last_name = $request->last_name;
                 $user->email = $request->email;
                 $phone = preg_replace('/\D/', '', $request->phone_number);
-                if (strlen($phone) === 12 && substr($phone, 0, 3) === '251') {
-                    // already correct
-                } elseif (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                    $phone = '251' . $phone;
+                if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
+                    $phone = '+251' . $phone;
                 } else {
-                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7, or 12 digits starting with 251');
+                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
                 }
                 $user->fayda_id = $request->fayda_id;
                 $user->type = $userRole->name;

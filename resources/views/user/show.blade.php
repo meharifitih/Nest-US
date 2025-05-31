@@ -67,74 +67,40 @@
                                             </div>
                                         </div>
                                         <div class="card-body px-2 pb-0">
-                                            <div class="list-group list-group-flush">
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">email</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Email') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->email }}</small>
-                                                        </div>
+                                            <div class="user-info-list">
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">email</i></span>
+                                                        <span class="user-info-label">{{ __('Email') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">badge</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Fayda ID') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->fayda_id }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->email }}</span>
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">badge</i></span>
+                                                        <span class="user-info-label">{{ __('Fayda ID') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">phonelink_ring</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Phone') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->phone_number }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->fayda_id }}</span>
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">phonelink_ring</i></span>
+                                                        <span class="user-info-label">{{ __('Phone') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">pin_drop</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Package') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ !empty($user->subscriptions) ? $user->subscriptions->title : '' }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->phone_number }}</span>
+                                                    @if($user->phone_number)
+                                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone_number) }}" target="_blank" class="wa-btn" title="Chat on WhatsApp">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">pin_drop</i></span>
+                                                        <span class="user-info-label">{{ __('Package') }}</span>
                                                     </div>
-                                                </a>
-                                                @if (\Auth::user()->type == 'super admin' && $user->type == 'owner' && !empty($user->business_license))
-                                                    <a href="{{ asset(Storage::url('upload/business_license/' . $user->business_license)) }}" target="_blank" class="list-group-item list-group-item-action">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="flex-shrink-0">
-                                                                <i class="material-icons-two-tone f-20">description</i>
-                                                            </div>
-                                                            <div class="flex-grow-1 mx-3">
-                                                                <h5 class="m-0">{{ __('Business License') }}</h5>
-                                                            </div>
-                                                            <div class="flex-shrink-0">
-                                                                <span class="badge bg-info">{{ __('View') }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                @endif
+                                                    <span class="user-info-value">{{ !empty($user->subscriptions) ? $user->subscriptions->title : '' }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -217,59 +183,40 @@
                                             </div>
                                         </div>
                                         <div class="card-body px-2 pb-0">
-                                            <div class="list-group list-group-flush">
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">email</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Email') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->email }}</small>
-                                                        </div>
+                                            <div class="user-info-list">
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">email</i></span>
+                                                        <span class="user-info-label">{{ __('Email') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">badge</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Fayda ID') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->fayda_id }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->email }}</span>
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">badge</i></span>
+                                                        <span class="user-info-label">{{ __('Fayda ID') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">phonelink_ring</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Phone') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ $user->phone_number }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->fayda_id }}</span>
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">phonelink_ring</i></span>
+                                                        <span class="user-info-label">{{ __('Phone') }}</span>
                                                     </div>
-                                                </a>
-                                                <a href="#" class="list-group-item list-group-item-action">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <i class="material-icons-two-tone f-20">pin_drop</i>
-                                                        </div>
-                                                        <div class="flex-grow-1 mx-3">
-                                                            <h5 class="m-0">{{ __('Package') }}</h5>
-                                                        </div>
-                                                        <div class="flex-shrink-0">
-                                                            <small>{{ !empty($user->subscriptions) ? $user->subscriptions->title : '' }}</small>
-                                                        </div>
+                                                    <span class="user-info-value">{{ $user->phone_number }}</span>
+                                                    @if($user->phone_number)
+                                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone_number) }}" target="_blank" class="wa-btn" title="Chat on WhatsApp">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                                <div class="user-info-row">
+                                                    <div class="user-info-header">
+                                                        <span class="user-info-icon"><i class="material-icons-two-tone">pin_drop</i></span>
+                                                        <span class="user-info-label">{{ __('Package') }}</span>
                                                     </div>
-                                                </a>
+                                                    <span class="user-info-value">{{ !empty($user->subscriptions) ? $user->subscriptions->title : '' }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -360,3 +307,79 @@
         </div>
     </div>
 @endsection
+
+<style>
+    .list-group-item-action {
+        margin-bottom: 0.75rem;
+        border-radius: 0.5rem;
+    }
+    .list-group-item-action:last-child {
+        margin-bottom: 0;
+    }
+    .user-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .user-info-row {
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 1px 2px rgba(60,60,60,0.03);
+        min-width: 220px;
+        width: 100%;
+        word-break: break-word;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .user-info-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .user-info-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e9ecef;
+        border-radius: 50%;
+        font-size: 1.1rem;
+        color: #4f4f4f;
+    }
+    .user-info-label {
+        font-weight: 600;
+        color: #222;
+        font-size: 1rem;
+        margin-left: 0.5rem;
+    }
+    .user-info-value {
+        font-size: 0.96rem;
+        color: #333;
+        margin-top: 0.25rem;
+        word-break: break-word;
+        align-self: flex-start;
+    }
+    .wa-btn {
+        background: #25d366;
+        color: #fff;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+        transition: background 0.2s;
+        border: none;
+    }
+    .wa-btn:hover {
+        background: #128c7e;
+        color: #fff;
+        text-decoration: none;
+    }
+</style>

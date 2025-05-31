@@ -65,14 +65,14 @@ if (!function_exists('settingsKeys')) {
             "google_recaptcha" => "off",
             "recaptcha_key" => "",
             "recaptcha_secret" => "",
-            'SERVER_DRIVER' => "",
-            'SERVER_HOST' => "",
-            'SERVER_PORT' => "",
-            'SERVER_USERNAME' => "",
-            'SERVER_PASSWORD' => "",
-            'SERVER_ENCRYPTION' => "",
-            'FROM_EMAIL' => "",
-            'FROM_NAME' => "",
+            'SERVER_DRIVER' => env('MAIL_MAILER', 'smtp'),
+            'SERVER_HOST' => env('MAIL_HOST', ''),
+            'SERVER_PORT' => env('MAIL_PORT', ''),
+            'SERVER_USERNAME' => env('MAIL_USERNAME', ''),
+            'SERVER_PASSWORD' => env('MAIL_PASSWORD', ''),
+            'SERVER_ENCRYPTION' => env('MAIL_ENCRYPTION', ''),
+            'FROM_EMAIL' => env('MAIL_FROM_ADDRESS', ''),
+            'FROM_NAME' => env('MAIL_FROM_NAME', ''),
             "invoice_number_prefix" => "#INV-000",
             "expense_number_prefix" => "#EXP-000",
             'CURRENCY' => "USD",
@@ -803,24 +803,38 @@ if (!function_exists('commonEmailSend')) {
 if (!function_exists('emailSettings')) {
     function emailSettings($id)
     {
-        $settingData = DB::table('settings')
-            ->where('type', 'smtp')
-            ->where('parent_id', $id)
-            ->get();
+        // For admin (parent_id = 1), always use env values
+        if ($id == 1) {
+            $result = [
+                'FROM_EMAIL' => env('MAIL_FROM_ADDRESS', ''),
+                'FROM_NAME' => env('MAIL_FROM_NAME', ''),
+                'SERVER_DRIVER' => env('MAIL_MAILER', 'smtp'),
+                'SERVER_HOST' => env('MAIL_HOST', ''),
+                'SERVER_PORT' => env('MAIL_PORT', ''),
+                'SERVER_USERNAME' => env('MAIL_USERNAME', ''),
+                'SERVER_PASSWORD' => env('MAIL_PASSWORD', ''),
+                'SERVER_ENCRYPTION' => env('MAIL_ENCRYPTION', ''),
+            ];
+        } else {
+            $settingData = DB::table('settings')
+                ->where('type', 'smtp')
+                ->where('parent_id', $id)
+                ->get();
 
-        $result = [
-            'FROM_EMAIL' => "",
-            'FROM_NAME' => "",
-            'SERVER_DRIVER' => "",
-            'SERVER_HOST' => "",
-            'SERVER_PORT' => "",
-            'SERVER_USERNAME' => "",
-            'SERVER_PASSWORD' => "",
-            'SERVER_ENCRYPTION' => "",
-        ];
+            $result = [
+                'FROM_EMAIL' => env('MAIL_FROM_ADDRESS', ''),
+                'FROM_NAME' => env('MAIL_FROM_NAME', ''),
+                'SERVER_DRIVER' => env('MAIL_MAILER', 'smtp'),
+                'SERVER_HOST' => env('MAIL_HOST', ''),
+                'SERVER_PORT' => env('MAIL_PORT', ''),
+                'SERVER_USERNAME' => env('MAIL_USERNAME', ''),
+                'SERVER_PASSWORD' => env('MAIL_PASSWORD', ''),
+                'SERVER_ENCRYPTION' => env('MAIL_ENCRYPTION', ''),
+            ];
 
-        foreach ($settingData as $setting) {
-            $result[$setting->name] = $setting->value;
+            foreach ($settingData as $setting) {
+                $result[$setting->name] = $setting->value;
+            }
         }
 
         // Apply settings dynamically

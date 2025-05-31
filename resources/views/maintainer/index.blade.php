@@ -97,8 +97,13 @@
                                             @if ($maintainer->user->phone_number)
                                                 <div class="col-sm-6 mb-3">
                                                     <p class="mb-0 text-muted text-sm">{{ __('Phone') }} :</p>
-                                                    <h6 class="mb-0">
+                                                    <h6 class="mb-0 d-flex align-items-center">
                                                         {{ !empty($maintainer->user) ? $maintainer->user->phone_number : '-' }}
+                                                        @if(!empty($maintainer->user) && $maintainer->user->phone_number)
+                                                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $maintainer->user->phone_number) }}" target="_blank" class="btn btn-sm btn-success ms-2">
+                                                                <i class="fab fa-whatsapp"></i>
+                                                            </a>
+                                                        @endif
                                                     </h6>
                                                 </div>
                                             @endif

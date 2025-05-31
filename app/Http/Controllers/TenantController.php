@@ -8,6 +8,7 @@ use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\TenantDocument;
 use App\Models\User;
+use App\Traits\PhoneNumberFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -15,6 +16,7 @@ use App\Notifications\PasswordChangeNotification;
 
 class TenantController extends Controller
 {
+    use PhoneNumberFormatter;
 
     public function index()
     {
@@ -47,7 +49,7 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users',
-                    'phone_number' => 'required',
+                    'phone_number' => 'required|regex:/^[79][0-9]{8}$/',
                     'property' => 'required',
                     'unit' => 'required',
                 ]
@@ -70,7 +72,7 @@ class TenantController extends Controller
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->password = Hash::make($password);
-            $user->phone_number = $request->phone_number;
+            $user->phone_number = '+251' . $request->phone_number;
             $user->type = 'tenant';
             $user->email_verified_at = now();
             $user->profile = 'avatar.png';
@@ -160,7 +162,7 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users,email,' . $tenant->user_id,
-                    'phone_number' => 'required',
+                    'phone_number' => 'required|regex:/^[79][0-9]{8}$/',
                     'family_member' => 'required',
                     'sub_city' => 'required',
                     'woreda' => 'required',
@@ -186,7 +188,7 @@ class TenantController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->phone_number = $request->phone_number;
+            $user->phone_number = '+251' . $request->phone_number;
             $user->save();
 
             if ($request->profile != '') {

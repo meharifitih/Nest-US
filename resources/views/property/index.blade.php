@@ -86,6 +86,10 @@
                 },
             });
         });
+
+        function goToPropertyDetail(url) {
+            window.location = url;
+        }
     </script>
 @endpush
 
@@ -117,22 +121,18 @@
                             @php $thumbnail= 'default.jpg'; @endphp
                         @endif
                         <div class="col-sm-6 col-md-4 col-xxl-3">
-                            <div class="card product-card">
+                            <div class="card product-card" style="cursor:pointer;" onclick="goToPropertyDetail('{{ route('property.show', $property->id) }}')">
                                 <div class="card-img-top">
                                     <img src="{{ asset(Storage::url('upload/thumbnail/' . $thumbnail)) }}"
                                         alt="{{ $property->name }}" class="img-prod" />
-
                                 </div>
                                 <div class="card-body">
-                             
-
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <a href="@can('show property') {{ route('property.show', $property->id) }}  @endcan"
-                                            class="fw-semibold mb-0 text-truncate">
+                                        <span class="fw-semibold mb-0 text-truncate">
                                             <h4>{{ $property->name }}</h4>
-                                        </a>
+                                        </span>
                                         @if (Gate::check('edit property') || Gate::check('delete property') || Gate::check('show property'))
-                                            <div class="dropdown">
+                                            <div class="dropdown" onclick="event.stopPropagation();">
                                                 <a class="dropdown-toggle text-primary opacity-50 arrow-none" href="#"
                                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <i class="ti ti-dots f-16"></i>
@@ -150,7 +150,6 @@
                                                             {{ __('Edit Property') }}
                                                         </a>
                                                     @endcan
-
                                                     @can('show property')
                                                         <a class="dropdown-item"
                                                             href="{{ route('property.show', $property->id) }}">
@@ -164,12 +163,10 @@
                                                             {{ __('Delete Property') }}
                                                         </a>
                                                     @endcan
-
                                                     {!! Form::close() !!}
                                                 </div>
                                             </div>
                                         @endif
-
                                     </div>
                                     <div class="col-md-12">
                                         <button type="button" class="btn  my-2 btn-light-secondary">
@@ -181,15 +178,11 @@
                                             {{ $property->totalRoom() }}
                                             {{ __('Rooms') }}
                                         </button>
-
                                     </div>
-
                                     <p class="prod-content my-2 text-muted">
                                         {{ substr($property->description, 0, 200) }}{{ !empty($property->description) ? '...' : '' }}
                                     </p>
-
                                     <div class="d-flex align-items-center justify-content-between mt-3">
-
                                         <span class="badge bg-light-secondary" data-bs-toggle="tooltip"
                                             data-bs-original-title="{{ __('Type') }}">{{ \App\Models\Property::$Type[$property->type] }}</span>
                                     </div>
@@ -197,10 +190,8 @@
                             </div>
                         </div>
                     @endforeach
-
                 </div>
             </div>
-
         </div>
     </div>
 @endsection

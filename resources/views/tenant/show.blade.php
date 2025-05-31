@@ -67,9 +67,13 @@
                                                 <div class="flex-grow-1 mx-3">
                                                     <h5 class="m-0">{{ __('Phone') }}</h5>
                                                 </div>
-                                                <div class="flex-shrink-0">
-                                                    <small>{{ !empty($tenant->user) ? $tenant->user->phone_number : '-' }}
-                                                    </small>
+                                                <div class="flex-shrink-0 d-flex align-items-center">
+                                                    <small class="me-2">{{ !empty($tenant->user) ? $tenant->user->phone_number : '-' }}</small>
+                                                    @if(!empty($tenant->user) && $tenant->user->phone_number)
+                                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $tenant->user->phone_number) }}" target="_blank" class="btn btn-sm btn-success">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </a>

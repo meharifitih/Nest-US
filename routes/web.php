@@ -447,9 +447,3 @@ Route::middleware(['auth'])->group(function () {
 Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');
 Route::get('rent/create', [App\Http\Controllers\RentController::class, 'create'])->name('rent.create');
 Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name('rent.store');
-
-// WhatsApp Test Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/whatsapp/test', [WhatsAppTestController::class, 'index'])->name('whatsapp.test');
-    Route::post('/whatsapp/test/send', [WhatsAppTestController::class, 'send'])->name('whatsapp.test.send');
-});

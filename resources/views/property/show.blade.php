@@ -357,6 +357,9 @@
                                                     <small class="form-text text-muted">
                                                         {{ __('Supported formats: XLSX, XLS, CSV. Maximum file size: 2MB') }}
                                                     </small>
+                                                    <small class="form-text text-muted">
+                                                        {{ __('Phone numbers must be in the format +251XXXXXXXXX (e.g. +251912345678).') }}
+                                                    </small>
                                                 </div>
                                                 <div class="form-group mt-3">
                                                     <button type="submit" class="btn btn-primary">
