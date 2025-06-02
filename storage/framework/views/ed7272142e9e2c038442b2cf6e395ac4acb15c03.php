@@ -57,13 +57,9 @@
                                 <tr>
                                     <th><?php echo e(__('User')); ?></th>
                                     <th><?php echo e(__('Email')); ?></th>
-                                    <?php if(\Auth::user()->type == 'super admin'): ?>
-                                        <th><?php echo e(__('Active Package')); ?></th>
-                                        <th><?php echo e(__('Package Due Date')); ?></th>
-                                        <th><?php echo e(__('Approval Status')); ?></th>
-                                    <?php else: ?>
-                                        <th><?php echo e(__('Assign Role')); ?></th>
-                                    <?php endif; ?>
+                                    <th><?php echo e(__('Active Package')); ?></th>
+                                    <th><?php echo e(__('Package Due Date')); ?></th>
+                                    <th><?php echo e(__('Approval Status')); ?></th>
                                     <th><?php echo e(__('Action')); ?></th>
                                 </tr>
                             </thead>
@@ -78,18 +74,18 @@
                                         </td>
                                         <td><?php echo e($user->email); ?> </td>
                                         <?php if(\Auth::user()->type == 'super admin'): ?>
-                                            <td><?php echo e(!empty($user->subscriptions) ? $user->subscriptions->title : '-'); ?>
-
-                                            </td>
-                                            <td><?php echo e(!empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited')); ?>
-
-                                            </td>
+                                            <td><?php echo e(!empty($user->subscriptions) ? $user->subscriptions->title : '-'); ?></td>
+                                            <td><?php echo e(!empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited')); ?></td>
                                             <td>
                                                 <span class="badge bg-<?php echo e($user->approval_status === 'approved' ? 'success' : ($user->approval_status === 'rejected' ? 'danger' : 'warning')); ?>">
                                                     <?php echo e(ucfirst($user->approval_status)); ?>
 
                                                 </span>
                                             </td>
+                                        <?php else: ?>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
                                         <?php endif; ?>
                                         <td>
                                             <div class="cart-action">

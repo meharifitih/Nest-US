@@ -52,13 +52,9 @@
                                 <tr>
                                     <th>{{ __('User') }}</th>
                                     <th>{{ __('Email') }}</th>
-                                    @if (\Auth::user()->type == 'super admin')
-                                        <th>{{ __('Active Package') }}</th>
-                                        <th>{{ __('Package Due Date') }}</th>
-                                        <th>{{ __('Approval Status') }}</th>
-                                    @else
-                                        <th>{{ __('Assign Role') }}</th>
-                                    @endif
+                                    <th>{{ __('Active Package') }}</th>
+                                    <th>{{ __('Package Due Date') }}</th>
+                                    <th>{{ __('Approval Status') }}</th>
                                     <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
@@ -73,15 +69,17 @@
                                         </td>
                                         <td>{{ $user->email }} </td>
                                         @if (\Auth::user()->type == 'super admin')
-                                            <td>{{ !empty($user->subscriptions) ? $user->subscriptions->title : '-' }}
-                                            </td>
-                                            <td>{{ !empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited') }}
-                                            </td>
+                                            <td>{{ !empty($user->subscriptions) ? $user->subscriptions->title : '-' }}</td>
+                                            <td>{{ !empty($user->subscription_expire_date) ? dateFormat($user->subscription_expire_date) : __('Unlimited') }}</td>
                                             <td>
                                                 <span class="badge bg-{{ $user->approval_status === 'approved' ? 'success' : ($user->approval_status === 'rejected' ? 'danger' : 'warning') }}">
                                                     {{ ucfirst($user->approval_status) }}
                                                 </span>
                                             </td>
+                                        @else
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
                                         @endif
                                         <td>
                                             <div class="cart-action">

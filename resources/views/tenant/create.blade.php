@@ -114,6 +114,29 @@
                 },
 
             });
+
+            // Autofill address fields when property is selected
+            if (property_id) {
+                $.ajax({
+                    url: '/property/' + property_id + '/address',
+                    type: 'GET',
+                    success: function(data) {
+                        if (!data.error) {
+                            $('#sub_city').val(data.sub_city || '');
+                            $('#woreda').val(data.woreda || '');
+                            $('#house_number').val(data.house_number || '');
+                            $('#location').val(data.location || '');
+                            $('#city').val(data.city || '');
+                        }
+                    }
+                });
+            } else {
+                $('#sub_city').val('');
+                $('#woreda').val('');
+                $('#house_number').val('');
+                $('#location').val('');
+                $('#city').val('');
+            }
         });
 
         $(document).ready(function() {
@@ -232,43 +255,9 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>{{ __('Address Details') }}</h5>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label for="sub_city" class="form-label">{{ __('Sub City') }}</label>
-                                <input type="text" class="form-control" id="sub_city" name="sub_city" value="{{ old('sub_city') }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="woreda" class="form-label">{{ __('Woreda') }}</label>
-                                <input type="text" class="form-control" id="woreda" name="woreda" value="{{ old('woreda') }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="house_number" class="form-label">{{ __('House Number') }}</label>
-                                <input type="text" class="form-control" id="house_number" name="house_number" value="{{ old('house_number') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="location" class="form-label">{{ __('Location') }}</label>
-                                <input type="text" class="form-control" id="location" name="location" value="{{ old('location') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="city" class="form-label">{{ __('City') }}</label>
-                                <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}">
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header">
                         <h5>{{ __('Property Details') }}</h5>
                     </div>
                     <div class="card-body">
-
                         <div class="row">
                             <div class="form-group col-lg-6 col-md-6">
                                 <label for="property" class="form-label">{{ __('Property') }} <span class="text-danger">*</span></label>
@@ -296,7 +285,37 @@
                                 <input type="date" class="form-control" id="lease_end_date" name="lease_end_date" value="{{ old('lease_end_date') }}">
                             </div>
                         </div>
-
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ __('Address Details') }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="sub_city" class="form-label">{{ __('Sub City') }}</label>
+                                <input type="text" class="form-control" id="sub_city" name="sub_city" value="{{ old('sub_city') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="woreda" class="form-label">{{ __('Woreda') }}</label>
+                                <input type="text" class="form-control" id="woreda" name="woreda" value="{{ old('woreda') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="house_number" class="form-label">{{ __('House Number') }}</label>
+                                <input type="text" class="form-control" id="house_number" name="house_number" value="{{ old('house_number') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">{{ __('Location') }}</label>
+                                <input type="text" class="form-control" id="location" name="location" value="{{ old('location') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">{{ __('City') }}</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

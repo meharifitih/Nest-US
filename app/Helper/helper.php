@@ -465,7 +465,7 @@ if (!function_exists('userLoggedHistory')) {
             $details->type = Auth::user()->type;
             $details->user_id = Auth::user()->id;
             $details->date = date('Y-m-d H:i:s');
-            $details->Details = $result;
+            $details->details = $result;
             $details->ip = $serverip;
             $details->parent_id = parentId();
             $details->save();

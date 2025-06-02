@@ -32,6 +32,7 @@ use App\Http\Controllers\AccountReviewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HoaController;
 use App\Http\Controllers\WhatsAppTestController;
+use App\Http\Controllers\TenantExcelUploadController;
 
 
 /*
@@ -290,6 +291,7 @@ Route::group(
         Route::delete('property/{pid}/unit/{id}/destroy', [PropertyController::class, 'unitDestroy'])->name('unit.destroy');
         Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
         Route::get('get-units', [PropertyController::class, 'getUnits'])->name('get.units');
+        Route::get('property/{id}/address', [App\Http\Controllers\PropertyController::class, 'getAddress'])->name('property.address');
     }
 );
 
@@ -447,3 +449,8 @@ Route::middleware(['auth'])->group(function () {
 Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');
 Route::get('rent/create', [App\Http\Controllers\RentController::class, 'create'])->name('rent.create');
 Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name('rent.store');
+
+// Tenant Excel Upload Routes
+Route::get('tenant-excel-upload/select-property', [TenantExcelUploadController::class, 'selectProperty'])->name('tenant-excel-upload.select-property');
+Route::get('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'uploadForm'])->name('tenant-excel-upload.form');
+Route::post('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'upload'])->name('tenant-excel-upload.upload');

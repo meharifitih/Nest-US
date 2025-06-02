@@ -54,6 +54,7 @@ class PropertyController extends Controller
                     'house_number' => 'required',
                     'woreda' => 'required',
                     'sub_city' => 'required',
+                    'city' => 'required',
                     'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                 ]
             );
@@ -85,6 +86,7 @@ class PropertyController extends Controller
             $property->house_number = $request->house_number;
             $property->woreda = $request->woreda;
             $property->sub_city = $request->sub_city;
+            $property->city = $request->city;
             $property->type = $request->type;
             $property->parent_id = parentId();
             $property->save();
@@ -591,5 +593,21 @@ class PropertyController extends Controller
         $propertyId = $request->input('property_id');
         $units = PropertyUnit::where('property_id', $propertyId)->get();
         return response()->json($units);
+    }
+
+    // Autofill property address details for tenant create
+    public function getAddress($id)
+    {
+        $property = \App\Models\Property::find($id);
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
+        return response()->json([
+            'sub_city' => $property->sub_city,
+            'woreda' => $property->woreda,
+            'house_number' => $property->house_number,
+            'location' => $property->location,
+            'city' => $property->city,
+        ]);
     }
 }

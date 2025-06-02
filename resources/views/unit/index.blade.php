@@ -25,6 +25,11 @@
                                         class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}</a>
                             </div>
                         @endif
+                        <div class="col-auto">
+                            <a href="{{ route('tenant-excel-upload.select-property') }}" class="btn btn-secondary">
+                                <i class="ti ti-upload align-text-bottom"></i> {{ __('Tenant Excel Upload') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
