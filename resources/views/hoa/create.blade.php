@@ -22,29 +22,37 @@
             data: { property_id: property_id },
             type: 'GET',
             success: function(data) {
-                var unit = `<select class="form-control" id="unit_id" name="unit_id"><option value="">{{ __('Select Unit') }}</option>`;
+                var options = '';
                 $.each(data, function(key, value) {
-                    unit += `<option value="${key}">${value}</option>`;
+                    options += `<option value="${key}">${value}</option>`;
                 });
-                unit += '</select>';
-                $('.unit_div').html(unit);
+                $('#main_unit_select').html(options);
+                if ($('#main_unit_select')[0].choicesInstance) {
+                    $('#main_unit_select')[0].choicesInstance.destroy();
+                }
+                $('#main_unit_select')[0].choicesInstance = new Choices($('#main_unit_select')[0], {
+                    removeItemButton: true
+                });
                 $('#tenant_name').val('');
             }
         });
     });
-    $(document).on('change', '#unit_id', function() {
-        var unit_id = $(this).val();
-        if(unit_id) {
-            $.ajax({
-                url: '/hoa/unit/' + unit_id + '/tenant',
-                type: 'GET',
-                success: function(data) {
-                    $('#tenant_name').val(data.tenant ? data.tenant : '');
-                }
+
+    // On form submit, set hidden inputs for selected units
+    $('#hoa_form').on('submit', function(e) {
+        var $unitSelect = $('#main_unit_select');
+        var selected = $unitSelect.val();
+        
+        // Remove any previous hidden inputs
+        $("input[name='unit_ids[]']").remove();
+        
+        // Add a hidden input for each selected unit
+        if (selected && selected.length) {
+            selected.forEach(function(val) {
+                $('<input>').attr({type: 'hidden', name: 'unit_ids[]'}).val(val).appendTo('#hoa_form');
             });
-        } else {
-            $('#tenant_name').val('');
         }
+        $unitSelect.removeAttr('name');
     });
 </script>
 @endpush
@@ -72,16 +80,10 @@
                             <div class="form-group col-md-6 col-lg-4">
                                 <label for="unit_id" class="form-label">{{ __('Unit') }}</label>
                                 <div class="unit_div">
-                                    <select class="form-control" id="unit_id" name="unit_id">
-                                        <option value="">{{ __('Select Unit') }}</option>
-                                        @if(!empty($units))
-                                            @foreach($units as $id => $name)
-                                                <option value="{{ $id }}">{{ $name }}</option>
-                                            @endforeach
-                                        @endif
+                                    <select class="form-control unit-multiselect" id="main_unit_select" name="unit_ids[]" multiple>
                                     </select>
                                 </div>
-                                @error('unit_id')
+                                @error('unit_ids')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>

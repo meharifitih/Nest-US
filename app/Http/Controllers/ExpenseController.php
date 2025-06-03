@@ -47,7 +47,8 @@ class ExpenseController extends Controller
                 $request->all(), [
                 'title' => 'required',
                 'property_id' => 'required',
-                'unit_id' => 'required',
+                'unit_ids' => 'required|array|min:1',
+                'unit_ids.*' => 'required|integer',
                 'expense_type' => 'required',
                 'amount' => 'required',
                 'date' => 'required',
@@ -69,21 +70,22 @@ class ExpenseController extends Controller
                     mkdir($dir, 0777, true);
                 }
                 $request->file('receipt')->storeAs('upload/receipt', $receiptFileName, 'public');
-
             }
 
-            $expense = new Expense();
-            $expense->title = $request->title;
-            $expense->expense_id = $request->expense_id;
-            $expense->property_id = $request->property_id;
-            $expense->unit_id = $request->unit_id;
-            $expense->expense_type = $request->expense_type;
-            $expense->amount = $request->amount;
-            $expense->date = $request->date;
-            $expense->receipt = !empty($request->receipt) ? $receiptFileName : '';
-            $expense->notes = $request->notes;
-            $expense->parent_id = parentId();
-            $expense->save();
+            foreach ($request->unit_ids as $unitId) {
+                $expense = new Expense();
+                $expense->title = $request->title;
+                $expense->expense_id = $request->expense_id;
+                $expense->property_id = $request->property_id;
+                $expense->unit_id = $unitId;
+                $expense->expense_type = $request->expense_type;
+                $expense->amount = $request->amount;
+                $expense->date = $request->date;
+                $expense->receipt = !empty($request->receipt) ? $receiptFileName : '';
+                $expense->notes = $request->notes;
+                $expense->parent_id = parentId();
+                $expense->save();
+            }
 
             return redirect()->back()->with('success', __('Expense successfully created.'));
         } else {

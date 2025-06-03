@@ -43,7 +43,8 @@ class HoaController extends Controller
     {
         $validated = $request->validate([
             'property_id' => 'required|exists:properties,id',
-            'unit_id' => 'required|exists:property_units,id',
+            'unit_ids' => 'required|array|min:1',
+            'unit_ids.*' => 'required|exists:property_units,id',
             'hoa_type_id' => 'required|exists:types,id',
             'amount' => 'required|numeric|min:0',
             'frequency' => 'required|in:monthly,quarterly,semi_annual,annual',
@@ -51,15 +52,19 @@ class HoaController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $validated['created_by'] = Auth::id();
-        $validated['status'] = 'open';
+        foreach ($validated['unit_ids'] as $unitId) {
+            $data = $validated;
+            $data['unit_id'] = $unitId;
+            $data['created_by'] = Auth::id();
+            $data['status'] = 'open';
 
-        // Set tenant_id from unit
-        $unit = \App\Models\PropertyUnit::find($validated['unit_id']);
-        $tenant = $unit && $unit->tenants ? $unit->tenants : null;
-        $validated['tenant_id'] = $tenant ? $tenant->id : null;
+            // Set tenant_id from unit
+            $unit = \App\Models\PropertyUnit::find($unitId);
+            $tenant = $unit && $unit->tenants ? $unit->tenants : null;
+            $data['tenant_id'] = $tenant ? $tenant->id : null;
 
-        Hoa::create($validated);
+            Hoa::create($data);
+        }
 
         return redirect()->route('hoa.index')->with('success', 'HOA created successfully');
     }

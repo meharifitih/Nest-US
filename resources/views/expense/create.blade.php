@@ -1,4 +1,4 @@
-{{ Form::open(['url' => 'expense', 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
+{{ Form::open(['url' => 'expense', 'method' => 'post', 'enctype' => 'multipart/form-data', 'id' => 'expense_form']) }}
 <div class="modal-body">
     <div class="row">
         <div class="form-group  col-md-12 col-lg-12">
@@ -25,8 +25,7 @@
         <div class="form-group col-lg-6 col-md-6">
             {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
             <div class="unit_div">
-                <select class="form-control hidesearch unit" id="unit_id" name="unit_id">
-                    <option value="">{{ __('Select Unit') }}</option>
+                <select class="form-control unit-multiselect" id="main_unit_select" name="unit_ids[]" multiple>
                 </select>
             </div>
         </div>
@@ -70,24 +69,35 @@
             processData: false,
             type: 'GET',
             success: function(data) {
-                $('.unit').empty();
-                var unit =
-                    `<select class="form-control hidesearch unit" id="unit_id" name="unit_id"></select>`;
-                $('.unit_div').html(unit);
-
+                var options = '';
                 $.each(data, function(key, value) {
-                    $('.unit').append('<option value="' + key + '">' + value + '</option>');
+                    options += `<option value="${key}">${value}</option>`;
                 });
-
-                $(".hidesearch").each(function() {
-                    var basic_select = new Choices(this, {
-                        searchEnabled: false,
-                        removeItemButton: true,
-                    });
+                $('#main_unit_select').html(options);
+                if ($('#main_unit_select')[0].choicesInstance) {
+                    $('#main_unit_select')[0].choicesInstance.destroy();
+                }
+                $('#main_unit_select')[0].choicesInstance = new Choices($('#main_unit_select')[0], {
+                    removeItemButton: true
                 });
-
-            },
-
+            }
         });
+    });
+
+    // On form submit, set hidden inputs for selected units
+    $('#expense_form').on('submit', function(e) {
+        var $unitSelect = $('#main_unit_select');
+        var selected = $unitSelect.val();
+        
+        // Remove any previous hidden inputs
+        $("input[name='unit_ids[]']").remove();
+        
+        // Add a hidden input for each selected unit
+        if (selected && selected.length) {
+            selected.forEach(function(val) {
+                $('<input>').attr({type: 'hidden', name: 'unit_ids[]'}).val(val).appendTo('#expense_form');
+            });
+        }
+        $unitSelect.removeAttr('name');
     });
 </script>

@@ -74,14 +74,9 @@
                                     @endforeach
                                 @endif
 
-                                @if($otherInvoices->count() > 0)
-                                    <tr class="table-primary">
-                                        <td colspan="10"><strong>{{ __('Other Invoices') }}</strong></td>
-                                    </tr>
-                                    @foreach ($otherInvoices as $invoice)
-                                        @include('invoice.partials.invoice_row', ['invoice' => $invoice])
-                                    @endforeach
-                                @endif
+                                @foreach ($otherInvoices as $invoice)
+                                    @include('invoice.partials.invoice_row', ['invoice' => $invoice])
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

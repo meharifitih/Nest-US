@@ -6,8 +6,8 @@
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/jquery.repeater.min.js') }}"></script>
     <script>
+        // On property change, update unit select
         $('#property_id').on('change', function() {
-            "use strict";
             var property_id = $(this).val();
             var url = '{{ route('property.unit', ':id') }}';
             url = url.replace(':id', property_id);
@@ -16,41 +16,50 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                data: {
-                    property_id: property_id,
-                },
+                data: { property_id: property_id },
                 contentType: false,
                 processData: false,
                 type: 'GET',
                 success: function(data) {
-                    $('.unit').empty();
-                    var unit =
-                        `<select class="form-control hidesearch unit" id="unit" name="unit_id"></select>`;
-                    $('.unit_div').html(unit);
-
+                    var options = '';
                     $.each(data, function(key, value) {
-                        $('.unit').append('<option value="' + key + '">' + value + '</option>');
+                        options += '<option value="' + key + '">' + value + '</option>';
                     });
-                    $(".hidesearch").each(function() {
-                        var basic_select = new Choices(this, {
-                            searchEnabled: false,
-                            removeItemButton: true,
-                        });
+                    $('#main_unit_select').html(options);
+                    if ($('#main_unit_select')[0].choicesInstance) {
+                        $('#main_unit_select')[0].choicesInstance.destroy();
+                    }
+                    $('#main_unit_select')[0].choicesInstance = new Choices($('#main_unit_select')[0], {
+                        removeItemButton: true
                     });
-                },
-
+                }
             });
+        });
+
+        // On form submit, set hidden inputs for selected units
+        $('#invoice_form').on('submit', function(e) {
+            var $unitSelect = $('#main_unit_select');
+            var selected = $unitSelect.val();
+            
+            // Remove any previous hidden inputs
+            $("input[name='unit_ids[]']").remove();
+            
+            // Add a hidden input for each selected unit
+            if (selected && selected.length) {
+                selected.forEach(function(val) {
+                    $('<input>').attr({type: 'hidden', name: 'unit_ids[]'}).val(val).appendTo('#invoice_form');
+                });
+            }
+            $unitSelect.removeAttr('name');
         });
     </script>
     <script>
         var selector = "body";
         if ($(selector + " .repeater").length) {
             var $dragAndDrop = $("body .repeater tbody").sortable({
-
                 handle: '.sort-handler'
             });
             var $repeater = $(selector + ' .repeater').repeater({
-
                 initEmpty: false,
                 defaultValues: {
                     'status': 1
@@ -62,14 +71,12 @@
                             removeItemButton: true,
                         });
                     });
-
                     $(this).slideDown();
                 },
                 hide: function(deleteElement) {
                     if (confirm('Are you sure you want to delete this element?')) {
                         $(this).slideUp(deleteElement);
                         $(this).remove();
-
                     }
                 },
                 ready: function(setIndexes) {
@@ -107,8 +114,7 @@
                             <div class="form-group col-md-6 col-lg-4">
                                 {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
                                 <div class="unit_div">
-                                    <select class="form-control hidesearch unit" id="unit" name="unit_id">
-                                        <option value="">{{ __('Select Unit') }}</option>
+                                    <select class="form-control unit-multiselect" id="main_unit_select" name="unit_ids[]" multiple>
                                     </select>
                                 </div>
                             </div>
@@ -141,15 +147,11 @@
             </div>
             <div class="card repeater">
                 <div class="card-header">
-
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="mb-0">{{ __('Invoice Type') }}</h5>
-
                         <a class="btn btn-secondary d-flex align-items-center gap-2" href="#" data-repeater-create="">
                             <i class="ti ti-circle-plus align-text-bottom"></i>{{ __('Add Type') }}</a>
-
                     </div>
-
                 </div>
                 <div class="card-body">
                     <table class="display dataTable cell-border" data-repeater-list="types">
@@ -179,7 +181,6 @@
                                 </td>
                             </tr>
                         </tbody>
-
                     </table>
                 </div>
             </div>

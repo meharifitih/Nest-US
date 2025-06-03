@@ -64,15 +64,31 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         if (\Auth::user()->can('create invoice')) {
+            $unitIds = $request->unit_ids ?? [];
+            if (in_array('all', $unitIds)) {
+                $unitIds = \App\Models\PropertyUnit::where('property_id', $request->property_id)->pluck('id')->toArray();
+                $request->merge(['unit_ids' => $unitIds]);
+            } else {
+                // Remove any accidental 'all'
+                $unitIds = array_filter($unitIds, function($v) { return $v !== 'all'; });
+                $request->merge(['unit_ids' => $unitIds]);
+            }
+            // If no units found, show error
+            if (empty($unitIds)) {
+                return redirect()->back()->with('error', 'No units found for the selected property.');
+            }
+            \Log::info('Invoice store unit IDs', ['unit_ids' => $unitIds, 'property_id' => $request->property_id]);
             $validator = \Validator::make(
                 $request->all(),
                 [
                     'property_id' => 'required',
-                    'unit_id' => 'required',
-                    'invoice_date' => 'required',
-                    'due_date' => 'required',
-                    'type' => 'required',
-                    'amount' => 'required',
+                    'unit_ids' => 'required|array|min:1',
+                    'unit_ids.*' => 'required|integer',
+                    'invoice_month' => 'required',
+                    'end_date' => 'required',
+                    'types' => 'required|array|min:1',
+                    'types.*.invoice_type' => 'required',
+                    'types.*.amount' => 'required',
                 ]
             );
 
@@ -81,45 +97,30 @@ class InvoiceController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
-            $invoice = new Invoice();
-            $invoice->invoice_id = $this->invoiceNumber();
-            $invoice->property_id = $request->property_id;
-            $invoice->unit_id = $request->unit_id;
-            $invoice->invoice_date = $request->invoice_date;
-            $invoice->due_date = $request->due_date;
-            $invoice->end_date = $request->due_date;
-            $invoice->parent_id = parentId();
-            $invoice->save();
+            $invoiceNumber = $this->invoiceNumber();
+            foreach ($unitIds as $idx => $unitId) {
+                $invoice = new \App\Models\Invoice();
+                $invoice->invoice_id = $invoiceNumber + $idx;
+                $invoice->property_id = $request->property_id;
+                $invoice->unit_id = $unitId;
+                $invoice->invoice_month = $request->invoice_month . '-01';
+                $invoice->end_date = $request->end_date;
+                $invoice->notes = $request->notes;
+                $invoice->parent_id = parentId();
+                $invoice->save();
 
-            $types = $request->type;
-            for ($i = 0; $i < count($types); $i++) {
-                $invoiceItem = new InvoiceItem();
-                $invoiceItem->invoice_id = $invoice->id;
-                $invoiceItem->invoice_type = $types[$i]['invoice_type'];
-                $invoiceItem->amount = $types[$i]['amount'];
-                $invoiceItem->description = $types[$i]['description'];
-                $invoiceItem->save();
-            }
-
-            $module = 'invoice_create';
-            $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-            $setting = settings();
-            $errorMessage = '';
-            if (!empty($notification) && $notification->enabled_email == 1 && !empty($invoice->tenants()->user->email)) {
-                $notification_responce = MessageReplace($notification, $invoice->id);
-                $datas['subject'] = $notification_responce['subject'];
-                $datas['message'] = $notification_responce['message'];
-                $datas['module'] = $module;
-                $datas['logo'] =  $setting['company_logo'];
-
-                $to = $invoice->tenants()->user->email;
-                $response = commonEmailSend($to, $datas);
-                if ($response['status'] == 'error') {
-                    $errorMessage = $response['message'];
+                $types = $request->types;
+                foreach ($types as $type) {
+                    $invoiceItem = new \App\Models\InvoiceItem();
+                    $invoiceItem->invoice_id = $invoice->id;
+                    $invoiceItem->invoice_type = $type['invoice_type'];
+                    $invoiceItem->amount = $type['amount'];
+                    $invoiceItem->description = $type['description'];
+                    $invoiceItem->save();
                 }
             }
 
-            return redirect()->route('invoice.index')->with('success', __('Invoice successfully created.') . '</br>' . $errorMessage);
+            return redirect()->route('invoice.index')->with('success', __('Invoices successfully created for selected units.'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

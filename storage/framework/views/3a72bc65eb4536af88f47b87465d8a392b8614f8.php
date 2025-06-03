@@ -40,7 +40,7 @@
                                             <form method="POST" action="<?php echo e(route('tenant.destroy', $tenant->id)); ?>" style="display:inline;" onsubmit="event.stopPropagation(); return confirm('Are you sure you want to delete this tenant?');">
                                                 <?php echo csrf_field(); ?>
                                                 <?php echo method_field('DELETE'); ?>
-                                                <button type="submit" class="tenant-action-btn" title="Delete Tenant">
+                                                <button type="submit" class="tenant-action-btn" title="Delete Tenant" onclick="event.stopPropagation();">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
                                             </form>
