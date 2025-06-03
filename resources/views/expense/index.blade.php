@@ -3,6 +3,13 @@
     {{ __('Expense') }}
 @endsection
 @push('script-page')
+<script>
+    $(document).on('click', '.clickable-expense-row', function(e) {
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
 @endpush
 @section('breadcrumb')
     <ul class="breadcrumb mb-0">
@@ -64,7 +71,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($expenses as $expense)
-                                    <tr role="row">
+                                    <tr class="clickable-expense-row" data-href="{{ route('expense.show', $expense->id) }}">
                                         <td>{{ expensePrefix() . $expense->expense_id }} </td>
                                         <td> {{ $expense->title }} </td>
                                         <td> {{ !empty($expense->properties) ? $expense->properties->name : '-' }} </td>
@@ -75,7 +82,7 @@
                                         <td>
                                             @if (!empty($expense->receipt))
                                                 <a href="{{ asset(Storage::url('upload/receipt')) . '/' . $expense->receipt }}"
-                                                    download="download"><i data-feather="download"></i></a>
+                                                    download="download" onclick="event.stopPropagation();"><i data-feather="download"></i></a>
                                             @else
                                                 -
                                             @endif
@@ -85,11 +92,10 @@
                                                 <div class="cart-action">
                                                     {!! Form::open(['method' => 'DELETE', 'route' => ['expense.destroy', $expense->id]]) !!}
                                                     @can('show expense')
-                                                        <a class="avtar avtar-xs btn-link-warning text-warning customModal" data-size="lg"
+                                                        <a class="avtar avtar-xs btn-link-warning text-warning"
+                                                            href="{{ route('expense.show', $expense->id) }}"
                                                             data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('View') }}" href="#"
-                                                            data-url="{{ route('expense.show', $expense->id) }}"
-                                                            data-title="{{ __('Expense Details') }}"> <i
+                                                            data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();"> <i
                                                                 data-feather="eye"></i></a>
                                                     @endcan
                                                     @can('edit expense')
@@ -97,22 +103,20 @@
                                                             data-bs-toggle="tooltip"
                                                             data-bs-original-title="{{ __('Edit') }}" href="#"
                                                             data-url="{{ route('expense.edit', $expense->id) }}"
-                                                            data-title="{{ __('Edit Expense') }}"> <i
+                                                            data-title="{{ __('Edit Expense') }}" onclick="event.stopPropagation();"> <i
                                                                 data-feather="edit"></i></a>
                                                     @endcan
                                                     @can('delete expense')
                                                         <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Detete') }}" href="#"> <i
+                                                            data-bs-original-title="{{ __('Detete') }}" href="#" onclick="event.stopPropagation();"> <i
                                                                 data-feather="trash-2"></i></a>
                                                     @endcan
                                                     {!! Form::close() !!}
                                                 </div>
-
                                             </td>
                                         @endif
                                     </tr>
                                 @endforeach
-
                             </tbody>
                         </table>
                     </div>

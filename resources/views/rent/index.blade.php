@@ -31,7 +31,9 @@
                             </thead>
                             <tbody>
                                 @foreach ($invoices as $invoice)
-                                    @include('invoice.partials.invoice_row', ['invoice' => $invoice])
+                                    <tr class="clickable-rent-row" data-href="{{ route('invoice.show', $invoice->id) }}">
+                                        @include('invoice.partials.invoice_row', ['invoice' => $invoice])
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -40,4 +42,14 @@
             </div>
         </div>
     </div>
-@endsection 
+@endsection
+
+@push('script-page')
+<script>
+    $(document).on('click', '.clickable-rent-row', function(e) {
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
+@endpush 

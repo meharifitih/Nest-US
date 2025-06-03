@@ -60,12 +60,11 @@
                             </thead>
                             <tbody>
                                 @foreach ($users as $user)
-                                    <tr>
+                                    <tr class="clickable-customer-row" data-href="{{ route('users.show', $user->id) }}">
                                         <td class="table-user">
                                             <img src="{{ !empty($user->avatar) ? asset(Storage::url('upload/profile')) . '/' . $user->avatar : asset(Storage::url('upload/profile')) . '/avatar.png' }}"
                                                 alt="" class="mr-2 avatar-sm rounded-circle user-avatar">
-                                            <a href="#"
-                                                class="text-body font-weight-semibold">{{ $user->name }}</a>
+                                            <a href="#" class="text-body font-weight-semibold" onclick="event.stopPropagation();">{{ $user->name }}</a>
                                         </td>
                                         <td>{{ $user->email }} </td>
                                         @if (\Auth::user()->type == 'super admin')
@@ -87,39 +86,37 @@
                                                     <a class="avtar avtar-xs btn-link-warning text-warning" data-bs-toggle="tooltip"
                                                         data-bs-original-title="{{ __('Show') }}"
                                                         href="{{ route('users.show', $user->id) }}"
-                                                        data-title="{{ __('Edit User') }}"> <i data-feather="eye"></i></a>
+                                                        data-title="{{ __('Edit User') }}" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
                                                 @endcan
                                                 @can('edit user')
                                                     <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-bs-toggle="tooltip"
                                                         data-size="lg" data-bs-original-title="{{ __('Edit') }}"
                                                         href="#" data-url="{{ route('users.edit', $user->id) }}"
-                                                        data-title="{{ __('Edit User') }}"> <i data-feather="edit"></i></a>
+                                                        data-title="{{ __('Edit User') }}" onclick="event.stopPropagation();"> <i data-feather="edit"></i></a>
                                                 @endcan
                                                 @can('delete user')
                                                     {!! Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id], 'class' => 'd-inline']) !!}
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Delete') }}">
+                                                            data-bs-original-title="{{ __('Delete') }}" onclick="event.stopPropagation();">
                                                             <i data-feather="trash-2"></i>
                                                         </button>
                                                     {!! Form::close() !!}
                                                 @endcan
-
                                                 @if (Auth::user()->canImpersonate())
                                                     <a class="avtar avtar-xs btn-link-info text-info" data-bs-toggle="tooltip"
                                                         data-bs-original-title="{{ __('Continue as Customer') }}"
-                                                        href="{{ route('impersonate', $user->id) }}" target="_blank"> <i
+                                                        href="{{ route('impersonate', $user->id) }}" target="_blank" onclick="event.stopPropagation();"> <i
                                                             data-feather="log-in"></i></a>
                                                 @endif
-
                                                 @if (\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending')
-                                                    <form action="{{ route('users.approve', $user->id) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('users.approve', $user->id) }}" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         @csrf
                                                         <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
                                                             data-bs-original-title="{{ __('Approve') }}">
                                                             <i data-feather="check"></i>
                                                         </button>
                                                     </form>
-                                                    <form action="{{ route('users.reject', $user->id) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('users.reject', $user->id) }}" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         @csrf
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
                                                             data-bs-original-title="{{ __('Reject') }}">
@@ -139,3 +136,13 @@
         </div>
     </div>
 @endsection
+
+@push('script-page')
+<script>
+    $(document).on('click', '.clickable-customer-row', function(e) {
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
+@endpush

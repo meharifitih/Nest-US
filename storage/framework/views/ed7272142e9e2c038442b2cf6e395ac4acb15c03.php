@@ -65,12 +65,11 @@
                             </thead>
                             <tbody>
                                 <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <tr>
+                                    <tr class="clickable-customer-row" data-href="<?php echo e(route('users.show', $user->id)); ?>">
                                         <td class="table-user">
                                             <img src="<?php echo e(!empty($user->avatar) ? asset(Storage::url('upload/profile')) . '/' . $user->avatar : asset(Storage::url('upload/profile')) . '/avatar.png'); ?>"
                                                 alt="" class="mr-2 avatar-sm rounded-circle user-avatar">
-                                            <a href="#"
-                                                class="text-body font-weight-semibold"><?php echo e($user->name); ?></a>
+                                            <a href="#" class="text-body font-weight-semibold" onclick="event.stopPropagation();"><?php echo e($user->name); ?></a>
                                         </td>
                                         <td><?php echo e($user->email); ?> </td>
                                         <?php if(\Auth::user()->type == 'super admin'): ?>
@@ -93,41 +92,39 @@
                                                     <a class="avtar avtar-xs btn-link-warning text-warning" data-bs-toggle="tooltip"
                                                         data-bs-original-title="<?php echo e(__('Show')); ?>"
                                                         href="<?php echo e(route('users.show', $user->id)); ?>"
-                                                        data-title="<?php echo e(__('Edit User')); ?>"> <i data-feather="eye"></i></a>
+                                                        data-title="<?php echo e(__('Edit User')); ?>" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
                                                 <?php endif; ?>
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit user')): ?>
                                                     <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-bs-toggle="tooltip"
                                                         data-size="lg" data-bs-original-title="<?php echo e(__('Edit')); ?>"
                                                         href="#" data-url="<?php echo e(route('users.edit', $user->id)); ?>"
-                                                        data-title="<?php echo e(__('Edit User')); ?>"> <i data-feather="edit"></i></a>
+                                                        data-title="<?php echo e(__('Edit User')); ?>" onclick="event.stopPropagation();"> <i data-feather="edit"></i></a>
                                                 <?php endif; ?>
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete user')): ?>
                                                     <?php echo Form::open(['method' => 'DELETE', 'route' => ['users.destroy', $user->id], 'class' => 'd-inline']); ?>
 
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                            data-bs-original-title="<?php echo e(__('Delete')); ?>">
+                                                            data-bs-original-title="<?php echo e(__('Delete')); ?>" onclick="event.stopPropagation();">
                                                             <i data-feather="trash-2"></i>
                                                         </button>
                                                     <?php echo Form::close(); ?>
 
                                                 <?php endif; ?>
-
                                                 <?php if(Auth::user()->canImpersonate()): ?>
                                                     <a class="avtar avtar-xs btn-link-info text-info" data-bs-toggle="tooltip"
                                                         data-bs-original-title="<?php echo e(__('Continue as Customer')); ?>"
-                                                        href="<?php echo e(route('impersonate', $user->id)); ?>" target="_blank"> <i
+                                                        href="<?php echo e(route('impersonate', $user->id)); ?>" target="_blank" onclick="event.stopPropagation();"> <i
                                                             data-feather="log-in"></i></a>
                                                 <?php endif; ?>
-
                                                 <?php if(\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending'): ?>
-                                                    <form action="<?php echo e(route('users.approve', $user->id)); ?>" method="POST" class="d-inline">
+                                                    <form action="<?php echo e(route('users.approve', $user->id)); ?>" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         <?php echo csrf_field(); ?>
                                                         <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
                                                             data-bs-original-title="<?php echo e(__('Approve')); ?>">
                                                             <i data-feather="check"></i>
                                                         </button>
                                                     </form>
-                                                    <form action="<?php echo e(route('users.reject', $user->id)); ?>" method="POST" class="d-inline">
+                                                    <form action="<?php echo e(route('users.reject', $user->id)); ?>" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         <?php echo csrf_field(); ?>
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
                                                             data-bs-original-title="<?php echo e(__('Reject')); ?>">
@@ -147,5 +144,15 @@
         </div>
     </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('script-page'); ?>
+<script>
+    $(document).on('click', '.clickable-customer-row', function(e) {
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /Users/chipchip/Downloads/codecanyon-ytuZNl0y-smart-tenant-property-management-system-saas/main_file/resources/views/user/index.blade.php ENDPATH**/ ?>

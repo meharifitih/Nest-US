@@ -85,3 +85,14 @@
         </div>
     </div>
 @endsection
+
+@push('script-page')
+<script>
+    $(document).on('click', '.clickable-invoice-row', function(e) {
+        // Only trigger if not clicking on a link or button
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
+@endpush

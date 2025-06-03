@@ -1,4 +1,4 @@
-<tr>
+<tr class="clickable-invoice-row" data-href="{{ route('invoice.show', $invoice->id) }}">
     <td>{{ invoicePrefix() . $invoice->invoice_id }} </td>
     <td>{{ !empty($invoice->properties) ? $invoice->properties->name : '-' }} </td>
     <td>{{ !empty($invoice->units) ? $invoice->units->name : '-' }} </td>
@@ -27,12 +27,12 @@
         <td>
             <div class="cart-action">
                 @if ($invoice->status == 'open')
-                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-primary btn-sm">Pay Now</a>
+                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation();">Pay Now</a>
                 @else
                     <a class="avtar avtar-xs btn-link-warning text-warning"
                         href="{{ route('invoice.show', $invoice->id) }}"
                         data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('View') }}"> <i data-feather="eye"></i></a>
+                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
                 @endif
             </div>
         </td>
@@ -44,18 +44,18 @@
                     <a class="avtar avtar-xs btn-link-warning text-warning"
                         href="{{ route('invoice.show', $invoice->id) }}"
                         data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('View') }}"> <i
+                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();"> <i
                             data-feather="eye"></i></a>
                 @endcan
                 @can('edit invoice')
                     <a class="avtar avtar-xs btn-link-secondary text-secondary" data-bs-original-title="{{ __('Edit') }}"
                         href="{{ route('invoice.edit', $invoice->id) }}" data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('Edit') }}"> <i
+                        data-bs-original-title="{{ __('Edit') }}" onclick="event.stopPropagation();"> <i
                             data-feather="edit"></i></a>
                 @endcan
                 @can('delete invoice')
                     <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('Detete') }}" href="#"> <i
+                        data-bs-original-title="{{ __('Detete') }}" href="#" onclick="event.stopPropagation();"> <i
                             data-feather="trash-2"></i></a>
                 @endcan
                 {!! Form::close() !!}

@@ -54,7 +54,7 @@
                             </thead>
                             <tbody>
                                 @foreach($hoas as $hoa)
-                                    <tr>
+                                    <tr class="clickable-hoa-row" data-href="{{ route('hoa.show', $hoa) }}">
                                         <td>{{ $hoa->property->name ?? '-' }}</td>
                                         <td>{{ $hoa->unit->name ?? '-' }}</td>
                                         <td>{{ $hoa->unit && $hoa->unit->tenants && $hoa->unit->tenants->user ? $hoa->unit->tenants->user->name : '-' }}</td>
@@ -72,25 +72,25 @@
                                         <td>
                                             <div class="cart-action">
                                                 @if(Auth::user()->hasRole('tenant') && $hoa->status == 'open')
-                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Pay Now') }}">
+                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Pay Now') }}" onclick="event.stopPropagation();">
                                                         <i class="ti ti-credit-card"></i> {{ __('Pay Now') }}
                                                     </a>
                                                 @elseif(Auth::user()->hasRole('tenant'))
                                                     <a class="avtar avtar-xs btn-link-warning text-warning"
                                                         href="{{ route('hoa.show', $hoa) }}"
                                                         data-bs-toggle="tooltip"
-                                                        data-bs-original-title="{{ __('View') }}">
+                                                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();">
                                                         <i data-feather="eye"></i>
                                                     </a>
                                                 @endif
                                                 @if(Auth::user()->hasRole('owner'))
-                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('View') }}">
+                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();">
                                                         <i class="ti ti-eye"></i>
                                                     </a>
-                                                    <a href="{{ route('hoa.edit', $hoa) }}" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}">
+                                                    <a href="{{ route('hoa.edit', $hoa) }}" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}" onclick="event.stopPropagation();">
                                                         <i class="ti ti-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('hoa.destroy', $hoa) }}" method="POST" style="display:inline;">
+                                                    <form action="{{ route('hoa.destroy', $hoa) }}" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm confirm_dialog" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Delete') }}">
@@ -112,4 +112,14 @@
             </div>
         </div>
     </div>
-@endsection 
+@endsection
+
+@push('script-page')
+<script>
+    $(document).on('click', '.clickable-hoa-row', function(e) {
+        if (!$(e.target).closest('a, button, input, .cart-action').length) {
+            window.location = $(this).data('href');
+        }
+    });
+</script>
+@endpush 
