@@ -49,7 +49,7 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users',
-                    'phone_number' => 'required|regex:/^[79][0-9]{8}$/',
+                    'phone_number' => 'required|regex:/^[97][0-9]{8}$/',
                     'property' => 'required',
                     'unit' => 'required',
                 ]
@@ -67,12 +67,23 @@ class TenantController extends Controller
             // Generate a random password
             $password = \Illuminate\Support\Str::random(8);
 
+            $phone = preg_replace('/\D/', '', $request->phone_number);
+            if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
+                $phone = '+251' . $phone;
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'Phone number must be 9 digits starting with 9 or 7',
+                    'old_input' => $request->all()
+                ]);
+            }
+
             $user = new User();
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->password = Hash::make($password);
-            $user->phone_number = '+251' . $request->phone_number;
+            $user->phone_number = $phone;
             $user->type = 'tenant';
             $user->email_verified_at = now();
             $user->profile = 'avatar.png';
@@ -162,7 +173,7 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users,email,' . $tenant->user_id,
-                    'phone_number' => 'required|regex:/^[79][0-9]{8}$/',
+                    'phone_number' => 'required|regex:/^[97][0-9]{8}$/',
                     'family_member' => 'required',
                     'sub_city' => 'required',
                     'woreda' => 'required',
@@ -180,7 +191,6 @@ class TenantController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'msg' => $messages->first(),
-
                 ]);
             }
 
@@ -188,7 +198,7 @@ class TenantController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->phone_number = '+251' . $request->phone_number;
+            $user->phone_number = $request->phone_number;
             $user->save();
 
             if ($request->profile != '') {

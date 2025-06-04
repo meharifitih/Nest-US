@@ -435,8 +435,15 @@ class PropertyController extends Controller
 
     public function getPropertyUnit($property_id)
     {
-        $units = PropertyUnit::where('property_id', $property_id)->get()->pluck('name', 'id');
-        return response()->json($units);
+        $units = PropertyUnit::where('property_id', $property_id)->get();
+        $result = [];
+        foreach ($units as $unit) {
+            $result[$unit->id] = [
+                'name' => $unit->name,
+                'rent' => $unit->rent
+            ];
+        }
+        return response()->json($result);
     }
 
     public function uploadTenantExcel(Request $request, Property $property)

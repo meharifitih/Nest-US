@@ -56,6 +56,11 @@ class RentController extends Controller
             $messages = $validator->getMessageBag();
             return redirect()->back()->with('error', $messages->first());
         }
+        // Only allow invoice if rent is > 0
+        $amount = $request->types[0]['amount'] ?? 0;
+        if ($amount <= 0) {
+            return redirect()->back()->with('error', 'Unit rent must be greater than zero.');
+        }
         $invoice = new Invoice();
         $invoice->invoice_id = $request->invoice_id;
         $invoice->property_id = $request->property_id;
@@ -66,21 +71,17 @@ class RentController extends Controller
         $invoice->status = 'open';
         $invoice->parent_id = parentId();
         $invoice->save();
-        $types = $request->types;
         $rentType = Type::firstOrCreate([
             'type' => 'rent',
             'title' => 'Rent',
             'parent_id' => parentId(),
         ]);
-        for ($i = 0; $i < count($types); $i++) {
-            $invoiceItem = new InvoiceItem();
-            $invoiceItem->invoice_id = $invoice->id;
-            $invoiceItem->invoice_type = $rentType->id;
-            $invoiceItem->amount = $types[$i]['amount'];
-            $invoiceItem->description = $types[$i]['description'];
-            $invoiceItem->save();
-        }
-
+        $invoiceItem = new InvoiceItem();
+        $invoiceItem->invoice_id = $invoice->id;
+        $invoiceItem->invoice_type = $rentType->id;
+        $invoiceItem->amount = $amount;
+        $invoiceItem->description = $request->types[0]['description'] ?? '';
+        $invoiceItem->save();
         // Send WhatsApp notification to tenant
         $tenant = Tenant::where('unit', $invoice->unit_id)->first();
         if ($tenant) {
@@ -90,7 +91,6 @@ class RentController extends Controller
                 $unit = PropertyUnit::find($invoice->unit_id);
             }
         }
-
         return redirect()->route('rent.index')->with('success', __('Rent invoice successfully created.'));
     }
 

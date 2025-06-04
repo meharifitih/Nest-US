@@ -59,6 +59,8 @@
     <!-- [ Main Content ] end -->
     <?php echo $__env->make('admin.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
+    <?php echo $__env->yieldPushContent('script-page'); ?>
+
     <div class="modal fade" id="customModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

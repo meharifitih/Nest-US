@@ -218,7 +218,9 @@ $(document).ready(function() {
                 $section.find('.cbe-receipt-link').attr('href', 'https://apps.cbe.com.et:100/?id=' + encodeURIComponent(receipt)).removeClass('d-none');
                 $section.find('.cbe-receipt-input').val('');
             },
-            error: function() { alert('Submission failed'); }
+            error: function(xhr) {
+                // Do nothing (no alert)
+            }
         });
     });
     $(document).on('click', '.confirm-telebirr', function() {
@@ -241,7 +243,9 @@ $(document).ready(function() {
                 $section.find('.telebirr-receipt-link').attr('href', 'https://transactioninfo.ethiotelecom.et/receipt/' + encodeURIComponent(receipt)).removeClass('d-none');
                 $section.find('.telebirr-receipt-input').val('');
             },
-            error: function() { alert('Submission failed'); }
+            error: function(xhr) {
+                // Do nothing (no alert)
+            }
         });
     });
 });
@@ -312,13 +316,6 @@ $(document).ready(function() {
             </div>
         </div>
     </div>
-
-    @if(auth()->user()->type == 'owner' && $invoice->status == 'open')
-        <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
-            <span class="badge bg-light-info me-2">Open</span>
-            <span>This invoice is currently open and awaiting tenant action.</span>
-        </div>
-    @endif
 
 @endsection
 

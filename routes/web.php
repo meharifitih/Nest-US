@@ -272,6 +272,9 @@ Route::get('property/{property}/tenant-excel-uploads', [PropertyController::clas
 Route::get('property/tenant-excel-template', [PropertyController::class, 'downloadTenantExcelTemplate'])->name('property.tenant.excel.template');
 
 //-------------------------------Property-------------------------------------------
+// Make this route public for AJAX unit fetching
+Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
+
 Route::group(
     [
         'middleware' => [
@@ -289,7 +292,6 @@ Route::group(
         Route::get('units', [PropertyController::class, 'units'])->name('unit.index');
         Route::put('property/{pid}/unit/{id}/update', [PropertyController::class, 'unitUpdate'])->name('unit.update');
         Route::delete('property/{pid}/unit/{id}/destroy', [PropertyController::class, 'unitDestroy'])->name('unit.destroy');
-        Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
         Route::get('get-units', [PropertyController::class, 'getUnits'])->name('get.units');
         Route::get('property/{id}/address', [App\Http\Controllers\PropertyController::class, 'getAddress'])->name('property.address');
     }

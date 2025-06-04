@@ -456,12 +456,15 @@ class InvoiceController extends Controller
         ]);
 
         $invoice = \App\Models\Invoice::find($request->invoice_id);
-
+        $dueAmount = $invoice->getInvoiceDueAmount();
+        if ($dueAmount <= 0) {
+            return response()->json(['success' => false, 'error' => 'Payment not allowed.'], 400);
+        }
         $payment = new \App\Models\InvoicePayment();
         $payment->invoice_id = $invoice->id;
         $payment->transaction_id = uniqid('', true);
         $payment->payment_type = strtoupper($request->receipt_type);
-        $payment->amount = $invoice->getInvoiceDueAmount();
+        $payment->amount = $dueAmount;
         $payment->payment_date = now();
         $payment->receipt = $request->receipt_type === 'cbe'
             ? 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number)

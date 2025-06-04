@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="form-group col-md-6 col-lg-4">
                                 {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
-                                {{ Form::select('property_id', $property, null, ['class' => 'form-control hidesearch']) }}
+                                {{ Form::select('property_id', $property, null, ['class' => 'form-control hidesearch', 'id' => 'property_id']) }}
                             </div>
                             <div class="form-group col-md-6 col-lg-4">
                                 {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
@@ -56,13 +56,13 @@
                                     <tbody data-repeater-item>
                                         <tr>
                                             <td width="30%">
-                                                {{ Form::select('types[0][invoice_type]', $types, null, ['class' => 'form-control hidesearch']) }}
+                                                <input type="text" class="form-control" name="types[0][invoice_type]" value="Rent" readonly>
                                             </td>
                                             <td>
-                                                {{ Form::number('types[0][amount]', null, ['class' => 'form-control','required']) }}
+                                                <input type="number" class="form-control" id="unit_rent_amount" name="types[0][amount]" readonly required>
                                             </td>
                                             <td>
-                                                {{ Form::textarea('types[0][description]', null, ['class' => 'form-control', 'rows' => 1]) }}
+                                                <input type="text" class="form-control" name="types[0][description]" value="" readonly>
                                             </td>
                                             <td></td>
                                         </tr>
@@ -81,4 +81,52 @@
         </div>
     </div>
     {{ Form::close() }}
+    @push('script-page')
+    <script>
+    $('#property_id').on('change', function() {
+        var property_id = $(this).val();
+        var url = "{{ route('property.unit', ':id') }}".replace(':id', property_id);
+        $.ajax({
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { property_id: property_id },
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(data) {
+                var unit = `<select class=\"form-control hidesearch unit\" id=\"unit\" name=\"unit_id\"><option value=\"\">Select Unit</option>`;
+                $.each(data, function(key, value) {
+                    unit += '<option value="' + key + '">' + value.name + '</option>';
+                });
+                unit += '</select>';
+                $('.unit_div').html(unit);
+                $(".hidesearch").each(function() {
+                    var basic_select = new Choices(this, {
+                        searchEnabled: false,
+                        removeItemButton: true,
+                    });
+                });
+                // Store rent data for later use
+                window.unitRentData = data;
+            },
+            error: function() {
+                var unit = `<select class=\"form-control hidesearch unit\" id=\"unit\" name=\"unit_id\"></select>`;
+                $('.unit_div').html(unit);
+                window.unitRentData = {};
+            }
+        });
+    });
+    // Update rent field when unit changes
+    $('#property_id, .unit_div').on('change', '#unit', function() {
+        var unitId = $(this).val();
+        if(window.unitRentData && unitId && window.unitRentData[unitId]) {
+            $('#unit_rent_amount').val(window.unitRentData[unitId].rent);
+        } else {
+            $('#unit_rent_amount').val('');
+        }
+    });
+    </script>
+    @endpush
 @endsection 
