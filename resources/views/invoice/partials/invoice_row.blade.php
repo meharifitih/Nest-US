@@ -27,7 +27,7 @@
         <td>
             <div class="cart-action">
                 @if ($invoice->status == 'open')
-                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation();">Pay Now</a>
+                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">Pay Now</a>
                 @else
                     <a class="avtar avtar-xs btn-link-warning text-warning"
                         href="{{ route('invoice.show', $invoice->id) }}"
@@ -38,8 +38,7 @@
         </td>
     @else
         <td>
-            <div class="cart-action">
-                {!! Form::open(['method' => 'DELETE', 'route' => ['invoice.destroy', $invoice->id]]) !!}
+            <div class="cart-action d-flex align-items-center gap-2">
                 @can('show invoice')
                     <a class="avtar avtar-xs btn-link-warning text-warning"
                         href="{{ route('invoice.show', $invoice->id) }}"
@@ -54,11 +53,15 @@
                             data-feather="edit"></i></a>
                 @endcan
                 @can('delete invoice')
-                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('Detete') }}" href="#" onclick="event.stopPropagation();"> <i
-                            data-feather="trash-2"></i></a>
+                    <form method="POST" action="{{ route('invoice.destroy', $invoice->id) }}" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
+                            data-bs-original-title="{{ __('Detete') }}" onclick="event.stopPropagation();">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                    </form>
                 @endcan
-                {!! Form::close() !!}
             </div>
         </td>
     @endif

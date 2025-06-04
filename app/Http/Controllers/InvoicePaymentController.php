@@ -155,7 +155,7 @@ class InvoicePaymentController extends Controller
 
     public function banktransferPayment(Request $request, $id)
     {
-        $invoiceId = \Illuminate\Support\Facades\Crypt::decrypt($id);
+        $invoiceId = $id;
         $validator = \Validator::make(
             $request->all(),
             [
@@ -165,16 +165,13 @@ class InvoicePaymentController extends Controller
         );
         if ($validator->fails()) {
             $messages = $validator->getMessageBag();
-
             return redirect()->back()->with('error', $messages->first());
         }
-
         if (!empty($request->receipt)) {
             $recieptFilenameWithExt = $request->file('receipt')->getClientOriginalName();
             $recieptFilename = pathinfo($recieptFilenameWithExt, PATHINFO_FILENAME);
             $recieptExtension = $request->file('receipt')->getClientOriginalExtension();
             $recieptFileName = $recieptFilename . '_' . time() . '.' . $recieptExtension;
-
             $directory = storage_path('upload/receipt');
             if (!file_exists($directory)) {
                 mkdir($directory, 0777, true);
@@ -182,17 +179,13 @@ class InvoicePaymentController extends Controller
             $request->file('receipt')->storeAs('upload/receipt', $recieptFileName, 'public');
             $payment['receipt'] = $recieptFileName;
         }
-
-
         $invoice = Invoice::find($invoiceId);
         $transactionID = uniqid('', true);
-
         $payment['invoice_id'] = $invoice->id;
         $payment['transaction_id'] = $transactionID;
         $payment['payment_type'] = 'Bank Transfer';
         $payment['amount'] = $request->amount;
         $payment['notes'] = $request->notes;
-
         Invoice::addPayment($payment);
         return redirect()->back()->with('success', __('Invoice payment successfully completed.'));
     }
@@ -285,5 +278,13 @@ class InvoicePaymentController extends Controller
         }
     }
 }
+
+    public function invoicePaymentCreate($id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        $paymentAccounts = \App\Models\PaymentAccount::where('is_active', 1)->get();
+        $settings = settings();
+        return view('invoice.payment', compact('invoice', 'paymentAccounts', 'settings', 'id'));
+    }
 
 }

@@ -31,6 +31,9 @@
                                     <th>{{__('Payment Type')}}</th>
                                     <th>{{__('Payment Status')}}</th>
                                     <th>{{__('Receipt')}}</th>
+                                    @if(Auth::user()->type=='super admin')
+                                        <th>{{__('Action')}}</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,22 +68,38 @@
                                         @else
                                             <span class="text-muted">-</span>
                                         @endif
-                                        @if(Auth::user()->type=='super admin' && ($transaction->payment_status=='Pending' || $transaction->payment_status=='pending'))
-                                            <form action="{{ route('admin.payments.approve', $transaction->id) }}" method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Approve')}}">
-                                                    <i data-feather="user-check"></i>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('admin.payments.reject', $transaction->id) }}" method="POST" style="display:inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Reject')}}">
-                                                    <i data-feather="user-x"></i>
-                                                </button>
-                                            </form>
+                                    @elseif($transaction->payment_type=='CBE' || $transaction->payment_type=='TELEBIRR')
+                                        @if(!empty($transaction->receipt))
+                                            <a class="text-primary" data-bs-toggle="tooltip" target="_blank"
+                                               data-bs-original-title="{{__('Receipt')}}"
+                                               href="{{ $transaction->receipt }}">
+                                                <i data-feather="file"></i>
+                                            </a>
+                                        @else
+                                            <span class="text-muted">-</span>
                                         @endif
+                                    @else
+                                        <span class="text-muted">-</span>
                                     @endif
                                 </td>
+                                @if(Auth::user()->type=='super admin')
+                                <td>
+                                    @if(($transaction->payment_status=='Pending' || $transaction->payment_status=='pending'))
+                                        <form action="{{ route('admin.payments.approve', $transaction->id) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Approve')}}">
+                                                <i data-feather="user-check"></i>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.payments.reject', $transaction->id) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{__('Reject')}}">
+                                                <i data-feather="user-x"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                                @endif
                             </tr>
                         @endforeach
                             </tbody>

@@ -67,14 +67,14 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function show($ids)
+    public function show($id)
     {
         if (\Auth::user()->type == 'owner' || \Auth::user()->can('buy pricing packages')) {
-            $id = Crypt::decrypt($ids);
-            $subscription = Subscription::find($id);
+            $id = \Illuminate\Support\Facades\Crypt::decrypt($id);
+            $subscription = Subscription::findOrFail($id);
+            $paymentAccounts = \App\Models\PaymentAccount::where('is_active', 1)->get();
             $settings = subscriptionPaymentSettings();
-
-            return view('subscription.show', compact('subscription', 'settings'));
+            return view('subscription.show', compact('subscription', 'settings', 'paymentAccounts'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

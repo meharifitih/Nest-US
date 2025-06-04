@@ -329,6 +329,7 @@ Route::group(
         Route::post('invoice/{id}/reminder', [InvoiceController::class, 'invoicePaymentRemindData'])->name('invoice.sendEmail');
         Route::resource('invoice', InvoiceController::class);
         Route::post('/invoice/{invoice}/mark-paid', [App\Http\Controllers\InvoiceController::class, 'markPaid'])->name('invoice.markPaid');
+        Route::post('/invoice/receipt', [\App\Http\Controllers\InvoiceController::class, 'ajaxReceipt'])->name('invoice.ajax.receipt');
     }
 );
 
@@ -454,3 +455,10 @@ Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name
 Route::get('tenant-excel-upload/select-property', [TenantExcelUploadController::class, 'selectProperty'])->name('tenant-excel-upload.select-property');
 Route::get('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'uploadForm'])->name('tenant-excel-upload.form');
 Route::post('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'upload'])->name('tenant-excel-upload.upload');
+
+// Payment Account Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('payment-accounts', 'PaymentAccountController@index')->name('payment.accounts.index');
+    Route::post('payment-accounts', 'PaymentAccountController@store')->name('payment.accounts.store');
+    Route::delete('payment-accounts/{id}', 'PaymentAccountController@destroy')->name('payment.accounts.destroy');
+});

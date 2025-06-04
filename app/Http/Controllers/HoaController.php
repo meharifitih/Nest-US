@@ -84,7 +84,8 @@ class HoaController extends Controller
         // Get the property owner's id for this HOA
         $ownerId = $hoa->property ? $hoa->property->parent_id : ($hoa->creator ? $hoa->creator->id : null);
         $settings = $ownerId ? invoicePaymentSettings($ownerId) : invoicePaymentSettings(1);
-        return view('hoa.show', compact('hoa', 'settings'));
+        $paymentAccounts = \App\Models\PaymentAccount::where('is_active', 1)->get();
+        return view('hoa.show', compact('hoa', 'settings', 'paymentAccounts'));
     }
 
     public function destroy(Hoa $hoa)

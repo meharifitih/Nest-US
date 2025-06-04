@@ -656,6 +656,24 @@ class SettingController extends Controller
             }
         }
 
+        // Save CBE and Telebirr account info
+        $cbeTelebirrArray = [
+            'cbe_account_name' => $request->cbe_account_name,
+            'cbe_account_number' => $request->cbe_account_number,
+            'telebirr_account_name' => $request->telebirr_account_name,
+            'telebirr_account_number' => $request->telebirr_account_number,
+        ];
+        foreach ($cbeTelebirrArray as $key => $val) {
+            \DB::insert(
+                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                [
+                    $val,
+                    $key,
+                    'payment',
+                    parentId(),
+                ]
+            );
+        }
 
         return redirect()->back()->with('success', __('Payment successfully saved.'))->with('tab', 'payment_settings');
     }

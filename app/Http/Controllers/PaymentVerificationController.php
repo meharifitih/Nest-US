@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PackageTransaction;
+use App\Models\PaymentAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,6 +27,8 @@ class PaymentVerificationController extends Controller
         $validator = \Validator::make($request->all(), [
             'payment_screenshot' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'subscription_id' => 'required|exists:subscriptions,id',
+            'payment_type' => 'required|in:cbe,telebirr',
+            'receipt_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -44,8 +47,9 @@ class PaymentVerificationController extends Controller
             'subscription_id' => $subscription->id,
             'subscription_transactions_id' => $packageTransId,
             'amount' => $subscription->package_amount,
-            'payment_type' => 'manual',
+            'payment_type' => $request->payment_type,
             'status' => 'pending',
+            'receipt_number' => $request->receipt_number,
         ];
 
         if ($request->hasFile('payment_screenshot')) {
@@ -70,6 +74,17 @@ class PaymentVerificationController extends Controller
             $transaction = PackageTransaction::find($id);
             if (!$transaction) {
                 return redirect()->back()->with('error', __('Transaction not found.'));
+            }
+
+            // Verify receipt number based on payment type
+            if ($transaction->payment_type === 'cbe') {
+                // Verify CBE receipt
+                $receiptUrl = "https://apps.cbe.com.et:100/?id=" . $transaction->receipt_number;
+                // Add your CBE receipt verification logic here
+            } elseif ($transaction->payment_type === 'telebirr') {
+                // Verify TeleBirr receipt
+                $receiptUrl = "https://transactioninfo.ethiotelecom.et/receipt/" . $transaction->receipt_number;
+                // Add your TeleBirr receipt verification logic here
             }
 
             $transaction->status = 'approved';

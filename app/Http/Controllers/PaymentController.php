@@ -21,37 +21,64 @@ class PaymentController extends Controller
     public function subscriptionBankTransfer(Request $request, $id)
     {
         $subscriptionId = \Illuminate\Support\Facades\Crypt::decrypt($id);
+        $subscription = Subscription::find($subscriptionId);
+        $coupon = $request->coupon;
+        $amount = Coupon::couponApply($subscriptionId, $coupon);
+        $packageTransId = uniqid('', true);
+
+        // CBE/Telebirr logic
+        if ($request->has('receipt_number') && $request->has('receipt_type')) {
+            $type = strtolower($request->receipt_type);
+            if ($type === 'cbe') {
+                $receiptUrl = 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number);
+                $paymentType = 'CBE';
+            } elseif ($type === 'telebirr') {
+                $receiptUrl = 'https://transactioninfo.ethiotelecom.et/receipt/' . urlencode($request->receipt_number);
+                $paymentType = 'TELEBIRR';
+            } else {
+                return response()->json(['error' => 'Invalid receipt type'], 422);
+            }
+            $data = [
+                'holder_name' => $request->name,
+                'subscription_id' => $subscription->id,
+                'amount' => $amount,
+                'subscription_transactions_id' => $packageTransId,
+                'payment_type' => $paymentType,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'receipt_number' => $request->receipt_number,
+                'receipt' => $receiptUrl,
+            ];
+            PackageTransaction::transactionData($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment submitted and is now pending review.',
+                'redirect' => route('account.review'),
+            ]);
+        }
+
+        // Fallback: manual bank transfer with file
         $validator = \Validator::make(
             $request->all(), [
-                'payment_receipt' => 'required',
+                'payment_receipt' => 'required|file|mimes:jpg,jpeg,png,pdf',
             ]
         );
         if ($validator->fails()) {
             $messages = $validator->getMessageBag();
-
             return redirect()->back()->with('error', $messages->first());
         }
-
         if (!empty($request->payment_receipt)) {
             $recieptFilenameWithExt = $request->file('payment_receipt')->getClientOriginalName();
             $recieptFilename = pathinfo($recieptFilenameWithExt, PATHINFO_FILENAME);
             $recieptExtension = $request->file('payment_receipt')->getClientOriginalExtension();
             $recieptFileName = $recieptFilename . '_' . time() . '.' . $recieptExtension;
             $dir = storage_path('upload/payment_receipt');
-            $image_path = $dir . $recieptFilenameWithExt;
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
             $request->file('payment_receipt')->storeAs('upload/payment_receipt', $recieptFileName, 'public');
             $data['receipt'] = $recieptFileName;
         }
-
-        $coupon = $request->coupon;
-        $subscription=Subscription::find($subscriptionId);
-
-        $amount = Coupon::couponApply($subscriptionId,$coupon);
-        $packageTransId = uniqid('', true);
-
         $data['holder_name'] = $request->name;
         $data['subscription_id'] = $subscription->id;
         $data['amount'] = $amount;
@@ -60,14 +87,12 @@ class PaymentController extends Controller
         $data['status'] = 'pending';
         $data['payment_status'] = 'pending';
         PackageTransaction::transactionData($data);
-
-        if($subscription->couponCheck()>0 && !empty($request->coupon)){
-            $couhis['coupon']=$request->coupon;
-            $couhis['package']=$subscription->id;
+        if ($subscription->couponCheck() > 0 && !empty($request->coupon)) {
+            $couhis['coupon'] = $request->coupon;
+            $couhis['package'] = $subscription->id;
             CouponHistory::couponData($couhis);
         }
-        return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
-
+        return redirect()->route('account.review')->with('success', __('Subscription payment successfully completed.'));
     }
 
     public function subscriptionManualAssignPackage(Request $request, $id, $user_id)

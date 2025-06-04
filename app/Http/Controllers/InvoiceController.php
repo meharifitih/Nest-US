@@ -107,6 +107,7 @@ class InvoiceController extends Controller
                 $invoice->end_date = $request->end_date;
                 $invoice->notes = $request->notes;
                 $invoice->parent_id = parentId();
+                $invoice->status = 'open';
                 $invoice->save();
 
                 $types = $request->types;
@@ -444,5 +445,35 @@ class InvoiceController extends Controller
             return redirect()->back()->with('success', 'Invoice marked as paid.');
         }
         return redirect()->back()->with('error', 'Permission Denied!');
+    }
+
+    public function ajaxReceipt(Request $request)
+    {
+        $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'receipt_number' => 'required|string',
+            'receipt_type' => 'required|in:cbe,telebirr',
+        ]);
+
+        $invoice = \App\Models\Invoice::find($request->invoice_id);
+
+        $payment = new \App\Models\InvoicePayment();
+        $payment->invoice_id = $invoice->id;
+        $payment->transaction_id = uniqid('', true);
+        $payment->payment_type = strtoupper($request->receipt_type);
+        $payment->amount = $invoice->getInvoiceDueAmount();
+        $payment->payment_date = now();
+        $payment->receipt = $request->receipt_type === 'cbe'
+            ? 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number)
+            : 'https://transactioninfo.ethiotelecom.et/receipt/' . urlencode($request->receipt_number);
+        $payment->notes = '';
+        $payment->parent_id = parentId();
+        $payment->save();
+
+        // Set invoice status to pending and save
+        $invoice->status = 'pending';
+        $invoice->save();
+
+        return response()->json(['success' => true, 'redirect' => route('invoice.index')]);
     }
 }

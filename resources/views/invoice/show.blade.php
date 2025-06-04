@@ -166,6 +166,88 @@
         });
     </script>
 @endpush
+
+@push('script-page')
+<script>
+$(document).ready(function() {
+    function hideAllReceiptSections() {
+        $('.telebirr-receipt-section').hide();
+        $('.cbe-receipt-section').hide();
+    }
+    $(document).on('change', 'input[name="selected_account"]', function() {
+        hideAllReceiptSections();
+        let selected = $(this).val();
+        if (selected === 'telebirr') {
+            $(this).closest('.payment-account-card').find('.telebirr-receipt-section').show();
+        } else if (selected === 'cbe') {
+            $(this).closest('.payment-account-card').find('.cbe-receipt-section').show();
+        } else if (selected === 'other') {
+            $('#bankTransferModal').modal('show');
+            setTimeout(function(){
+                $('input[name="selected_account"][value="other"]').prop('checked', false);
+            }, 500);
+        }
+    });
+    $(document).on('click', '.cancel-cbe', function() {
+        $(this).closest('.cbe-receipt-section').hide();
+        $('input[name="selected_account"][value!="cbe"]').prop('checked', false);
+    });
+    $(document).on('click', '.cancel-telebirr', function() {
+        $(this).closest('.telebirr-receipt-section').hide();
+        $('input[name="selected_account"][value!="telebirr"]').prop('checked', false);
+    });
+
+    // Confirm Payment AJAX for CBE/Telebirr
+    $(document).on('click', '.confirm-cbe', function() {
+        var $section = $(this).closest('.cbe-receipt-section');
+        var receipt = $section.find('.cbe-receipt-input').val();
+        if (!receipt) { alert('Enter CBE receipt number'); return; }
+        $.post({
+            url: '{{ route('invoice.ajax.receipt') }}',
+            data: {
+                _token: '{{ csrf_token() }}',
+                receipt_number: receipt,
+                receipt_type: 'cbe',
+                invoice_id: '{{ $invoice->id }}'
+            },
+            success: function(response) {
+                if(response.redirect) {
+                    window.location.href = response.redirect;
+                    return;
+                }
+                $section.find('.cbe-receipt-link').attr('href', 'https://apps.cbe.com.et:100/?id=' + encodeURIComponent(receipt)).removeClass('d-none');
+                $section.find('.cbe-receipt-input').val('');
+            },
+            error: function() { alert('Submission failed'); }
+        });
+    });
+    $(document).on('click', '.confirm-telebirr', function() {
+        var $section = $(this).closest('.telebirr-receipt-section');
+        var receipt = $section.find('.telebirr-receipt-input').val();
+        if (!receipt) { alert('Enter Telebirr receipt number'); return; }
+        $.post({
+            url: '{{ route('invoice.ajax.receipt') }}',
+            data: {
+                _token: '{{ csrf_token() }}',
+                receipt_number: receipt,
+                receipt_type: 'telebirr',
+                invoice_id: '{{ $invoice->id }}'
+            },
+            success: function(response) {
+                if(response.redirect) {
+                    window.location.href = response.redirect;
+                    return;
+                }
+                $section.find('.telebirr-receipt-link').attr('href', 'https://transactioninfo.ethiotelecom.et/receipt/' + encodeURIComponent(receipt)).removeClass('d-none');
+                $section.find('.telebirr-receipt-input').val('');
+            },
+            error: function() { alert('Submission failed'); }
+        });
+    });
+});
+</script>
+@endpush
+
 @section('breadcrumb')
     <ul class="breadcrumb mb-0">
         <li class="breadcrumb-item">
@@ -186,511 +268,50 @@
 
 
 
-    <div class="row">
-
-
-        <div class="{{ $invoice->getInvoiceDueAmount() > 0 ? 'col-lg-8 col-md-12' : 'col-lg-12 col-md-12' }}">
-            <div>
-
-                <div class="card">
-
-                    <div class="card-header">
-                        <ul class="list-inline ms-auto mb-0 d-flex justify-content-end flex-wrap">
-
-                            @if (\Auth::user()->type == 'owner')
-                                @if ($invoice->getInvoiceDueAmount() > 0)
-                                    <li class="list-inline-item align-bottom me-2">
-                                        <a href="#" class="avtar avtar-s btn-link-secondary customModal"
-                                            data-size="lg" data-url="{{ route('invoice.reminder', $invoice->id) }}"
-                                            data-bs-toggle="tooltip" data-bs-original-title="{{ __('Payment Reminder') }}"
-                                            data-title="{{ __('Payment Reminder') }}">
-                                            <i class="ph-duotone ph-repeat f-22"></i>
-                                        </a>
-                                    </li>
-                                @endif
-                            @endif
-                            <li class="list-inline-item align-bottom me-2">
-                                <a href="#" class="avtar avtar-s btn-link-secondary print" data-bs-toggle="tooltip"
-                                    data-bs-original-title="{{ __('Download') }}">
-                                    <i class="ph-duotone ph-printer f-22"></i>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </div>
-
-                    <div class="card-body" id="invoice-print">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="row align-items-center g-3">
-                                    <div class="col-sm-6">
-                                        <div class="d-flex align-items-center mb-2 navbar-brand img-fluid invoice-logo">
-                                            <img src="{{ asset(Storage::url('upload/logo/')) . '/' . (isset($admin_logo) && !empty($admin_logo) ? $admin_logo : 'logo.png') }}"
-                                                class="img-fluid brand-logo" alt="images" />
-                                        </div>
-                                        <p class="mb-0">{{ invoicePrefix() . $invoice->invoice_id }}</p>
-                                    </div>
-                                    <div class="col-sm-6 text-sm-end">
-                                        <h6>
-                                            {{ __('Invoice Month') }}
-                                            <span
-                                                class="text-muted f-w-400">{{ date('F Y', strtotime($invoice->invoice_month)) }}</span>
-                                        </h6>
-                                        <h6>
-                                            {{ __('Due Date') }}
-                                            <span class="text-muted f-w-400">{{ dateFormat($invoice->end_date) }}</span>
-                                        </h6>
-                                        <h6>
-                                            {{ __('Status') }}
-                                            <span class="text-muted f-w-400">
-                                                @if ($invoice->status == 'open')
-                                                    <span class="badge bg-light-info">Open</span>
-                                                @elseif($invoice->status == 'pending')
-                                                    <span class="badge bg-light-warning">Pending</span>
-                                                @elseif($invoice->status == 'paid')
-                                                    <span class="badge bg-light-success">Paid</span>
-                                                @elseif($invoice->status == 'partial_paid')
-                                                    <span class="badge bg-light-warning">Partial Paid</span>
-                                                @endif
-                                            </span>
-                                        </h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="border rounded p-3">
-                                    <h6 class="mb-0">From:</h6>
-                                    <h5>{{ $settings['company_name'] }}</h5>
-                                    <p class="mb-0">{{ $settings['company_phone'] }}</p>
-                                    <p class="mb-0">{{ $settings['company_email'] }}</p>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="border rounded p-3">
-                                    <h6 class="mb-0">To:</h6>
-                                    <h5>{{ !empty($tenant) && !empty($tenant->user) ? $tenant->user->first_name . ' ' . $tenant->user->last_name : '' }}
-                                    </h5>
-                                    <p class="mb-0">
-                                        {{ !empty($tenant) && !empty($tenant->user) ? $tenant->user->phone_number : '-' }}
-                                    </p>
-                                    <p class="mb-0">
-                                        {{ !empty($tenant) ? $tenant->address : '' }}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th width="46%">{{ __('Type') }}</th>
-                                                <th width="46%">{{ __('Description') }}</th>
-                                                <th>{{ __('Amount') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($invoice->types as $k => $type)
-                                                <tr>
-                                                    <td>{{ !empty($type->types) ? $type->types->title : '-' }}</td>
-                                                    <td>{{ $type->description }}</td>
-                                                    <td>{{ priceFormat($type->amount) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="text-start">
-                                    <hr class="mb-2 mt-1 border-secondary border-opacity-50" />
-                                </div>
-                            </div>
-                            <div class="col-12 ">
-                                <div class="invoice-total ms-auto">
-                                    <div class="row">
-
-                                        <div class="col-4">
-                                            <p class="f-w-600 mb-1 text-start">{{ __('Total') }} :</p>
-                                        </div>
-                                        <div class="col-7">
-                                            <p class="f-w-600 mb-1 text-end">
-                                                {{ priceFormat($invoice->getInvoiceSubTotalAmount()) }}
-                                            </p>
-                                        </div>
-                                        <div class="col-4">
-                                            <p class="f-w-600 mb-1 text-start">{{ __('Due Amount') }} :</p>
-                                        </div>
-                                        <div class="col-7">
-                                            <p class="f-w-600 mb-1 text-end">
-                                                {{ priceFormat($invoice->getInvoiceDueAmount()) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-
+    <div class="row g-4">
+        <div class="col-12">
+            {{-- Invoice Details Card --}}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="h5 mb-0">{{ __('Invoice Details') }}</span>
+                    <a href="#" class="btn btn-light btn-sm print" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Download') }}">
+                        <i class="ph-duotone ph-printer"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    @include('invoice.partials.details', ['invoice' => $invoice, 'settings' => $settings, 'tenant' => $tenant])
                 </div>
             </div>
         </div>
-
-        @if ($invoice->getInvoiceDueAmount() > 0 && auth()->user()->type == 'tenant')
-            <div class="mt-25 col-lg-4 col-md-12" id="paymentModal" style="">
-                <div class="card">
-
-                    <div class="col-xxl-12 cdx-xxl-100">
-                        <div class="payment-method">
-                            <div class="card-header">
-                                <h5> {{ __('Add Payment') }} </h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="nav nav-tabs profile-tabs border-bottom mb-3 d-print-none" id="myTab"
-                                    role="tablist">
-                                    @if ($settings['bank_transfer_payment'] == 'on')
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="profile-tab-1" data-bs-toggle="tab"
-                                                href="#bank_transfer" role="tab"
-                                                aria-selected="true">{{ __('Bank Transfer') }} </a>
-
-                                        </li>
-                                    @endif
-
-                                    @if ($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']) && !empty($settings['STRIPE_SECRET']))
-                                        <li class="nav-item">
-
-                                            <a class="nav-link" id="profile-tab-2" data-bs-toggle="tab"
-                                                href="#stripe_payment" role="tab"
-                                                aria-selected="true">{{ __('Stripe') }}</a>
-                                        </li>
-                                    @endif
-
-
-                                    @if (
-                                        $settings['paypal_payment'] == 'on' &&
-                                            !empty($settings['paypal_client_id']) &&
-                                            !empty($settings['paypal_secret_key']))
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="profile-tab-3" data-bs-toggle="tab"
-                                                href="#paypal_payment" role="tab" aria-selected="true">
-                                                {{ __('Paypal') }} </a>
-                                        </li>
-                                    @endif
-
-                                    @if (
-                                        $settings['flutterwave_payment'] == 'on' &&
-                                            !empty($settings['flutterwave_public_key']) &&
-                                            !empty($settings['flutterwave_secret_key']))
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="profile-tab-3" data-bs-toggle="tab"
-                                                href="#flutterwave_payment" role="tab" aria-selected="true">
-                                                {{ __('Flutterwave') }}
-                                            </a>
-                                        </li>
-                                    @endif
-
-                                </ul>
-
-                                <div class="tab-content">
-                                    @if ($settings['bank_transfer_payment'] == 'on')
-                                        <div class="tab-pane fade active show" id="bank_transfer">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class=" profile-user-box">
-                                                        <form
-                                                            action="{{ route('invoice.banktransfer.payment', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)) }}"
-                                                            method="post" class="require-validation"
-                                                            id="bank-payment" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="f-w-600 mb-1 text-start">{{ __('Bank Name') }}</label>
-                                                                        <p>{{ $settings['bank_name'] }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="f-w-600 mb-1 text-start">{{ __('Bank Holder Name') }}</label>
-                                                                        <p>{{ $settings['bank_holder_name'] }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="f-w-600 mb-1 text-start">{{ __('Bank Account Number') }}</label>
-                                                                        <p>{{ $settings['bank_account_number'] }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="f-w-600 mb-1 text-start">{{ __('Bank IFSC Code') }}</label>
-                                                                        <p>{{ $settings['bank_ifsc_code'] }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                @if (!empty($settings['bank_other_details']))
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <label for="card-name-on"
-                                                                                class="f-w-600 mb-1 text-start">{{ __('Bank Other Details') }}</label>
-                                                                            <p>{{ $settings['bank_other_details'] }}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="amount"
-                                                                            class="form-label text-dark">{{ __('Amount') }}</label>
-                                                                        <input type="number" name="amount"
-                                                                            class="form-control required"
-                                                                            value="{{ $invoice->getInvoiceDueAmount() }}"
-                                                                            placeholder="{{ __('Enter Amount') }}"
-                                                                            required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="form-label text-dark">{{ __('Attachment') }}</label>
-                                                                        <input type="file" name="receipt"
-                                                                            id="receipt" class="form-control"
-                                                                            required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="notes"
-                                                                            class="form-label text-dark">{{ __('Notes') }}</label>
-                                                                        <input type="text" name="notes"
-                                                                            class="form-control " value=""
-                                                                            placeholder="{{ __('Enter notes') }}">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-12 ">
-                                                                    <input type="submit" value="{{ __('Pay') }}"
-                                                                        class="btn btn-secondary">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if ($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']) && !empty($settings['STRIPE_SECRET']))
-                                        <div class="tab-pane fade " id="stripe_payment">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class=" profile-user-box">
-                                                        <form
-                                                            action="{{ route('invoice.stripe.payment', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)) }}"
-                                                            method="post" class="require-validation"
-                                                            id="stripe-payment">
-                                                            @csrf
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="amount"
-                                                                            class="form-label text-dark">{{ __('Amount') }}</label>
-                                                                        <input type="number" name="amount"
-                                                                            class="form-control required"
-                                                                            value="{{ $invoice->getInvoiceDueAmount() }}"
-                                                                            placeholder="{{ __('Enter Amount') }}"
-                                                                            required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="card-name-on"
-                                                                            class="form-label text-dark">{{ __('Card Name') }}</label>
-                                                                        <input type="text" name="name"
-                                                                            id="card-name-on"
-                                                                            class="form-control required"
-                                                                            placeholder="{{ __('Card Holder Name') }}">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <label for="card-name-on"
-                                                                        class="form-label text-dark">{{ __('Card Details') }}</label>
-                                                                    <div id="card-element">
-                                                                    </div>
-                                                                    <div id="card-errors" role="alert"></div>
-                                                                </div>
-                                                                <div class="col-sm-12 mt-3">
-
-                                                                    <input type="submit" value="{{ __('Pay Now') }}"
-                                                                        class="btn btn-secondary">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    @if (
-                                        $settings['paypal_payment'] == 'on' &&
-                                            !empty($settings['paypal_client_id']) &&
-                                            !empty($settings['paypal_secret_key']))
-                                        <div class="tab-pane fade" id="paypal_payment">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class=" profile-user-box">
-                                                        <form
-                                                            action="{{ route('invoice.paypal', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)) }}"
-                                                            method="post" class="require-validation">
-                                                            @csrf
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label for="amount"
-                                                                            class="form-label text-dark">{{ __('Amount') }}</label>
-                                                                        <input type="number" name="amount"
-                                                                            class="form-control required"
-                                                                            value="{{ $invoice->getInvoiceDueAmount() }}"
-                                                                            placeholder="{{ __('Enter Amount') }}"
-                                                                            required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-12 ">
-                                                                    <input type="submit" value="{{ __('Pay Now') }}"
-                                                                        class="btn btn-secondary">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    @if (
-                                        $settings['flutterwave_payment'] == 'on' &&
-                                            !empty($settings['flutterwave_public_key']) &&
-                                            !empty($settings['flutterwave_secret_key']))
-                                        <div class="tab-pane fade" id="flutterwave_payment">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class=" profile-user-box">
-                                                        <form action="#" method="post"
-                                                            class="require-validation" id="flutterwavePaymentForm">
-                                                            @csrf
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-
-                                                                        <label for="amount"
-                                                                            class="form-label text-dark">{{ __('Amount') }}</label>
-                                                                        <input type="number" name="amount"
-                                                                            class="form-control amount required"
-                                                                            value="{{ $invoice->getInvoiceDueAmount() }}"
-                                                                            placeholder="{{ __('Enter Amount') }}"
-                                                                            required>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-sm-12 ">
-                                                                    <input type="button" value="{{ __('Pay Now') }}"
-                                                                        class="btn btn-secondary"
-                                                                        id="flutterwavePaymentBtn">
-                                                                </div>
-
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    </div>
+    @if ($invoice->getInvoiceDueAmount() > 0 && auth()->user()->type == 'tenant')
+    <div class="row g-4">
+        <div class="col-12">
+            {{-- Add Payment Card --}}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ __('Add Payment') }}</h5>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    @include('invoice.payment', ['settings' => $settings, 'invoice_id' => $invoice->id, 'invoice' => $invoice])
                 </div>
             </div>
-        @endif
-
-
+        </div>
     </div>
-
-    <div class="row">
+    @endif
+    {{-- Payment History --}}
+    <div class="row g-4">
         <div class="col-12">
             <div class="card" id="invoice-print">
                 <div class="card-header">
                     <h5>{{ __('Payment History') }}</h5>
                 </div>
                 <div class="card-body pt-0">
-                    <div class="dt-responsive table-responsive">
-                        <table class="table table-hover ">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Transaction Id') }}</th>
-                                    <th>{{ __('Payment Date') }}</th>
-                                    <th>{{ __('Amount') }}</th>
-                                    <th>{{ __('Notes') }}</th>
-                                    <th>{{ __('Receipt') }}</th>
-                                    @can('delete invoice payment')
-                                        <th class="text-right">{{ __('Action') }}</th>
-                                    @endcan
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($invoice->payments as $payment)
-                                    <tr role="row">
-                                        <td>{{ $payment->transaction_id }} </td>
-                                        <td>{{ dateFormat($payment->payment_date) }} </td>
-                                        <td>{{ priceFormat($payment->amount) }} </td>
-                                        <td>{{ $payment->notes }} </td>
-                                        <td>
-                                            @if (!empty($payment->receipt))
-                                                <a href="{{ asset(Storage::url('upload/receipt')) . '/' . $payment->receipt }}"
-                                                    download="download"><i data-feather="download"></i></a>
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        @can('delete invoice payment')
-                                            <td class="text-right">
-                                                <div class="cart-action">
-                                                    {!! Form::open(['method' => 'DELETE', 'route' => ['invoice.payment.destroy', $invoice->id, $payment->id]]) !!}
-                                                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-original-title="{{ __('Detete') }}" href="#"> <i
-                                                            data-feather="trash-2"></i></a>
-                                                    {!! Form::close() !!}
-                                                </div>
-                                            </td>
-                                        @endcan
-                                    </tr>
-                                @endforeach
-                            </tbody>
-
-                        </table>
-                    </div>
+                    @include('invoice.partials.history', ['invoice' => $invoice])
                 </div>
             </div>
         </div>
     </div>
-
-    @if (auth()->user()->type == 'owner' && $invoice->status == 'pending')
-        @php
-            $lastPayment = $invoice->payments->last();
-        @endphp
-        @if ($lastPayment && $lastPayment->receipt)
-            <div class="mb-3">
-                <label class="form-label">Payment Screenshot:</label><br>
-                <img src="{{ asset('storage/upload/receipt/' . $lastPayment->receipt) }}" alt="Payment Screenshot" style="max-width:300px;">
-            </div>
-        @endif
-        <form action="{{ route('invoice.markPaid', $invoice->id) }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-success">Mark as Paid</button>
-        </form>
-    @endif
 
     @if(auth()->user()->type == 'owner' && $invoice->status == 'open')
         <div class="alert alert-info d-flex align-items-center mt-3" role="alert">
@@ -699,6 +320,38 @@
         </div>
     @endif
 
-
-
 @endsection
+
+@push('css-page')
+<style>
+.payment-account-card {
+    min-width: 220px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    transition: box-shadow .2s, border-color .2s;
+    background: #fff;
+}
+.payment-account-card.selected, .payment-account-card:hover {
+    border-color: #0ab39c;
+    box-shadow: 0 0 0 2px #0ab39c33;
+}
+.payment-account-card img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+@media (max-width: 991px) {
+    .payment-account-card {
+        min-width: 100%;
+        flex-direction: column;
+    }
+}
+</style>
+@endpush

@@ -23,6 +23,7 @@ class PackageTransaction extends Model
         'card_expiry_year',
         'receipt',
         'payment_screenshot',
+        'receipt_number',
         'status',
         'rejection_reason',
     ];
@@ -43,6 +44,7 @@ class PackageTransaction extends Model
         $transaction->card_expiry_year = $data['card_expiry_year'] ?? null;
         $transaction->receipt = $data['receipt'] ?? null;
         $transaction->payment_screenshot = $data['payment_screenshot'] ?? null;
+        $transaction->receipt_number = $data['receipt_number'] ?? null;
         $transaction->status = $data['status'] ?? 'pending';
         $transaction->rejection_reason = $data['rejection_reason'] ?? null;
         $transaction->save();

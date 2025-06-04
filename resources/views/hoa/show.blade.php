@@ -84,32 +84,38 @@
         </div>
         <div class="col-lg-4 col-md-12">
             @if(Auth::user()->hasRole('tenant') && $hoa->status == 'open')
-                <div class="card">
-                    <div class="card-header">
-                        <h5>{{ __('Add Payment') }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('hoa.mark-as-paid', $hoa) }}" method="POST" enctype="multipart/form-data" class="text-start">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="payment_date" class="form-label">{{ __('Payment Date') }}</label>
-                                <input type="date" name="payment_date" id="payment_date" class="form-control" value="{{ date('Y-m-d') }}">
+                <div class="row mb-4">
+                    @foreach($paymentAccounts as $account)
+                        <div class="col-md-4">
+                            <div class="card payment-account-card mb-3">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="selected_account" id="account_{{ $account->id }}" value="{{ $account->id }}">
+                                        <label class="form-check-label" for="account_{{ $account->id }}">
+                                            <strong>{{ strtoupper($account->account_type) }}</strong><br>
+                                            {{ $account->account_name }}<br>
+                                            {{ $account->account_number }}
+                                        </label>
+                                    </div>
+                                    <div>
+                                        @if($account->account_type === 'telebirr')
+                                            <span class="badge bg-info">Instant Activation</span>
+                                        @elseif($account->account_type === 'cbe')
+                                            <span class="badge bg-warning">Instant Activation</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">{{ __('Amount') }}</label>
-                                <input type="number" name="amount" id="amount" class="form-control" value="{{ $hoa->amount }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="receipt" class="form-label">{{ __('Receipt') }}</label>
-                                <input type="file" name="receipt" id="receipt" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="notes" class="form-label">{{ __('Notes') }}</label>
-                                <textarea name="notes" id="notes" class="form-control" rows="2"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100 btn-rounded fw-bold" style="font-size: 1.1rem;">{{ __('Submit Payment') }}</button>
-                        </form>
-                    </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div id="receipt-number-section" style="display:none;">
+                    <label for="receipt_number">Receipt Number</label>
+                    <input type="text" name="receipt_number" id="receipt_number" class="form-control" placeholder="Enter receipt number">
+                    <small class="text-muted">
+                        For CBE: Enter the number after <code>?id=</code><br>
+                        For Telebirr: Enter the number after <code>/receipt/</code>
+                    </small>
                 </div>
             @elseif(Auth::user()->hasRole('owner') && $hoa->status == 'pending')
                 <div class="card">
@@ -136,4 +142,20 @@
             </div>
         </div>
     </div>
+    @if(Auth::user()->hasRole('tenant') && $hoa->status == 'open')
+        <script>
+            $(document).on('change', 'input[name="selected_account"]', function() {
+                let selected = $('input[name="selected_account"]:checked').closest('.payment-account-card').find('.form-check-label').text();
+                if (selected.includes('CBE') || selected.includes('TELEBIRR')) {
+                    $('#receipt-number-section').show();
+                } else {
+                    $('#receipt-number-section').hide();
+                }
+            });
+        </script>
+        <style>
+        .payment-account-card { cursor:pointer; border:2px solid #eee; transition:box-shadow .2s; }
+        .payment-account-card:hover, .payment-account-card input:checked ~ label { box-shadow:0 0 0 2px #007bff; border-color:#007bff; }
+        </style>
+    @endif
 @endsection 

@@ -210,6 +210,8 @@
             <div class="col-lg-12">
                 <div class="row">
                     @if ($settings['bank_transfer_payment'] == 'on')
+                        {{-- BEGIN REMOVE Bank Transfer Payment card section --}}
+                        {{--
                         <div class="col-sm-6">
                             <div class="card">
                                 <div class="card-header">
@@ -300,6 +302,8 @@
                                 </div>
                             </div>
                         </div>
+                        --}}
+                        {{-- END REMOVE Bank Transfer Payment card section --}}
                     @endif
                     @if ($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']) && !empty($settings['STRIPE_SECRET']))
                         <div class="col-sm-6">
@@ -477,6 +481,83 @@
             </div>
         </div>
     </div>
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <div class="form-check d-flex align-items-center w-100">
+                        <input class="form-check-input me-2" type="radio" name="selected_account" id="telebirr" value="telebirr">
+                        <img src="https://play-lh.googleusercontent.com/Mtnybz6w7FMdzdQUbc7PWN3_0iLw3t9lUkwjmAa_usFCZ60zS0Xs8o00BW31JDCkAiQk" alt="Telebirr Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                        <label class="form-check-label w-100" for="telebirr">
+                            <strong style="font-size:1.3rem;">TELEBIRR</strong><br>
+                            <span style="font-size:1.1rem;">{{ $settings['telebirr_account_name'] ?? '' }}</span><br>
+                            <span style="font-size:1.1rem;">{{ $settings['telebirr_account_number'] ?? '' }}</span>
+                        </label>
+                    </div>
+                    <div id="telebirr-receipt" class="mt-3 w-100" style="display:none;">
+                        <label for="telebirr_receipt_number">Telebirr Receipt Number</label>
+                        <input type="text" name="telebirr_receipt_number" id="telebirr_receipt_number" class="form-control" placeholder="Enter Telebirr receipt number">
+                        <div class="mt-2 d-flex gap-2">
+                            <button type="button" class="btn btn-secondary" id="confirm-telebirr">Confirm Payment</button>
+                            <button type="button" class="btn btn-light" id="cancel-telebirr">Cancel</button>
+                            <a href="#" id="telebirr-receipt-link" class="btn btn-link d-none" target="_blank"><i class="fa fa-receipt"></i> View Receipt</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <div class="form-check d-flex align-items-center w-100">
+                        <input class="form-check-input me-2" type="radio" name="selected_account" id="cbe" value="cbe">
+                        <img src="https://www.cbeib.com.et/ARCIB-4/modelbank/unprotected/assets/cbe.png" alt="CBE Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                        <label class="form-check-label w-100" for="cbe">
+                            <strong style="font-size:1.3rem;">CBE</strong><br>
+                            <span style="font-size:1.1rem;">{{ $settings['cbe_account_name'] ?? '' }}</span><br>
+                            <span style="font-size:1.1rem;">{{ $settings['cbe_account_number'] ?? '' }}</span>
+                        </label>
+                    </div>
+                    <div id="cbe-receipt" class="mt-3 w-100" style="display:none;">
+                        <label for="cbe_receipt_number">CBE Receipt Number</label>
+                        <input type="text" name="cbe_receipt_number" id="cbe_receipt_number" class="form-control" placeholder="Enter CBE receipt number">
+                        <div class="mt-2 d-flex gap-2">
+                            <button type="button" class="btn btn-secondary" id="confirm-cbe">Confirm Payment</button>
+                            <button type="button" class="btn btn-light" id="cancel-cbe">Cancel</button>
+                            <a href="#" id="cbe-receipt-link" class="btn btn-link d-none" target="_blank"><i class="fa fa-receipt"></i> View Receipt</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <div class="form-check w-100">
+                        <input class="form-check-input" type="radio" name="selected_account" id="other" value="other">
+                        <label class="form-check-label w-100" for="other">
+                            <strong style="font-size:1.3rem;">Bank Transfer Payment</strong>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Transfer Modal -->
+    <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bankTransferModalLabel">Bank Transfer Payment</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            @include('subscription.partials.bank_transfer')
+          </div>
+        </div>
+      </div>
+    </div>
 @endsection
 
 @push('script-page')
@@ -513,4 +594,98 @@
             });
         });
     </script>
+    <script>
+        $(document).on('change', 'input[name="selected_account"]', function() {
+            let selected = $('input[name="selected_account"]:checked').val();
+            $('#telebirr-receipt').hide();
+            $('#cbe-receipt').hide();
+            if (selected === 'telebirr') {
+                $('#telebirr-receipt').show();
+            } else if (selected === 'cbe') {
+                $('#cbe-receipt').show();
+            } else if (selected === 'other') {
+                $('#bankTransferModal').modal('show');
+            }
+        });
+    </script>
+    <script>
+        $(document).on('click', '#cancel-cbe', function() {
+            $('#cbe-receipt').hide();
+            $('input[name="selected_account"][value!="cbe"]').prop('checked', false);
+        });
+        $(document).on('click', '#cancel-telebirr', function() {
+            $('#telebirr-receipt').hide();
+            $('input[name="selected_account"][value!="telebirr"]').prop('checked', false);
+        });
+        $(document).on('click', '#confirm-cbe', function() { submitReceiptPayment('cbe'); });
+        $(document).on('click', '#confirm-telebirr', function() { submitReceiptPayment('telebirr'); });
+    </script>
+    <style>
+    .payment-account-card {
+        cursor:pointer;
+        border:2px solid #eee;
+        transition:box-shadow .2s;
+        min-height:200px;
+        font-size:1.2rem;
+    }
+    .payment-account-card:hover {
+        box-shadow:0 0 0 2px #007bff;
+        border-color:#007bff;
+    }
+    .payment-account-card input:checked ~ label {
+        /* Remove blue border effect */
+        box-shadow:none;
+        border-color:inherit;
+    }
+    .payment-account-card input:focus {
+        outline:none;
+        box-shadow:none;
+    }
+    </style>
 @endpush
+
+<script>
+    function submitReceiptPayment(type) {
+        let receipt = type === 'cbe' ? $('#cbe_receipt_number').val() : $('#telebirr_receipt_number').val();
+        if (!receipt) {
+            alert('Enter ' + (type === 'cbe' ? 'CBE' : 'Telebirr') + ' receipt number');
+            return;
+        }
+        $.ajax({
+            url: '{{ route('subscription.bank.transfer', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                receipt_number: receipt,
+                receipt_type: type
+            },
+            success: function(response) {
+                toastrs('success', 'Payment submitted and is now pending review.', 'success');
+                if(response.redirect) {
+                    window.location.href = response.redirect;
+                    return;
+                }
+                if(type === 'cbe') {
+                    $('#cbe-receipt').hide();
+                    $('#cbe-receipt-link').attr('href', getReceiptUrl('cbe', receipt)).removeClass('d-none');
+                }
+                if(type === 'telebirr') {
+                    $('#telebirr-receipt').hide();
+                    $('#telebirr-receipt-link').attr('href', getReceiptUrl('telebirr', receipt)).removeClass('d-none');
+                }
+                $('input[name="selected_account"]').prop('checked', false);
+            },
+            error: function(xhr) {
+                toastrs('error', xhr.responseJSON?.error || 'Submission failed', 'error');
+            }
+        });
+    }
+    function getReceiptUrl(type, receipt) {
+        if(type === 'cbe') {
+            return 'https://mobile.cbe.com.et/ArcIBInternetBanking/TransactionReceiptPrint?id=' + encodeURIComponent(receipt);
+        } else if(type === 'telebirr') {
+            return 'https://portal.telebirr.com/receipt/' + encodeURIComponent(receipt);
+        }
+        return '#';
+    }
+</script>

@@ -830,6 +830,32 @@
 
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <?php echo e(Form::label('cbe_account_name', __('CBE Account Name'), ['class' => 'form-label'])); ?>
+
+                                                <?php echo e(Form::text('cbe_account_name', $settings['cbe_account_name'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter CBE account name')])); ?>
+
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <?php echo e(Form::label('cbe_account_number', __('CBE Account Number'), ['class' => 'form-label'])); ?>
+
+                                                <?php echo e(Form::text('cbe_account_number', $settings['cbe_account_number'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter CBE account number')])); ?>
+
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <?php echo e(Form::label('telebirr_account_name', __('Telebirr Account Name'), ['class' => 'form-label'])); ?>
+
+                                                <?php echo e(Form::text('telebirr_account_name', $settings['telebirr_account_name'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter Telebirr account name')])); ?>
+
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <?php echo e(Form::label('telebirr_account_number', __('Telebirr Account Number'), ['class' => 'form-label'])); ?>
+
+                                                <?php echo e(Form::text('telebirr_account_number', $settings['telebirr_account_number'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter Telebirr account number')])); ?>
+
+                                            </div>
+                                        </div>
 
                                         <hr>
                                         
