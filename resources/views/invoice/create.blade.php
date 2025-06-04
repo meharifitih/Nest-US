@@ -23,7 +23,7 @@
                 success: function(data) {
                     var options = '';
                     $.each(data, function(key, value) {
-                        options += '<option value="' + key + '">' + value + '</option>';
+                        options += '<option value="' + key + '">' + value.name + '</option>';
                     });
                     $('#main_unit_select').html(options);
                     if ($('#main_unit_select')[0].choicesInstance) {
