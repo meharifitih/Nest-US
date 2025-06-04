@@ -122,4 +122,38 @@ class HoaController extends Controller
             return redirect()->back()->with('success', 'HOA marked as paid');
         }
     }
+
+    public function banktransferPayment(Request $request, Hoa $hoa)
+    {
+        $request->validate([
+            'receipt' => 'required|file|mimes:jpg,jpeg,png,pdf',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        if ($request->hasFile('receipt')) {
+            $file = $request->file('receipt');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('hoa-receipts', $filename, 'public');
+            $hoa->receipt = 'hoa-receipts/' . $filename;
+        }
+        $hoa->amount = $request->amount;
+        $hoa->status = 'pending';
+        $hoa->paid_date = now();
+        $hoa->save();
+
+        return redirect()->route('hoa.index')->with('success', 'HOA bank transfer submitted for approval.');
+    }
+
+    public function receiptPayment(Request $request, Hoa $hoa)
+    {
+        $request->validate([
+            'payment_type' => 'required|in:telebirr,cbe',
+            'receipt_number' => 'required|string|max:255',
+        ]);
+        $hoa->receipt = strtoupper($request->payment_type) . ':' . $request->receipt_number;
+        $hoa->status = 'pending';
+        $hoa->paid_date = now();
+        $hoa->save();
+        return redirect()->route('hoa.index')->with('success', 'Payment submitted for approval.');
+    }
 } 

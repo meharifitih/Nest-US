@@ -277,21 +277,21 @@ $(document).ready(function() {
                     <a href="#" class="btn btn-light btn-sm print" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Download') }}">
                         <i class="ph-duotone ph-printer"></i>
                     </a>
-                </div>
+                    </div>
                 <div class="card-body">
                     @include('invoice.partials.details', ['invoice' => $invoice, 'settings' => $settings, 'tenant' => $tenant])
                 </div>
             </div>
         </div>
     </div>
-    @if ($invoice->getInvoiceDueAmount() > 0 && auth()->user()->type == 'tenant')
+        @if ($invoice->getInvoiceDueAmount() > 0 && auth()->user()->type == 'tenant')
     <div class="row g-4">
         <div class="col-12">
             {{-- Add Payment Card --}}
             <div class="card mb-4">
-                <div class="card-header">
+                            <div class="card-header">
                     <h5 class="mb-0">{{ __('Add Payment') }}</h5>
-                </div>
+                            </div>
                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
                     @include('invoice.payment', ['settings' => $settings, 'invoice_id' => $invoice->id, 'invoice' => $invoice])
                 </div>

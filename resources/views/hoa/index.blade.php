@@ -63,7 +63,9 @@
                                         <td>{{ ucfirst($hoa->frequency) }}</td>
                                         <td>{{ $hoa->due_date ? dateFormat($hoa->due_date) : '-' }}</td>
                                         <td>
-                                            @if ($hoa->status == 'pending' || $hoa->status == 'open')
+                                            @if ($hoa->status == 'pending')
+                                                <span class="badge bg-light-warning">Pending</span>
+                                            @elseif ($hoa->status == 'open')
                                                 <span class="badge bg-light-warning">Open</span>
                                             @elseif ($hoa->status == 'paid')
                                                 <span class="badge bg-light-success">Paid</span>

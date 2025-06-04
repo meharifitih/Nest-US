@@ -445,6 +445,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/hoa/{hoa}', [HoaController::class, 'destroy'])->name('hoa.destroy');
     Route::post('/hoa/{hoa}/mark-as-paid', [HoaController::class, 'markAsPaid'])->name('hoa.mark-as-paid');
     Route::get('/hoa/unit/{unit_id}/tenant', [HoaController::class, 'getTenantForUnit'])->name('hoa.unit.tenant');
+    Route::post('/hoa/{hoa}/banktransfer/payment', [App\Http\Controllers\HoaController::class, 'banktransferPayment'])->name('hoa.banktransfer.payment');
+    Route::post('/hoa/{hoa}/receipt/payment', [App\Http\Controllers\HoaController::class, 'receiptPayment'])->name('hoa.receipt.payment');
 });
 
 Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');
