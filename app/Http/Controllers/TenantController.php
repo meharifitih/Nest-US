@@ -70,6 +70,10 @@ class TenantController extends Controller
             $phone = preg_replace('/\D/', '', $request->phone_number);
             if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
                 $phone = '+251' . $phone;
+            } else if (substr($phone, 0, 3) === '251' && strlen($phone) === 12) {
+                $phone = '+' . $phone;
+            } else if (substr($phone, 0, 4) === '+251' && strlen($phone) === 13) {
+                $phone = $phone;
             } else {
                 return response()->json([
                     'status' => 'error',
@@ -198,7 +202,20 @@ class TenantController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->phone_number = $request->phone_number;
+            $phone = preg_replace('/\D/', '', $request->phone_number);
+            if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
+                $phone = '+251' . $phone;
+            } else if (substr($phone, 0, 3) === '251' && strlen($phone) === 12) {
+                $phone = '+' . $phone;
+            } else if (substr($phone, 0, 4) === '+251' && strlen($phone) === 13) {
+                $phone = $phone;
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'Phone number must be 9 digits starting with 9 or 7',
+                ]);
+            }
+            $user->phone_number = $phone;
             $user->save();
 
             if ($request->profile != '') {

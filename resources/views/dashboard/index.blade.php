@@ -8,6 +8,11 @@
 
 @push('script-page')
 <script>
+    // Remove any existing chart before rendering a new one
+    var chartContainer = document.querySelector('#incomeExpense');
+    if (chartContainer) {
+        chartContainer.innerHTML = '';
+    }
     var options = {
         chart: {
             type: 'area',

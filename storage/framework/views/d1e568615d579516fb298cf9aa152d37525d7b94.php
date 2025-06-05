@@ -7,6 +7,11 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->startPush('script-page'); ?>
 <script>
+    // Remove any existing chart before rendering a new one
+    var chartContainer = document.querySelector('#users_and_payments_overview');
+    if (chartContainer) {
+        chartContainer.innerHTML = '';
+    }
     var options = {
         chart: {
             type: 'area',
@@ -79,8 +84,6 @@
     };
     var chart = new ApexCharts(document.querySelector('#users_and_payments_overview'), options);
     chart.render();
-
-
 </script>
 <?php $__env->stopPush(); ?>
 
@@ -172,9 +175,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
         <div class="col-lg-12 col-md-12">
             <div class="card">

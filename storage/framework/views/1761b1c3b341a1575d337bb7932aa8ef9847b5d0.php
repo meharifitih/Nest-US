@@ -63,7 +63,7 @@
             <?php endif; ?>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="name" name="name"
-                    placeholder="<?php echo e(__('Name')); ?>" required />
+                    placeholder="<?php echo e(__('Name')); ?>" value="<?php echo e(old('name')); ?>" required />
                 <label for="name"><?php echo e(__('Name')); ?></label>
                 <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -81,7 +81,7 @@ unset($__errorArgs, $__bag); ?>
             <input type="hidden" name="type" value="owner" />
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email"
-                    placeholder="<?php echo e(__('Email address')); ?>" required />
+                    placeholder="<?php echo e(__('Email address')); ?>" value="<?php echo e(old('email')); ?>" required />
                 <label for="email"><?php echo e(__('Email address')); ?></label>
                 <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -98,7 +98,7 @@ unset($__errorArgs, $__bag); ?>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="fayda_id" name="fayda_id"
-                    placeholder="<?php echo e(__('Fayda ID')); ?>" required />
+                    placeholder="<?php echo e(__('Fayda ID')); ?>" value="<?php echo e(old('fayda_id')); ?>" required />
                 <label for="fayda_id"><?php echo e(__('Fayda ID')); ?></label>
                 <?php $__errorArgs = ['fayda_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -117,7 +117,7 @@ unset($__errorArgs, $__bag); ?>
                 <div class="input-group">
                     <span class="input-group-text">+251</span>
                     <input type="text" class="form-control" id="phone_number" name="phone_number"
-                        placeholder="<?php echo e(__('Phone Number (e.g., 912345678)')); ?>" required />
+                        placeholder="Phone Number (e.g., 912345678)" value="<?php echo e(old('phone_number')); ?>" required />
                 </div>
                 <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
                 <span id="phone_error" class="text-danger" style="display: none;"></span>

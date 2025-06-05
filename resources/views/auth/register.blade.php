@@ -61,7 +61,7 @@
             @endif
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="name" name="name"
-                    placeholder="{{ __('Name') }}" required />
+                    placeholder="{{ __('Name') }}" value="{{ old('name') }}" required />
                 <label for="name">{{ __('Name') }}</label>
                 @error('name')
                     <span class="invalid-name text-danger" role="alert">
@@ -72,7 +72,7 @@
             <input type="hidden" name="type" value="owner" />
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" id="email" name="email"
-                    placeholder="{{ __('Email address') }}" required />
+                    placeholder="{{ __('Email address') }}" value="{{ old('email') }}" required />
                 <label for="email">{{ __('Email address') }}</label>
                 @error('email')
                     <span class="invalid-email text-danger" role="alert">
@@ -82,7 +82,7 @@
             </div>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="fayda_id" name="fayda_id"
-                    placeholder="{{ __('Fayda ID') }}" required />
+                    placeholder="{{ __('Fayda ID') }}" value="{{ old('fayda_id') }}" required />
                 <label for="fayda_id">{{ __('Fayda ID') }}</label>
                 @error('fayda_id')
                     <span class="invalid-fayda_id text-danger" role="alert">
@@ -94,7 +94,7 @@
                 <div class="input-group">
                     <span class="input-group-text">+251</span>
                     <input type="text" class="form-control" id="phone_number" name="phone_number"
-                        placeholder="{{ __('Phone Number (e.g., 912345678)') }}" required />
+                        placeholder="Phone Number (e.g., 912345678)" value="{{ old('phone_number') }}" required />
                 </div>
                 <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
                 <span id="phone_error" class="text-danger" style="display: none;"></span>

@@ -98,12 +98,12 @@
                 type: 'GET',
                 success: function(data) {
                     $('.unit').empty();
-                    var unit =
-                        `<select class="form-control hidesearch unit" id="unit" name="unit"></select>`;
+                    var unit = `<select class="form-control hidesearch unit" id="unit" name="unit"></select>`;
                     $('.unit_div').html(unit);
 
                     $.each(data, function(key, value) {
-                        $('.unit').append('<option value="' + key + '">' + value + '</option>');
+                        var text = (typeof value === 'object' && value !== null && value.name) ? value.name : value;
+                        $('.unit').append('<option value="' + key + '">' + text + '</option>');
                     });
                     $(".hidesearch").each(function() {
                         var basic_select = new Choices(this, {
@@ -154,7 +154,7 @@
                         success: function(data) {
                             $('#unit').empty();
                             $('#unit').append('<option value="">{{ __("Select Unit") }}</option>');
-                            $.each(data, function(key, value) {
+                            $.each(data, function(index, value) {
                                 var selected = value.id == "{{ old('unit') }}" ? 'selected' : '';
                                 $('#unit').append('<option value="' + value.id + '" ' + selected + '>' + value.name + '</option>');
                             });

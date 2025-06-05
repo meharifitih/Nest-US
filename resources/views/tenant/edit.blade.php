@@ -103,32 +103,46 @@
                 type: 'GET',
                 success: function(data) {
                     $('.unit').empty();
-                    var unit =
-                        `<select class="form-control hidesearch unit" id="unit" name="unit"></select>`;
+                    var unit = `<select class="form-control hidesearch unit" id="unit" name="unit"></select>`;
                     $('.unit_div').html(unit);
-
+                    var tenant_id = $('#edit_unit').val();
                     $.each(data, function(key, value) {
-
-                        var tenant_id = $('#edit_unit').val();
+                        var text = (typeof value === 'object' && value !== null && value.name) ? value.name : value;
                         if (key == tenant_id) {
-                            $('.unit').append('<option selected value="' + key + '">' + value +
-                                '</option>');
+                            $('.unit').append('<option selected value="' + key + '">' + text + '</option>');
                         } else {
-                            $('.unit').append('<option   value="' + key + '">' + value +
-                                '</option>');
+                            $('.unit').append('<option value="' + key + '">' + text + '</option>');
                         }
-
                     });
                     $('.hidesearch').select2({
                         minimumResultsForSearch: -1
                     });
-
                 },
-
             });
         });
 
         $('#property').trigger('change');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phone_number');
+            const phoneError = document.getElementById('phone_error');
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    const firstDigit = value.charAt(0);
+                    if (firstDigit !== '9' && firstDigit !== '7') {
+                        phoneError.textContent = 'Phone number must start with 9 or 7';
+                        phoneError.style.display = 'block';
+                    } else {
+                        phoneError.style.display = 'none';
+                    }
+                }
+                if (value.length > 9) {
+                    value = value.slice(0, 9);
+                }
+                e.target.value = value;
+            });
+        });
     </script>
 @endpush
 
@@ -167,7 +181,12 @@
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('phone_number', __('Phone Number'), ['class' => 'form-label']) }}
-                                {{ Form::text('phone_number', $user->phone_number, ['class' => 'form-control', 'placeholder' => __('Enter Phone Number')]) }}
+                                <div class="input-group">
+                                    <span class="input-group-text">+251</span>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ isset($user->phone_number) ? ltrim($user->phone_number, '+251') : '' }}" placeholder="Enter phone number (e.g. 912345678)" required>
+                                </div>
+                                <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                                <span id="phone_error" class="text-danger" style="display: none;"></span>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('family_member', __('Total Family Member'), ['class' => 'form-label']) }}
@@ -188,34 +207,28 @@
                         <h5>{{ __('Address Details') }}</h5>
                     </div>
                     <div class="card-body">
-
-                        <div class="row">
-                            <div class="form-group col-lg-6 col-md-6">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
                                 {{ Form::label('sub_city', __('Sub City'), ['class' => 'form-label']) }}
-                                {{ Form::text('sub_city', null, ['class' => 'form-control', 'placeholder' => __('Enter Sub City')]) }}
+                                {{ Form::text('sub_city', $tenant->sub_city, ['class' => 'form-control', 'placeholder' => __('Enter Sub City')]) }}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="col-md-4">
                                 {{ Form::label('woreda', __('Woreda'), ['class' => 'form-label']) }}
-                                {{ Form::text('woreda', null, ['class' => 'form-control', 'placeholder' => __('Enter Woreda')]) }}
+                                {{ Form::text('woreda', $tenant->woreda, ['class' => 'form-control', 'placeholder' => __('Enter Woreda')]) }}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="col-md-4">
                                 {{ Form::label('house_number', __('House Number'), ['class' => 'form-label']) }}
-                                {{ Form::text('house_number', null, ['class' => 'form-control', 'placeholder' => __('Enter House Number')]) }}
+                                {{ Form::text('house_number', $tenant->house_number, ['class' => 'form-control', 'placeholder' => __('Enter House Number')]) }}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="col-md-6">
                                 {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
-                                {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
+                                {{ Form::text('location', $tenant->location, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="col-md-6">
                                 {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
-                                {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
-                            </div>
-                            <div class="form-group ">
-                                {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}
-                                {{ Form::textarea('address', null, ['class' => 'form-control', 'rows' => 5, 'placeholder' => __('Enter Address')]) }}
+                                {{ Form::text('city', $tenant->city, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -225,7 +238,6 @@
                         <h5>{{ __('Property Details') }}</h5>
                     </div>
                     <div class="card-body">
-
                         <div class="row">
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('property', __('Property'), ['class' => 'form-label']) }}
@@ -241,15 +253,14 @@
                                 </div>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('lease_start_date', __('Start Date'), ['class' => 'form-label']) }}
-                                {{ Form::date('lease_start_date', null, ['class' => 'form-control', 'placeholder' => __('Enter lease start date')]) }}
+                                {{ Form::label('lease_start_date', __('Lease Start Date'), ['class' => 'form-label']) }}
+                                {{ Form::date('lease_start_date', $tenant->lease_start_date, ['class' => 'form-control']) }}
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('lease_end_date', __('End Date'), ['class' => 'form-label']) }}
-                                {{ Form::date('lease_end_date', null, ['class' => 'form-control', 'placeholder' => __('Enter lease end date')]) }}
+                                {{ Form::label('lease_end_date', __('Lease End Date'), ['class' => 'form-label']) }}
+                                {{ Form::date('lease_end_date', $tenant->lease_end_date, ['class' => 'form-control']) }}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
