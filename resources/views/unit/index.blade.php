@@ -20,9 +20,9 @@
                         </div>
                         @if (Gate::check('create unit'))
                             <div class="col-auto">
-                                <a href="#" class="btn btn-secondary customModal" data-size="lg"
-                                    data-url="{{ route('unit.direct-create') }}" data-title="{{ __('Create unit') }}"> <i
-                                        class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}</a>
+                                <a href="{{ route('unit.direct-create') }}" class="btn btn-secondary">
+                                    <i class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}
+                                </a>
                             </div>
                         @endif
                         <div class="col-auto">
@@ -64,9 +64,8 @@
                                                 <div class="cart-action">
                                                     {!! Form::open(['method' => 'DELETE', 'route' => ['unit.destroy', [$unit->property_id, $unit->id]]]) !!}
                                                     @can('edit unit')
-                                                        <a class="avtar avtar-xs btn-link-secondary text-secondary customModal"
-                                                            data-url="{{ route('unit.edit', [$unit->property_id, $unit->id]) }}"
-                                                            href="#" data-size="lg" data-title="{{ __('Edit Unit') }}"
+                                                        <a class="avtar avtar-xs btn-link-secondary text-secondary"
+                                                            href="{{ route('unit.edit', [$unit->property_id, $unit->id]) }}"
                                                             data-bs-toggle="tooltip"
                                                             data-bs-original-title="{{ __('Edit') }}">
                                                             <i data-feather="edit"></i></a>

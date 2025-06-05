@@ -348,7 +348,7 @@ class PropertyController extends Controller
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-                return redirect()->back()->with('error', $messages->first());
+                return redirect()->back()->with('error', $messages->first())->withInput();
             }
 
             $user = \Auth::user();
@@ -371,7 +371,7 @@ class PropertyController extends Controller
             $unit->notes = $request->notes;
             $unit->parent_id = parentId();
             $unit->save();
-            return redirect()->back()->with('success', __('Unit successfully created.'));
+            return redirect()->route('unit.index')->with('success', __('Unit successfully created.'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -416,7 +416,7 @@ class PropertyController extends Controller
             $unit->end_date = $request->end_date;
             $unit->notes = $request->notes;
             $unit->save();
-            return redirect()->back()->with('success', __('Unit successfully updated.'));
+            return redirect()->route('unit.index')->with('success', __('Unit successfully updated.'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
