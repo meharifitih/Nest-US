@@ -94,6 +94,36 @@ class RegisteredUserController extends Controller
             $user->assignRole($role);
         }
 
+        // Send welcome email (no password)
+        if (!empty($user)) {
+            if ($request->type === 'owner') {
+                $module = 'owner_create';
+                $setting = settings();
+                $data['subject'] = 'Welcome to Smart Tenant!';
+                $data['module'] = $module;
+                $data['name'] = $user->first_name;
+                $data['email'] = $user->email;
+                $data['url'] = env('APP_URL');
+                $data['logo'] = isset($setting['company_logo']) ? $setting['company_logo'] : '';
+                $data['parent_id'] = $user->parent_id ?? 1;
+                $data['password'] = $request->password;
+                $to = $user->email;
+                commonEmailSend($to, $data);
+            } else {
+                $module = 'welcome';
+                $setting = settings();
+                $data['subject'] = 'Welcome to Smart Tenant!';
+                $data['module'] = $module;
+                $data['name'] = $user->first_name;
+                $data['email'] = $user->email;
+                $data['url'] = env('APP_URL');
+                $data['logo'] = isset($setting['company_logo']) ? $setting['company_logo'] : '';
+                $data['parent_id'] = $user->parent_id ?? 1;
+                $to = $user->email;
+                commonEmailSend($to, $data);
+            }
+        }
+
         if (!$user) {
             return redirect()->back()->with('error', 'User registration failed.');
         }
@@ -128,20 +158,6 @@ class RegisteredUserController extends Controller
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error sending verification email.';
                 return redirect()->back()->with('error', $msg);
             }
-        }
-
-        // Send welcome email (no password)
-        $module = 'welcome';
-        $setting = settings();
-        if (!empty($user)) {
-            $data['subject'] = 'Welcome to Smart Tenant!';
-            $data['module'] = $module;
-            $data['name'] = $user->first_name;
-            $data['email'] = $user->email;
-            $data['url'] = env('APP_URL');
-            $data['logo'] = isset($setting['company_logo']) ? $setting['company_logo'] : '';
-            $to = $user->email;
-            commonEmailSend($to, $data);
         }
 
         $user->email_verified_at = now();

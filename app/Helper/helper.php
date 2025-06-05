@@ -803,50 +803,45 @@ if (!function_exists('commonEmailSend')) {
 if (!function_exists('emailSettings')) {
     function emailSettings($id)
     {
-        // For admin (parent_id = 1), always use env values
-        if ($id == 1) {
-            $result = [
-                'FROM_EMAIL' => env('MAIL_FROM_ADDRESS', ''),
-                'FROM_NAME' => env('MAIL_FROM_NAME', ''),
-                'SERVER_DRIVER' => env('MAIL_MAILER', 'smtp'),
-                'SERVER_HOST' => env('MAIL_HOST', ''),
-                'SERVER_PORT' => env('MAIL_PORT', ''),
-                'SERVER_USERNAME' => env('MAIL_USERNAME', ''),
-                'SERVER_PASSWORD' => env('MAIL_PASSWORD', ''),
-                'SERVER_ENCRYPTION' => env('MAIL_ENCRYPTION', ''),
-            ];
-        } else {
-            $settingData = DB::table('settings')
-                ->where('type', 'smtp')
-                ->where('parent_id', $id)
-                ->get();
+        $settingData = DB::table('settings')
+            ->where('type', 'smtp')
+            ->where('parent_id', $id)
+            ->get();
 
-            $result = [
-                'FROM_EMAIL' => env('MAIL_FROM_ADDRESS', ''),
-                'FROM_NAME' => env('MAIL_FROM_NAME', ''),
-                'SERVER_DRIVER' => env('MAIL_MAILER', 'smtp'),
-                'SERVER_HOST' => env('MAIL_HOST', ''),
-                'SERVER_PORT' => env('MAIL_PORT', ''),
-                'SERVER_USERNAME' => env('MAIL_USERNAME', ''),
-                'SERVER_PASSWORD' => env('MAIL_PASSWORD', ''),
-                'SERVER_ENCRYPTION' => env('MAIL_ENCRYPTION', ''),
-            ];
+        $result = [
+            'FROM_EMAIL' => '',
+            'FROM_NAME' => '',
+            'SERVER_DRIVER' => '',
+            'SERVER_HOST' => '',
+            'SERVER_PORT' => '',
+            'SERVER_USERNAME' => '',
+            'SERVER_PASSWORD' => '',
+            'SERVER_ENCRYPTION' => '',
+        ];
 
-            foreach ($settingData as $setting) {
-                $result[$setting->name] = $setting->value;
-            }
+        foreach ($settingData as $setting) {
+            $result[$setting->name] = $setting->value;
         }
 
-        // Apply settings dynamically
+        // fallback to .env if not set in DB
+        $result['FROM_EMAIL'] = $result['FROM_EMAIL'] ?: env('MAIL_FROM_ADDRESS', '');
+        $result['FROM_NAME'] = $result['FROM_NAME'] ?: env('MAIL_FROM_NAME', '');
+        $result['SERVER_DRIVER'] = $result['SERVER_DRIVER'] ?: env('MAIL_MAILER', 'smtp');
+        $result['SERVER_HOST'] = $result['SERVER_HOST'] ?: env('MAIL_HOST', '');
+        $result['SERVER_PORT'] = $result['SERVER_PORT'] ?: env('MAIL_PORT', '');
+        $result['SERVER_USERNAME'] = $result['SERVER_USERNAME'] ?: env('MAIL_USERNAME', '');
+        $result['SERVER_PASSWORD'] = $result['SERVER_PASSWORD'] ?: env('MAIL_PASSWORD', '');
+        $result['SERVER_ENCRYPTION'] = $result['SERVER_ENCRYPTION'] ?: env('MAIL_ENCRYPTION', '');
+
         config([
-            'mail.default' => $result['SERVER_DRIVER'] ?? '',
-            'mail.mailers.smtp.host' => $result['SERVER_HOST'] ?? '',
-            'mail.mailers.smtp.port' => $result['SERVER_PORT'] ?? '',
-            'mail.mailers.smtp.encryption' => $result['SERVER_ENCRYPTION'] ?? '',
-            'mail.mailers.smtp.username' => $result['SERVER_USERNAME'] ?? '',
-            'mail.mailers.smtp.password' => $result['SERVER_PASSWORD'] ?? '',
-            'mail.from.name' => $result['FROM_NAME'] ?? '',
-            'mail.from.address' => $result['FROM_EMAIL'] ?? '',
+            'mail.default' => $result['SERVER_DRIVER'],
+            'mail.mailers.smtp.host' => $result['SERVER_HOST'],
+            'mail.mailers.smtp.port' => $result['SERVER_PORT'],
+            'mail.mailers.smtp.encryption' => $result['SERVER_ENCRYPTION'],
+            'mail.mailers.smtp.username' => $result['SERVER_USERNAME'],
+            'mail.mailers.smtp.password' => $result['SERVER_PASSWORD'],
+            'mail.from.name' => $result['FROM_NAME'],
+            'mail.from.address' => $result['FROM_EMAIL'],
         ]);
         return $result;
     }

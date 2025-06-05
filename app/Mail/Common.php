@@ -53,6 +53,11 @@ class   Common extends Mailable
                 ->markdown('email.owner_create')
                 ->subject($subject)
                 ->with('content', $data);
+        } elseif (!empty($module) && $module == 'welcome') {
+            return $this->from($settings['FROM_EMAIL'], $settings['FROM_NAME'])
+                ->markdown('email.welcome')
+                ->subject($subject)
+                ->with('content', $data);
         } else {
             return $this->from($settings['FROM_EMAIL'], $settings['FROM_NAME'])->markdown('email.email_notification')->subject($subject)->with('content', $data);
         }

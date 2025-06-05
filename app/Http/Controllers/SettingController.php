@@ -431,13 +431,14 @@ class SettingController extends Controller
                 'SERVER_ENCRYPTION' => $request->server_encryption,
             ];
             foreach ($smtpArray as $key => $val) {
-                \DB::insert(
-                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                \DB::table('settings')->updateOrInsert(
                     [
-                        $val,
-                        $key,
-                        'smtp',
-                        parentId(),
+                        'name' => $key,
+                        'type' => 'smtp',
+                        'parent_id' => parentId(),
+                    ],
+                    [
+                        'value' => $val,
                     ]
                 );
             }

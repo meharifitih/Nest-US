@@ -25,7 +25,9 @@ class PasswordChangeNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
+        $settings = settings();
         return (new MailMessage)
+            ->from($settings['FROM_EMAIL'], $settings['FROM_NAME'])
             ->subject('Welcome to Property Management System')
             ->greeting('Hello ' . $notifiable->first_name . '!')
             ->line('Your account has been created successfully.')
