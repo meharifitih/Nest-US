@@ -69,10 +69,12 @@
 
                             <div class="profile-notification-scroll position-relative"
                                 style="max-height: calc(100vh - 280px)">
+                                @if(\Auth::user()->type !== 'tenant')
                                 <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
                                     <i class="ti ti-user"></i>
                                     <span>{{ __('Profile') }}</span>
                                 </a>
+                                @endif
                                 <hr />
                                 {!! Form::open(['method' => 'DELETE', 'route' => ['setting.account.delete']]) !!}
                                 <a href="#" class="dropdown-item common_confirm_dialog" data-actions="Account">

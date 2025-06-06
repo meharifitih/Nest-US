@@ -521,6 +521,7 @@ if (!function_exists('defaultTenantCreate')) {
             ['name' => 'edit maintenance request'],
             ['name' => 'delete maintenance request'],
             ['name' => 'show maintenance request'],
+            ['name' => 'manage account settings'],
         ];
         if ($systemTenantRole) {
             $systemTenantRole->givePermissionTo($systemTenantPermissions);

@@ -212,25 +212,20 @@
                         <h5>{{ __('Personal Details') }}</h5>
                     </div>
                     <div class="card-body">
-
-                        <div class="row">
-                            <div class="form-group col-lg-6 col-md-6">
+                        <div class="row g-3">
+                            <div class="form-group col-md-6">
                                 <label for="first_name" class="form-label">{{ __('First Name') }} <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name') }}" required>
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="form-group col-md-6">
                                 <label for="last_name" class="form-label">{{ __('Last Name') }} <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name') }}" required>
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="form-group col-md-6">
                                 <label for="email" class="form-label">{{ __('Email') }} <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
-                                {{ Form::label('password', __('Password'), ['class' => 'form-label']) }}
-                                {{ Form::password('password', ['class' => 'form-control', 'placeholder' => __('Enter Password')]) }}
-                            </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="form-group col-md-6">
                                 <label for="phone_number" class="form-label">{{ __('Phone Number') }} <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">+251</span>
@@ -239,13 +234,13 @@
                                 <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
                                 <span id="phone_error" class="text-danger" style="display: none;"></span>
                             </div>
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="form-group col-md-6">
                                 <label for="family_member" class="form-label">{{ __('Family Members') }}</label>
                                 <input type="number" class="form-control" id="family_member" name="family_member" value="{{ old('family_member') }}">
                             </div>
-                            <div class="form-group">
-                                {{ Form::label('profile', __('Profile'), ['class' => 'form-label']) }}
-                                {{ Form::file('profile', ['class' => 'form-control']) }}
+                            <div class="form-group col-md-6">
+                                <label for="profile" class="form-label">{{ __('Profile') }}</label>
+                                <input type="file" class="form-control" id="profile" name="profile">
                             </div>
                         </div>
                     </div>

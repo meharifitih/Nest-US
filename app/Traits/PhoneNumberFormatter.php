@@ -20,6 +20,9 @@ trait PhoneNumberFormatter
         if (str_starts_with($phone, '251')) {
             return '+'.$phone;
         }
+        if ((str_starts_with($phone, '9') || str_starts_with($phone, '7')) && strlen($phone) === 9) {
+            return '+251'.$phone;
+        }
         return $phone;
     }
 
@@ -36,9 +39,11 @@ trait PhoneNumberFormatter
             $number = substr($phone, 4);
         } elseif (str_starts_with($phone, '251')) {
             $number = substr($phone, 3);
+        } elseif ((str_starts_with($phone, '9') || str_starts_with($phone, '7')) && strlen($phone) === 9) {
+            $number = $phone;
         } else {
             return false;
         }
-        return preg_match('/^[0-9]{9}$/', $number);
+        return preg_match('/^[97][0-9]{8}$/', $number);
     }
 } 

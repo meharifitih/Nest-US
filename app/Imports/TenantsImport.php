@@ -44,9 +44,12 @@ class TenantsImport implements ToModel, WithHeadingRow
             throw new \Exception("Email already exists: {$row['email']}");
         }
 
-        // Validate phone number format
-        if (!$this->isValidPhoneNumber($row['phone_number'])) {
-            throw new \Exception("Invalid phone number format: {$row['phone_number']}. Phone number must be in the format +251XXXXXXXXX (e.g. +251912345678).");
+        // Normalize phone number first
+        $normalizedPhone = $this->formatPhoneNumber($row['phone_number']);
+
+        // Validate phone number format after normalization
+        if (!$this->isValidPhoneNumber($normalizedPhone)) {
+            throw new \Exception("Invalid phone number format: {$row['phone_number']}. Phone number must be in the format +251XXXXXXXXX (e.g. +251912345678). Accepted: 9XXXXXXXX, 251XXXXXXXXX, +251XXXXXXXXX");
         }
 
         // Find or create user role
@@ -64,7 +67,7 @@ class TenantsImport implements ToModel, WithHeadingRow
         $user->last_name = $row['last_name'] ?? '';
         $user->email = $row['email'] ?? '';
         $user->password = Hash::make($password);
-        $user->phone_number = $this->formatPhoneNumber($row['phone_number']);
+        $user->phone_number = $normalizedPhone;
         $user->type = $userRole->name;
         $user->email_verified_at = now();
         $user->profile = 'avatar.png';
@@ -98,6 +101,16 @@ class TenantsImport implements ToModel, WithHeadingRow
             ]
         );
 
+        // Parse lease_start_date and lease_end_date to Y-m-d
+        $leaseStartDate = null;
+        $leaseEndDate = null;
+        if (!empty($row['lease_start_date'])) {
+            $leaseStartDate = $this->parseExcelDate($row['lease_start_date']);
+        }
+        if (!empty($row['lease_end_date'])) {
+            $leaseEndDate = $this->parseExcelDate($row['lease_end_date']);
+        }
+
         // Create tenant
         $tenant = new Tenant();
         $tenant->user_id = $user->id;
@@ -109,11 +122,30 @@ class TenantsImport implements ToModel, WithHeadingRow
         $tenant->city = $row['city'] ?? '';
         $tenant->property = $this->propertyId;
         $tenant->unit = $unit->id;
-        $tenant->lease_start_date = $row['lease_start_date'] ?? null;
-        $tenant->lease_end_date = $row['lease_end_date'] ?? null;
+        $tenant->lease_start_date = $leaseStartDate;
+        $tenant->lease_end_date = $leaseEndDate;
         $tenant->parent_id = parentId();
         $tenant->save();
 
         return $tenant;
+    }
+
+    protected function parseExcelDate($date)
+    {
+        // Try d/m/Y
+        $d = \DateTime::createFromFormat('d/m/Y', $date);
+        if ($d !== false) return $d->format('Y-m-d');
+        // Try Y-m-d
+        $d = \DateTime::createFromFormat('Y-m-d', $date);
+        if ($d !== false) return $d->format('Y-m-d');
+        // Try m/d/Y (US Excel)
+        $d = \DateTime::createFromFormat('m/d/Y', $date);
+        if ($d !== false) return $d->format('Y-m-d');
+        // Try Excel serial number
+        if (is_numeric($date)) {
+            $unixDate = ($date - 25569) * 86400;
+            return gmdate('Y-m-d', $unixDate);
+        }
+        return null;
     }
 } 

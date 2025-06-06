@@ -41,14 +41,6 @@
                         {{Form::label('rent_type',__('Rent Type'),array('class'=>'form-label'))}}
                         {{Form::select('rent_type',$rentTypes,old('rent_type'),array('class'=>'form-control hidesearch','id'=>'rent_type'))}}
                     </div>
-                    <div class="form-group col-md-6">
-                        {{Form::label('start_date',__('Rent Start Date'),array('class'=>'form-label'))}}
-                        {{Form::date('start_date',old('start_date'),array('class'=>'form-control'))}}
-                    </div>
-                    <div class="form-group col-md-6">
-                        {{Form::label('end_date',__('Rent End Date'),array('class'=>'form-label'))}}
-                        {{Form::date('end_date',old('end_date'),array('class'=>'form-control'))}}
-                    </div>
                     <div class="form-group col-md-12">
                         {{Form::label('notes',__('Notes'),array('class'=>'form-label'))}}
                         {{Form::textarea('notes',old('notes'),array('class'=>'form-control','rows'=>'3'))}}
