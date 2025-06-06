@@ -33,6 +33,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HoaController;
 use App\Http\Controllers\WhatsAppTestController;
 use App\Http\Controllers\TenantExcelUploadController;
+use App\Http\Controllers\TenantProfileController;
 
 
 /*
@@ -298,12 +299,15 @@ Route::group(
 );
 
 //-------------------------------Tenant-------------------------------------------
-Route::resource('tenant', TenantController::class)->middleware(
-    [
-        'auth',
-        'XSS',
-    ]
-);
+Route::middleware(['auth', 'XSS'])->group(function () {
+    Route::get('tenant/password', [\App\Http\Controllers\TenantProfileController::class, 'editPassword'])->name('tenant.password.edit');
+    Route::post('tenant/password', [\App\Http\Controllers\TenantProfileController::class, 'updatePassword'])->name('tenant.password.update');
+});
+
+Route::resource('tenant', TenantController::class)->middleware([
+    'auth',
+    'XSS',
+]);
 
 //-------------------------------Type-------------------------------------------
 Route::resource('type', TypeController::class)->middleware(

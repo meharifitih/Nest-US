@@ -70,10 +70,15 @@
                             <div class="profile-notification-scroll position-relative"
                                 style="max-height: calc(100vh - 280px)">
                                 <?php if(\Auth::user()->type !== 'tenant'): ?>
-                                <a href="<?php echo e(route('setting.index')); ?>#user_profile_settings" class="dropdown-item">
-                                    <i class="ti ti-user"></i>
-                                    <span><?php echo e(__('Profile')); ?></span>
-                                </a>
+                                    <a href="<?php echo e(route('setting.index')); ?>#user_profile_settings" class="dropdown-item">
+                                        <i class="ti ti-user"></i>
+                                        <span><?php echo e(__('Profile')); ?></span>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="<?php echo e(route('tenant.password.edit')); ?>" class="dropdown-item">
+                                        <i class="ti ti-lock"></i>
+                                        <span><?php echo e(__('Change Password')); ?></span>
+                                    </a>
                                 <?php endif; ?>
                                 <hr />
                                 <?php echo Form::open(['method' => 'DELETE', 'route' => ['setting.account.delete']]); ?>

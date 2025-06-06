@@ -70,10 +70,15 @@
                             <div class="profile-notification-scroll position-relative"
                                 style="max-height: calc(100vh - 280px)">
                                 @if(\Auth::user()->type !== 'tenant')
-                                <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
-                                    <i class="ti ti-user"></i>
-                                    <span>{{ __('Profile') }}</span>
-                                </a>
+                                    <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
+                                        <i class="ti ti-user"></i>
+                                        <span>{{ __('Profile') }}</span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('tenant.password.edit') }}" class="dropdown-item">
+                                        <i class="ti ti-lock"></i>
+                                        <span>{{ __('Change Password') }}</span>
+                                    </a>
                                 @endif
                                 <hr />
                                 {!! Form::open(['method' => 'DELETE', 'route' => ['setting.account.delete']]) !!}

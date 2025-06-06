@@ -33,7 +33,7 @@ class PasswordChangeNotification extends Notification implements ShouldQueue
             ->line('Your account has been created successfully.')
             ->line('Your temporary password is: ' . $this->password)
             ->line('Please change your password after logging in for security reasons.')
-            ->action('Login Now', url('/login'))
+            ->action('Change Password', url('/tenant/password'))
             ->line('Thank you for using our application!');
     }
 } 
