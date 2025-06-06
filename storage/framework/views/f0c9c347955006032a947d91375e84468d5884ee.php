@@ -29,6 +29,31 @@
     <!-- [ Main Content ] start -->
     <div class="pc-container">
         <div class="pc-content">
+            <?php
+                $showBanner = !session('user_type_banner_shown');
+                if ($showBanner) session(['user_type_banner_shown' => true]);
+            ?>
+            <?php if($showBanner): ?>
+                <?php
+                    $userType = strtolower(Auth::user()->type ?? '');
+                    $typeLabel = $userType === 'owner' ? 'OWNER PAGE' : ($userType === 'tenant' ? 'TENANT PAGE' : ($userType === 'super admin' ? 'SUPER ADMIN PAGE' : strtoupper($userType) . ' PAGE'));
+                ?>
+                <div id="user-type-banner" style="text-align:center; margin: 30px 0 20px 0; transition: opacity 0.7s;">
+                    <span style="font-size:2.2rem; font-weight:900; letter-spacing:2px; color:#2d3748; text-transform:uppercase; display:inline-block; padding:12px 32px; border-radius:8px; background:#f1f5f9; box-shadow:0 2px 8px #e2e8f0;">
+                        <?php echo e($typeLabel); ?>
+
+                    </span>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var banner = document.getElementById('user-type-banner');
+                        if (banner) {
+                            banner.style.opacity = 0;
+                            setTimeout(function() { banner.remove(); }, 700);
+                        }
+                    }, 30000); // 30 seconds
+                </script>
+            <?php endif; ?>
             <!-- [ breadcrumb ] start -->
             <div class="page-header">
                 <div class="page-block">
