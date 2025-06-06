@@ -81,12 +81,6 @@
                                     </a>
                                 @endif
                                 <hr />
-                                {!! Form::open(['method' => 'DELETE', 'route' => ['setting.account.delete']]) !!}
-                                <a href="#" class="dropdown-item common_confirm_dialog" data-actions="Account">
-                                    <i class="ti ti-user-x"></i>
-                                    <span>{{ __('Account Delete') }}</span>
-                                </a>
-                                {!! Form::close() !!}
                                 @impersonating()
                                 <a href="{{ route('impersonate.leave') }}" class="dropdown-item" data-actions="Account">
                                     <i class="ti ti-transfer-out"></i>

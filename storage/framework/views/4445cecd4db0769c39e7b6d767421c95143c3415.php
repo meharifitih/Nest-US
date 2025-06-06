@@ -81,14 +81,6 @@
                                     </a>
                                 <?php endif; ?>
                                 <hr />
-                                <?php echo Form::open(['method' => 'DELETE', 'route' => ['setting.account.delete']]); ?>
-
-                                <a href="#" class="dropdown-item common_confirm_dialog" data-actions="Account">
-                                    <i class="ti ti-user-x"></i>
-                                    <span><?php echo e(__('Account Delete')); ?></span>
-                                </a>
-                                <?php echo Form::close(); ?>
-
                                 <?php if (is_impersonating()) : ?>
                                 <a href="<?php echo e(route('impersonate.leave')); ?>" class="dropdown-item" data-actions="Account">
                                     <i class="ti ti-transfer-out"></i>
