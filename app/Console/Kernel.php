@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('rent:generate-invoices')->hourly();
+        $schedule->command('hoa:generate-fees')->daily();
     }
 
     /**
