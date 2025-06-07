@@ -73,6 +73,14 @@
                     <?php endif; ?>
                 <?php endif; ?>
 
+                <?php if(Auth::user()->type == 'owner'): ?>
+                    <li class="pc-item <?php echo e(in_array($routeName, ['owner.tutorial_videos']) ? 'active' : ''); ?>">
+                        <a href="<?php echo e(route('owner.tutorial_videos')); ?>" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-video"></i></span>
+                            <span class="pc-mtext"><?php echo e(__('Tutorial Videos')); ?></span>
+                        </a>
+                    </li>
+                <?php endif; ?>
 
                 <?php if(Gate::check('manage property') ||
                         Gate::check('manage unit') ||

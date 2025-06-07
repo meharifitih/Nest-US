@@ -367,4 +367,25 @@ class UserController extends Controller
             return redirect()->back()->with('error', __('Permission Denied.'));
         }
     }
+
+    public function tutorialVideos()
+    {
+        // Always fetch from super admin (parent_id=1)
+        $settings = settingsById(1);
+        $tutorialVideos = isset($settings['tutorial_videos']) ? json_decode($settings['tutorial_videos'], true) : [];
+        // Normalize and convert YouTube links to embed format
+        $tutorialVideos = array_map(function($item) {
+            $url = is_array($item) && isset($item['url']) ? $item['url'] : (is_string($item) ? $item : null);
+            if ($url) {
+                // Convert YouTube watch links to embed links
+                if (preg_match('/youtube\\.com\\/watch\\?v=([\\w-]+)/', $url, $matches)) {
+                    $url = 'https://www.youtube.com/embed/' . $matches[1];
+                }
+                return $url;
+            }
+            return null;
+        }, $tutorialVideos);
+        $tutorialVideos = array_filter($tutorialVideos);
+        return view('owner.tutorial_videos', compact('tutorialVideos'));
+    }
 }

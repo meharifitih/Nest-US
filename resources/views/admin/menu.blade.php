@@ -73,6 +73,14 @@
                     @endif
                 @endif
 
+                @if (Auth::user()->type == 'owner')
+                    <li class="pc-item {{ in_array($routeName, ['owner.tutorial_videos']) ? 'active' : '' }}">
+                        <a href="{{ route('owner.tutorial_videos') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-video"></i></span>
+                            <span class="pc-mtext">{{ __('Tutorial Videos') }}</span>
+                        </a>
+                    </li>
+                @endif
 
                 @if (Gate::check('manage property') ||
                         Gate::check('manage unit') ||

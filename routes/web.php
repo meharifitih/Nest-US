@@ -470,3 +470,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('payment-accounts', 'PaymentAccountController@store')->name('payment.accounts.store');
     Route::delete('payment-accounts/{id}', 'PaymentAccountController@destroy')->name('payment.accounts.destroy');
 });
+
+Route::group([
+    'middleware' => [
+        'auth',
+        'XSS',
+    ],
+], function () {
+    Route::get('owner/tutorial-videos', [App\Http\Controllers\UserController::class, 'tutorialVideos'])->name('owner.tutorial_videos');
+});
