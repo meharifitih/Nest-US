@@ -10,7 +10,6 @@
 <?php $__env->startSection('content'); ?>
     <div class="row">
         <div class="col-sm-12">
-
             <div class="card">
                 <div class="card-header">
                     <div class="row align-items-center g-2">
@@ -33,158 +32,174 @@
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <div class="price-card2">
-                        <?php
-                            $features = [
-                                __('User Limit'),
-                                __('Property Limit'),
-                                __('Tenant Limit'),
-                                __('Unit Range'),
-                                __('Enabled Logged History'),
-                                __('Coupon Applicable'),
-                            ];
-                        ?>
-                        <table class="table table-striped m-0">
-                            <thead>
-                                <tr>
-                                    <th><?php echo e(__('Features')); ?></th>
-                                    <?php $__currentLoopData = $subscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <th>
-                                            <div class="card-body border-start text-center py-5 py-md-5">
-                                                <h3 class="text-primary"><b> <?php echo e(isset($subscription) ? $subscription->title : ''); ?></b></h3>
-                                                <h3 class="text-muted mb-0 mt-5">
-                                                    <b>
-                                                        <sup><?php echo e(subscriptionPaymentSettings()['CURRENCY_SYMBOL']); ?></sup>
-                                                        <?php echo e(isset($subscription) ? $subscription->package_amount : ''); ?>
+                <div class="card-body">
+                    <?php
+                        // Get only intervals that have active packages
+                        $activeIntervals = $subscriptions->pluck('interval')->unique();
+                    ?>
+                    
+                    <?php if($activeIntervals->count() > 0): ?>
+                        <div class="text-center mb-4">
+                            <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
+                                <?php $__currentLoopData = $activeIntervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link <?php if($loop->first): ?> active <?php endif; ?>" id="tab-<?php echo e($interval); ?>" data-bs-toggle="tab" data-bs-target="#interval-<?php echo e($interval); ?>" type="button" role="tab" aria-controls="interval-<?php echo e($interval); ?>" aria-selected="<?php echo e($loop->first ? 'true' : 'false'); ?>">
+                                            <?php echo e(__($interval)); ?>
 
-                                                        <span>/<?php echo e(isset($subscription) ? $subscription->interval : ''); ?></span>
-                                                    </b>
-                                                </h3>
-                                            </div>
-                                        </th>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $__currentLoopData = $features; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feature): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <tr>
-                                        <td><?php echo e(__($feature)); ?></td>
-                                        <?php $__currentLoopData = $subscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <td class="text-center">
-                                                <?php switch($feature):
-                                                    case (__('User Limit')): ?>
-                                                        <?php echo e(isset($subscription) ? $subscription->user_limit : ''); ?>
-
-                                                    <?php break; ?>
-
-                                                    <?php case (__('Property Limit')): ?>
-                                                        <?php echo e(isset($subscription) ? $subscription->property_limit : ''); ?>
-
-                                                    <?php break; ?>
-
-                                                    <?php case (__('Tenant Limit')): ?>
-                                                        <?php echo e(isset($subscription) ? $subscription->tenant_limit : ''); ?>
-
-                                                    <?php break; ?>
-
-                                                    <?php case (__('Unit Range')): ?>
-                                                        <?php echo e(isset($subscription) ? $subscription->min_units : ''); ?> - <?php echo e((isset($subscription) && $subscription->max_units == 0) ? 'Unlimited' : (isset($subscription) ? $subscription->max_units : '')); ?>
-
-                                                    <?php break; ?>
-
-                                                    <?php case (__('Enabled Logged History')): ?>
-                                                        <?php if(isset($subscription) && $subscription->enabled_logged_history): ?>
-                                                            <div class="bg-success text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-check f-20"></i>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <div class="bg-danger text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-x f-20"></i>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    <?php break; ?>
-
-                                                    <?php case (__('Coupon Applicable')): ?>
-                                                        <?php if(isset($subscription) && $subscription->couponCheck() > 0): ?>
-                                                            <div class="bg-success text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-check f-20"></i>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <div class="bg-danger text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-x f-20"></i>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    <?php break; ?>
-                                                <?php endswitch; ?>
-                                            </td>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </tr>
+                                        </button>
+                                    </li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </ul>
+                        </div>
+                        <div class="tab-content" id="intervalTabsContent">
+                            <?php $__currentLoopData = $activeIntervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="interval-<?php echo e($interval); ?>" role="tabpanel" aria-labelledby="tab-<?php echo e($interval); ?>">
+                                    <div class="row text-center justify-content-center">
+                                        <?php $__currentLoopData = $subscriptions->where('interval', $interval); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="card price-card border shadow-sm h-100">
+                                                    <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 position-relative">
+                                                        <?php if(\Auth::user()->type == 'super admin'): ?>
+                                                            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+                                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit pricing packages')): ?>
+                                                                    <a class="btn btn-sm btn-secondary customModal"
+                                                                        data-url="<?php echo e(route('subscriptions.edit', $subscription->id)); ?>"
+                                                                        data-title="<?php echo e(__('Edit Package')); ?>">
+                                                                        <i class="ti ti-edit"></i>
+                                                                    </a>
+                                                                <?php endif; ?>
+                                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete pricing packages')): ?>
+                                                                    <button type="button" class="btn btn-sm btn-danger delete-package-btn" data-package-id="<?php echo e($subscription->id); ?>">
+                                                                        <i class="ti ti-trash"></i>
+                                                                    </button>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <h2 class="mb-2 mt-2"><?php echo e($subscription->title); ?></h2>
+                                                        <div class="price-price mb-4">
+                                                            <sup class="h5"><?php echo e(subscriptionPaymentSettings()['CURRENCY_SYMBOL']); ?></sup>
+                                                            <span class="h1 fw-bold"><?php echo e($subscription->package_amount); ?></span>
+                                                            <span class="h6 text-muted">/<?php echo e($subscription->interval); ?></span>
+                                                        </div>
+                                                        <div class="d-flex flex-column align-items-center justify-content-center w-100">
+                                                            <ul class="list-unstyled text-start mb-4" style="max-width: 320px;">
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('User Limit')); ?>: <?php echo e($subscription->user_limit); ?></li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Property Limit')); ?>: <?php echo e($subscription->property_limit); ?></li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Tenant Limit')); ?>: <?php echo e($subscription->tenant_limit); ?></li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Unit Range')); ?>: <?php echo e($subscription->min_units); ?> - <?php echo e($subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units); ?></li>
+                                                                <li class="mb-2">
+                                                                    <i class="ti <?php echo e($subscription->enabled_logged_history ? 'ti-circle-check text-success' : 'ti-circle-x text-danger'); ?> me-2"></i>
+                                                                    <?php echo e(__('Enabled Logged History')); ?>
 
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <?php $__currentLoopData = $subscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <td class="text-center">
-                                            <?php if(\Auth::user()->type != 'super admin' && isset($subscription) && \Auth::user()->subscription == $subscription->id): ?>
-                                                <span class="badge text-bg-success"><?php echo e(__('Active')); ?></span>
-                                                <br>
-                                                <span><?php echo e(\Auth::user()->subscription_expire_date ? dateFormat(\Auth::user()->subscription_expire_date) : __('Unlimited')); ?></span>
-                                                <?php echo e(__('Expiry Date')); ?>
+                                                                </li>
+                                                                <li class="mb-2">
+                                                                    <i class="ti <?php echo e($subscription->couponCheck() > 0 ? 'ti-circle-check text-success' : 'ti-circle-x text-danger'); ?> me-2"></i>
+                                                                    <?php echo e(__('Coupon Applicable')); ?>
 
-                                            <?php else: ?>
-                                                <?php if(
-                                                    \Auth::user()->type == 'owner' &&
-                                                        \Auth::user()->subscription != $subscription->id &&
-                                                        $subscription->package_amount > 0): ?>
-                                                    <div class="border-start py-4 py-md-5">
-                                                        <a href="<?php echo e(isset($subscription) ? route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) : '#'); ?>"
-                                                            class="btn btn-outline-primary bg-light text-primary">
-                                                            <?php echo e(__('Purchase Now')); ?>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="mt-auto w-100">
+                                                            <?php if(\Auth::user()->type != 'super admin' && \Auth::user()->subscription == $subscription->id): ?>
+                                                                <div class="text-center">
+                                                                    <span class="badge bg-success mb-2"><?php echo e(__('Active')); ?></span>
+                                                                    <br>
+                                                                    <span class="text-muted">
+                                                                        <?php echo e(\Auth::user()->subscription_expire_date ? dateFormat(\Auth::user()->subscription_expire_date) : __('Unlimited')); ?>
 
-                                                        </a>
+                                                                        <?php echo e(__('Expiry Date')); ?>
+
+                                                                    </span>
+                                                                </div>
+                                                            <?php else: ?>
+                                                                <?php if(\Auth::user()->type == 'owner' && \Auth::user()->subscription != $subscription->id && $subscription->package_amount > 0): ?>
+                                                                    <a href="<?php echo e(route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id))); ?>"
+                                                                        class="btn btn-primary w-100">
+                                                                        <?php echo e(__('Purchase Now')); ?>
+
+                                                                    </a>
+                                                                <?php endif; ?>
+                                                                <?php if($subscription->package_amount == 0 && \Auth::user()->type == 'owner'): ?>
+                                                                    <form action="<?php echo e(route('subscriptions.subscribe', $subscription->id)); ?>" method="POST">
+                                                                        <?php echo csrf_field(); ?>
+                                                                        <button type="submit" class="btn btn-success w-100"><?php echo e(__('Subscribe Now')); ?></button>
+                                                                    </form>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <form id="delete-form-<?php echo e($subscription->id); ?>" action="<?php echo e(route('subscriptions.destroy', $subscription->id)); ?>" method="POST" style="display:none;">
+                                                            <?php echo csrf_field(); ?>
+                                                            <?php echo method_field('DELETE'); ?>
+                                                        </form>
                                                     </div>
-                                                <?php endif; ?>
-                                                <?php if(isset($subscription) && $subscription->package_amount == 0 && \Auth::user()->type == 'owner'): ?>
-                                                    <form action="<?php echo e(isset($subscription) ? route('subscriptions.subscribe', $subscription->id) : '#'); ?>" method="POST" style="display:inline;">
-                                                        <?php echo csrf_field(); ?>
-                                                        <button type="submit" class="btn btn-success"><?php echo e(__('Subscribe Now')); ?></button>
-                                                    </form>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center">
+                            <p><?php echo e(__('No packages available.')); ?></p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                            <?php echo Form::open(['method' => 'DELETE', 'route' => [isset($subscription) ? 'subscriptions.destroy' : '#', isset($subscription) ? $subscription->id : null]]); ?>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePackageModal" tabindex="-1" aria-labelledby="deletePackageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePackageModalLabel"><?php echo e(__('Confirm Delete')); ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php echo e(__('Are you sure you want to delete this package? This action cannot be undone.')); ?>
 
-                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit pricing packages')): ?>
-                                                <a class="avtar avtar-xs btn-link-secondary text-secondary customModal"
-                                                    data-bs-toggle="tooltip" data-bs-original-title="<?php echo e(__('Edit')); ?>"
-                                                    href="#"
-                                                    data-url="<?php echo e(isset($subscription) ? route('subscriptions.edit', $subscription->id) : '#'); ?>"
-                                                    data-title="<?php echo e(__('Edit Package')); ?>"> <i data-feather="edit"></i></a>
-                                            <?php endif; ?>
-                                            <?php if(isset($subscription) && $subscription->id != 1): ?>
-                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete pricing packages')): ?>
-                                                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog"
-                                                        data-bs-toggle="tooltip" data-bs-original-title="<?php echo e(__('Detete')); ?>"
-                                                        href="#"> <i data-feather="trash-2"></i></a>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                            <?php echo Form::close(); ?>
-
-
-                                        </td>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </tr>
-                            </tfoot>
-                        </table>
-
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo e(__('Cancel')); ?></button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?php echo e(__('Delete')); ?></button>
                 </div>
             </div>
         </div>
     </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+    let packageToDelete = null;
+    let deleteModal = null;
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.delete-package-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Delete button clicked for package:', btn.getAttribute('data-package-id'));
+                packageToDelete = btn.getAttribute('data-package-id');
+                deleteModal = new bootstrap.Modal(document.getElementById('deletePackageModal'));
+                deleteModal.show();
+            });
+        });
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (packageToDelete) {
+                const form = document.getElementById('delete-form-' + packageToDelete);
+                if (form) {
+                    form.submit();
+                } else {
+                    alert('Delete form not found!');
+                }
+                if(deleteModal) deleteModal.hide();
+            }
+        });
+        document.getElementById('deletePackageModal').addEventListener('hidden.bs.modal', function () {
+            packageToDelete = null;
+        });
+    });
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /Users/chipchip/Downloads/codecanyon-ytuZNl0y-smart-tenant-property-management-system-saas/main_file/resources/views/subscription/index.blade.php ENDPATH**/ ?>

@@ -33,7 +33,7 @@
 <!-- Required Js -->
 <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
+<!-- <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script> -->
 <script src="{{ asset('assets/js/fonts/custom-font.js') }}"></script>
 <script>
     var lightLogo = "{{ asset(Storage::url('upload/logo')) . '/' . $lightLogo }}";
@@ -45,22 +45,6 @@
 
 <!-- datatable Js -->
 <script src="{{ asset('assets/js/plugins/dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/dataTables.bootstrap5.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/buttons.colVis.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/buttons.print.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/pdfmake.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/jszip.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/vfs_fonts.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/buttons.bootstrap5.min.js') }}"></script>
-<script>
-    font_change("{{ $settings['layout_font'] }}");
-</script>
-
-<script>
-    change_box_container("{{ $settings['layout_width'] }}");
-</script>
 
 
 <!-- [Page Specific JS] start -->

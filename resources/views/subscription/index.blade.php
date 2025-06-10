@@ -10,7 +10,6 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12">
-
             <div class="card">
                 <div class="card-header">
                     <div class="row align-items-center g-2">
@@ -32,147 +31,165 @@
                         @endif
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <div class="price-card2">
-                        @php
-                            $features = [
-                                __('User Limit'),
-                                __('Property Limit'),
-                                __('Tenant Limit'),
-                                __('Unit Range'),
-                                __('Enabled Logged History'),
-                                __('Coupon Applicable'),
-                            ];
-                        @endphp
-                        <table class="table table-striped m-0">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Features') }}</th>
-                                    @foreach ($subscriptions as $subscription)
-                                        <th>
-                                            <div class="card-body border-start text-center py-5 py-md-5">
-                                                <h3 class="text-primary"><b> {{ isset($subscription) ? $subscription->title : '' }}</b></h3>
-                                                <h3 class="text-muted mb-0 mt-5">
-                                                    <b>
-                                                        <sup>{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
-                                                        {{ isset($subscription) ? $subscription->package_amount : '' }}
-                                                        <span>/{{ isset($subscription) ? $subscription->interval : '' }}</span>
-                                                    </b>
-                                                </h3>
-                                            </div>
-                                        </th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($features as $feature)
-                                    <tr>
-                                        <td>{{ __($feature) }}</td>
-                                        @foreach ($subscriptions as $subscription)
-                                            <td class="text-center">
-                                                @switch($feature)
-                                                    @case(__('User Limit'))
-                                                        {{ isset($subscription) ? $subscription->user_limit : '' }}
-                                                    @break
-
-                                                    @case(__('Property Limit'))
-                                                        {{ isset($subscription) ? $subscription->property_limit : '' }}
-                                                    @break
-
-                                                    @case(__('Tenant Limit'))
-                                                        {{ isset($subscription) ? $subscription->tenant_limit : '' }}
-                                                    @break
-
-                                                    @case(__('Unit Range'))
-                                                        {{ isset($subscription) ? $subscription->min_units : '' }} - {{ (isset($subscription) && $subscription->max_units == 0) ? 'Unlimited' : (isset($subscription) ? $subscription->max_units : '') }}
-                                                    @break
-
-                                                    @case(__('Enabled Logged History'))
-                                                        @if (isset($subscription) && $subscription->enabled_logged_history)
-                                                            <div class="bg-success text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-check f-20"></i>
-                                                            </div>
-                                                        @else
-                                                            <div class="bg-danger text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-x f-20"></i>
-                                                            </div>
-                                                        @endif
-                                                    @break
-
-                                                    @case(__('Coupon Applicable'))
-                                                        @if (isset($subscription) && $subscription->couponCheck() > 0)
-                                                            <div class="bg-success text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-check f-20"></i>
-                                                            </div>
-                                                        @else
-                                                            <div class="bg-danger text-white avtar avtar-xs icon">
-                                                                <i class="ti ti-x f-20"></i>
-                                                            </div>
-                                                        @endif
-                                                    @break
-                                                @endswitch
-                                            </td>
-                                        @endforeach
-                                    </tr>
+                <div class="card-body">
+                    @php
+                        // Get only intervals that have active packages
+                        $activeIntervals = $subscriptions->pluck('interval')->unique();
+                    @endphp
+                    
+                    @if($activeIntervals->count() > 0)
+                        <div class="text-center mb-4">
+                            <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
+                                @foreach ($activeIntervals as $idx => $interval)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link @if($loop->first) active @endif" id="tab-{{ $interval }}" data-bs-toggle="tab" data-bs-target="#interval-{{ $interval }}" type="button" role="tab" aria-controls="interval-{{ $interval }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                            {{ __($interval) }}
+                                        </button>
+                                    </li>
                                 @endforeach
-
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    @foreach ($subscriptions as $subscription)
-                                        <td class="text-center">
-                                            @if (\Auth::user()->type != 'super admin' && isset($subscription) && \Auth::user()->subscription == $subscription->id)
-                                                <span class="badge text-bg-success">{{ __('Active') }}</span>
-                                                <br>
-                                                <span>{{ \Auth::user()->subscription_expire_date ? dateFormat(\Auth::user()->subscription_expire_date) : __('Unlimited') }}</span>
-                                                {{ __('Expiry Date') }}
-                                            @else
-                                                @if (
-                                                    \Auth::user()->type == 'owner' &&
-                                                        \Auth::user()->subscription != $subscription->id &&
-                                                        $subscription->package_amount > 0)
-                                                    <div class="border-start py-4 py-md-5">
-                                                        <a href="{{ isset($subscription) ? route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) : '#' }}"
-                                                            class="btn btn-outline-primary bg-light text-primary">
-                                                            {{ __('Purchase Now') }}
-                                                        </a>
+                            </ul>
+                        </div>
+                        <div class="tab-content" id="intervalTabsContent">
+                            @foreach ($activeIntervals as $idx => $interval)
+                                <div class="tab-pane fade @if($loop->first) show active @endif" id="interval-{{ $interval }}" role="tabpanel" aria-labelledby="tab-{{ $interval }}">
+                                    <div class="row text-center justify-content-center">
+                                        @foreach ($subscriptions->where('interval', $interval) as $subscription)
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="card price-card border shadow-sm h-100">
+                                                    <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 position-relative">
+                                                        @if (\Auth::user()->type == 'super admin')
+                                                            <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+                                                                @can('edit pricing packages')
+                                                                    <a class="btn btn-sm btn-secondary customModal"
+                                                                        data-url="{{ route('subscriptions.edit', $subscription->id) }}"
+                                                                        data-title="{{ __('Edit Package') }}">
+                                                                        <i class="ti ti-edit"></i>
+                                                                    </a>
+                                                                @endcan
+                                                                @can('delete pricing packages')
+                                                                    <button type="button" class="btn btn-sm btn-danger delete-package-btn" data-package-id="{{ $subscription->id }}">
+                                                                        <i class="ti ti-trash"></i>
+                                                                    </button>
+                                                                @endcan
+                                                            </div>
+                                                        @endif
+                                                        <h2 class="mb-2 mt-2">{{ $subscription->title }}</h2>
+                                                        <div class="price-price mb-4">
+                                                            <sup class="h5">{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
+                                                            <span class="h1 fw-bold">{{ $subscription->package_amount }}</span>
+                                                            <span class="h6 text-muted">/{{ $subscription->interval }}</span>
+                                                        </div>
+                                                        <div class="d-flex flex-column align-items-center justify-content-center w-100">
+                                                            <ul class="list-unstyled text-start mb-4" style="max-width: 320px;">
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>{{ __('User Limit') }}: {{ $subscription->user_limit }}</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>{{ __('Property Limit') }}: {{ $subscription->property_limit }}</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>{{ __('Tenant Limit') }}: {{ $subscription->tenant_limit }}</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>{{ __('Unit Range') }}: {{ $subscription->min_units }} - {{ $subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units }}</li>
+                                                                <li class="mb-2">
+                                                                    <i class="ti {{ $subscription->enabled_logged_history ? 'ti-circle-check text-success' : 'ti-circle-x text-danger' }} me-2"></i>
+                                                                    {{ __('Enabled Logged History') }}
+                                                                </li>
+                                                                <li class="mb-2">
+                                                                    <i class="ti {{ $subscription->couponCheck() > 0 ? 'ti-circle-check text-success' : 'ti-circle-x text-danger' }} me-2"></i>
+                                                                    {{ __('Coupon Applicable') }}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="mt-auto w-100">
+                                                            @if (\Auth::user()->type != 'super admin' && \Auth::user()->subscription == $subscription->id)
+                                                                <div class="text-center">
+                                                                    <span class="badge bg-success mb-2">{{ __('Active') }}</span>
+                                                                    <br>
+                                                                    <span class="text-muted">
+                                                                        {{ \Auth::user()->subscription_expire_date ? dateFormat(\Auth::user()->subscription_expire_date) : __('Unlimited') }}
+                                                                        {{ __('Expiry Date') }}
+                                                                    </span>
+                                                                </div>
+                                                            @else
+                                                                @if (\Auth::user()->type == 'owner' && \Auth::user()->subscription != $subscription->id && $subscription->package_amount > 0)
+                                                                    <a href="{{ route('subscriptions.show', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}"
+                                                                        class="btn btn-primary w-100">
+                                                                        {{ __('Purchase Now') }}
+                                                                    </a>
+                                                                @endif
+                                                                @if ($subscription->package_amount == 0 && \Auth::user()->type == 'owner')
+                                                                    <form action="{{ route('subscriptions.subscribe', $subscription->id) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="btn btn-success w-100">{{ __('Subscribe Now') }}</button>
+                                                                    </form>
+                                                                @endif
+                                                            @endif
+                                                        </div>
+                                                        <form id="delete-form-{{ $subscription->id }}" action="{{ route('subscriptions.destroy', $subscription->id) }}" method="POST" style="display:none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
                                                     </div>
-                                                @endif
-                                                @if (isset($subscription) && $subscription->package_amount == 0 && \Auth::user()->type == 'owner')
-                                                    <form action="{{ isset($subscription) ? route('subscriptions.subscribe', $subscription->id) : '#' }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success">{{ __('Subscribe Now') }}</button>
-                                                    </form>
-                                                @endif
-                                            @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center">
+                            <p>{{ __('No packages available.') }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                            {!! Form::open(['method' => 'DELETE', 'route' => [isset($subscription) ? 'subscriptions.destroy' : '#', isset($subscription) ? $subscription->id : null]]) !!}
-                                            @can('edit pricing packages')
-                                                <a class="avtar avtar-xs btn-link-secondary text-secondary customModal"
-                                                    data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}"
-                                                    href="#"
-                                                    data-url="{{ isset($subscription) ? route('subscriptions.edit', $subscription->id) : '#' }}"
-                                                    data-title="{{ __('Edit Package') }}"> <i data-feather="edit"></i></a>
-                                            @endcan
-                                            @if (isset($subscription) && $subscription->id != 1)
-                                                @can('delete pricing packages')
-                                                    <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog"
-                                                        data-bs-toggle="tooltip" data-bs-original-title="{{ __('Detete') }}"
-                                                        href="#"> <i data-feather="trash-2"></i></a>
-                                                @endcan
-                                            @endif
-                                            {!! Form::close() !!}
-
-                                        </td>
-                                    @endforeach
-                                </tr>
-                            </tfoot>
-                        </table>
-
-                    </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePackageModal" tabindex="-1" aria-labelledby="deletePackageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePackageModalLabel">{{ __('Confirm Delete') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ __('Are you sure you want to delete this package? This action cannot be undone.') }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">{{ __('Delete') }}</button>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    let packageToDelete = null;
+    let deleteModal = null;
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.delete-package-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Delete button clicked for package:', btn.getAttribute('data-package-id'));
+                packageToDelete = btn.getAttribute('data-package-id');
+                deleteModal = new bootstrap.Modal(document.getElementById('deletePackageModal'));
+                deleteModal.show();
+            });
+        });
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (packageToDelete) {
+                const form = document.getElementById('delete-form-' + packageToDelete);
+                if (form) {
+                    form.submit();
+                } else {
+                    alert('Delete form not found!');
+                }
+                if(deleteModal) deleteModal.hide();
+            }
+        });
+        document.getElementById('deletePackageModal').addEventListener('hidden.bs.modal', function () {
+            packageToDelete = null;
+        });
+    });
+</script>
+@endpush

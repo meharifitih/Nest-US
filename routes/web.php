@@ -34,6 +34,7 @@ use App\Http\Controllers\HoaController;
 use App\Http\Controllers\WhatsAppTestController;
 use App\Http\Controllers\TenantExcelUploadController;
 use App\Http\Controllers\TenantProfileController;
+use App\Http\Controllers\EnterpriseContactController;
 
 
 /*
@@ -479,3 +480,5 @@ Route::group([
 ], function () {
     Route::get('owner/tutorial-videos', [App\Http\Controllers\UserController::class, 'tutorialVideos'])->name('owner.tutorial_videos');
 });
+
+Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store'])->name('enterprise.contact');

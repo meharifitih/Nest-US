@@ -3,6 +3,12 @@
     $settings = settings();
     $user = \App\Models\User::find(1);
     \App::setLocale($user->lang);
+    $intervals = $subscriptions->pluck('interval')->unique()->values()->toArray();
+    // Move 'Unlimited' to the end if it exists
+    if (($idx = array_search('Unlimited', $intervals)) !== false) {
+        unset($intervals[$idx]);
+        $intervals[] = 'Unlimited';
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -62,6 +68,69 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+    <style>
+        .enterprise-card {
+            border: 2px solid #007bff;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
+            transform: scale(1.05);
+            z-index: 1;
+        }
+
+        .enterprise-card .price-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .enterprise-card .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .enterprise-card .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .interval-tab-container {
+            background: #fff;
+            border-radius: 16px;
+            border: 1.5px solid #e0e4ea;
+            padding: 0 0 0 0;
+            margin: 0 auto 28px auto;
+            box-shadow: 0 4px 24px rgba(30, 34, 90, 0.07);
+            max-width: 600px;
+            position: relative;
+            top: -18px;
+        }
+        .nav-tabs {
+            border-bottom: none;
+            justify-content: center;
+        }
+        .nav-tabs .nav-link {
+            font-weight: 600;
+            color: #155263;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            margin: 0 8px;
+            border-radius: 8px 8px 0 0;
+            transition: color 0.2s, border-bottom 0.2s, background 0.2s;
+            padding: 12px 32px 10px 32px;
+            font-size: 1.1rem;
+        }
+        .nav-tabs .nav-link.active {
+            color: #fff;
+            background: #155263;
+            border-bottom: 3px solid #155263;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 8px rgba(21,82,99,0.08);
+        }
+        .nav-tabs .nav-link:not(.active):hover {
+            background: #f0f4f8;
+            color: #155263;
+        }
+    </style>
 </head>
 
 <body class="landing-page" data-pc-preset="{{ !empty($settings['color_type']) && $settings['color_type'] == 'custom' ? 'custom' : $settings['accent_color'] }}" data-pc-sidebar-theme="light"
@@ -495,49 +564,73 @@
                             </p>
                         </div>
                     </div>
-                    <div class="row text-center justify-content-center">
-                        <!-- [ sample-page ] start -->
-                        @foreach ($subscriptions as $subscription)
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card price-card ">
-                                    <div class="card-body">
-                                        <h2 class="">{{ isset($subscription) ? $subscription->title : '' }}</h2>
-                                        <div class="price-price mt-4">
-                                            <sup>{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
-                                            {{ isset($subscription) ? $subscription->package_amount : '' }}
-                                            <span>/{{ isset($subscription) ? $subscription->interval : '' }}</span>
-                                        </div>
-                                        <ul class="list-group list-group-flush product-list">
-                                            <li class="list-group-item enable">{{ __('User Limit') }}
-                                                {{ isset($subscription) ? $subscription->user_limit : '' }}</li>
-                                            <li class="list-group-item enable">{{ __('Property Limit') }}
-                                                {{ isset($subscription) ? $subscription->property_limit : '' }}</li>
-                                            <li class="list-group-item enable">{{ __('Tenant Limit') }}
-                                                {{ isset($subscription) ? $subscription->tenant_limit : '' }}</li>
+                    <div class="interval-tab-container mb-4">
+                        <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
+                            @foreach ($intervals as $idx => $interval)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link @if($idx === 0) active @endif" id="tab-{{ $interval }}" data-bs-toggle="tab" data-bs-target="#interval-{{ $interval }}" type="button" role="tab" aria-controls="interval-{{ $interval }}" aria-selected="{{ $idx === 0 ? 'true' : 'false' }}">
+                                        {{ __($interval) }}
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
-                                            @if (isset($subscription) && $subscription->enabled_logged_history)
-                                                <li class="list-group-item enable">{{ __('Enabled Logged History') }}
-                                                </li>
-                                            @else
-                                                <li class="list-group-item">{{ __('Disable Logged History') }}</li>
-                                            @endif
-                                            @if (isset($subscription) && $subscription->couponCheck() > 0)
-                                                <li class="list-group-item enable">
-                                                    {{ __('Enabled Coupon Applicable') }}
-                                                </li>
-                                            @else
-                                                <li class="list-group-item">{{ __('Disable Coupon Applicable') }}</li>
-                                            @endif
-                                        </ul>
-                                        <a class="btn btn-outline-primary bg-light text-primary mt-4"
-                                            href="{{ route('register') }}" role="button">{{ __('Order Now') }}</a>
+                    <div class="tab-content" id="intervalTabsContent">
+                        @foreach ($intervals as $idx => $interval)
+                            <div class="tab-pane fade @if($idx === 0) show active @endif" id="interval-{{ $interval }}" role="tabpanel" aria-labelledby="tab-{{ $interval }}">
+                                <div class="row text-center justify-content-center">
+                                    @foreach ($subscriptions->where('interval', $interval) as $subscription)
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="card price-card">
+                                                <div class="card-body">
+                                                    <h2 class="">{{ $subscription->title }}</h2>
+                                                    <div class="price-price mt-4">
+                                                        <sup>{{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}</sup>
+                                                        {{ $subscription->package_amount }}
+                                                        <span>/{{ $subscription->interval }}</span>
+                                                    </div>
+                                                    <ul class="list-unstyled mt-4">
+                                                        <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('User Limit') }}: {{ $subscription->user_limit }}</li>
+                                                        <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Property Limit') }}: {{ $subscription->property_limit }}</li>
+                                                        <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Tenant Limit') }}: {{ $subscription->tenant_limit }}</li>
+                                                        <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Unit Range') }}: {{ $subscription->min_units }} - {{ $subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units }}</li>
+                                                    </ul>
+                                                    <div class="mt-4">
+                                                        <a href="{{ route('register') }}" class="btn btn-primary w-100">{{ __('Get Started') }}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    <!-- Enterprise Card for this interval -->
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card price-card enterprise-card">
+                                            <div class="card-body">
+                                                <h2 class="">{{ __('Enterprise') }}</h2>
+                                                <div class="price-price mt-4">
+                                                    <span>{{ __('Contact us for pricing') }}</span>
+                                                </div>
+                                                <ul class="list-unstyled mt-4">
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Custom User Limit') }}</li>
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Custom Property Limit') }}</li>
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Custom Tenant Limit') }}</li>
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Custom Unit Range') }}</li>
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Priority Support') }}</li>
+                                                    <li><i class="ti ti-circle-check text-success me-2"></i>{{ __('Custom Features') }}</li>
+                                                </ul>
+                                                <div class="mt-4">
+                                                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enterpriseContactModal">
+                                                        {{ __('Contact Us') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-                        <!-- [ sample-page ] end -->
                     </div>
-
                 </div>
             </section>
         @endif
@@ -1144,6 +1237,105 @@
         });
     </script>
     <!-- [Page Specific JS] end -->
+
+    <!-- Enterprise Contact Modal -->
+    <div class="modal fade" id="enterpriseContactModal" tabindex="-1" aria-labelledby="enterpriseContactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enterpriseContactModalLabel">{{ __('Enterprise Package Inquiry') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="enterpriseContactForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{{ __('Name') }}</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">{{ __('Email') }}</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="property_limit" class="form-label">{{ __('Desired Property Limit') }}</label>
+                            <input type="text" class="form-control" id="property_limit" name="property_limit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unit_limit" class="form-label">{{ __('Desired Unit Limit') }}</label>
+                            <input type="text" class="form-control" id="unit_limit" name="unit_limit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="interval" class="form-label">{{ __('Preferred Interval') }}</label>
+                            <select class="form-control" id="interval" name="interval" required>
+                                <option value="Monthly">{{ __('Monthly') }}</option>
+                                <option value="Quarterly">{{ __('Quarterly') }}</option>
+                                <option value="Yearly">{{ __('Yearly') }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">{{ __('Additional Message (Optional)') }}</label>
+                            <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                    <button type="button" class="btn btn-primary" id="submitEnterpriseContact">{{ __('Submit') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    if (typeof $ === 'undefined') { alert('jQuery not loaded!'); }
+
+    $(document).ready(function() {
+        $('#submitEnterpriseContact').click(function() {
+            var form = $('#enterpriseContactForm');
+            var formData = form.serialize();
+            
+            $.ajax({
+                url: '{{ route("enterprise.contact") }}',
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    alert(response.message);
+                    $('#enterpriseContactModal').modal('hide');
+                    form[0].reset();
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessage = '';
+                        for (var key in errors) {
+                            errorMessage += errors[key][0] + '\n';
+                        }
+                        alert(errorMessage);
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
+                }
+            });
+        });
+    });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // If no tab is active, activate the first one
+        var firstTab = document.querySelector('.nav-tabs .nav-link');
+        var firstPane = document.querySelector('.tab-pane');
+        if (firstTab && !firstTab.classList.contains('active')) {
+            firstTab.classList.add('active');
+        }
+        if (firstPane && !firstPane.classList.contains('show')) {
+            firstPane.classList.add('show', 'active');
+        }
+    });
+    </script>
 </body>
 
 </html>

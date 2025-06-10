@@ -23,9 +23,8 @@
             </ul>
         </div>
         <!-- [Mobile Media Block end] -->
-        <div class="ms-auto">
-            <ul class="list-unstyled">
-
+        <div class="ms-auto d-flex align-items-center gap-2" style="margin-right: 18px;">
+            <ul class="list-unstyled mb-0 d-flex align-items-center gap-2">
                 <li class="dropdown pc-h-item" data-bs-toggle="tooltip" data-bs-original-title="{{__('Language')}}" data-bs-placement="bottom">
                     <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false" >
@@ -39,8 +38,6 @@
                                 </a>
                             @endif
                         @endforeach
-
-
                     </div>
                 </li>
                 @if (\Auth::user()->type == 'super admin' || \Auth::user()->type == 'owner')
@@ -54,47 +51,53 @@
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <img src="{{(!empty($users->profile)? $profile.'/'.$users->profile : $profile.'/avatar.png')}}" alt="user-image" class="user-avtar" />
+                        <img src="{{(!empty($users->profile)? $profile.'/'.$users->profile : $profile.'/avatar.png')}}" alt="user-image" class="user-avtar" style="width:38px;height:38px;border-radius:50%;object-fit:cover;" />
                         <span>
                             <i class="ti ti-user-check"></i>
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
-                        <div class="dropdown-header">
-                            <h4>
-                                {{ __('Good Morning') }},
-                                <span class="small text-muted">{{\Auth::user()->name}}</span>
-                            </h4>
-                            <p class="text-muted">{{\Auth::user()->type}}</p>
-
-                            <div class="profile-notification-scroll position-relative"
-                                style="max-height: calc(100vh - 280px)">
-                                @if(\Auth::user()->type !== 'tenant')
-                                    <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
-                                        <i class="ti ti-user"></i>
-                                        <span>{{ __('Profile') }}</span>
-                                    </a>
-                                @else
-                                    <a href="{{ route('tenant.password.edit') }}" class="dropdown-item">
-                                        <i class="ti ti-lock"></i>
-                                        <span>{{ __('Change Password') }}</span>
-                                    </a>
-                                @endif
-                                <hr />
-                                @impersonating()
-                                <a href="{{ route('impersonate.leave') }}" class="dropdown-item" data-actions="Account">
-                                    <i class="ti ti-transfer-out"></i>
-                                    <span>{{ __('Leave') }}</span>
+                        <div class="dropdown-header text-center">
+                            @php
+                                $hour = \Carbon\Carbon::now()->format('H');
+                                if ($hour < 12) {
+                                    $greeting = 'Good morning';
+                                } elseif ($hour < 18) {
+                                    $greeting = 'Good afternoon';
+                                } else {
+                                    $greeting = 'Good evening';
+                                }
+                            @endphp
+                            <span class="fw-bold d-block mb-1" style="font-size:1.1rem; color:#222;">{{ $greeting }},</span>
+                            <span class="fw-bold d-block mb-1" style="font-size:1.35rem; letter-spacing:0.5px; color:#444;">{{ \Auth::user()->name }}</span>
+                            <span class="text-muted small">{{ ucfirst(\Auth::user()->type) }}</span>
+                        </div>
+                        <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 280px)">
+                            @if(\Auth::user()->type !== 'tenant')
+                                <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
+                                    <i class="ti ti-user"></i>
+                                    <span>{{ __('Profile') }}</span>
                                 </a>
-                                @endImpersonating
-                                <a href="{{ route('logout') }}" class="dropdown-item"  onclick="event.preventDefault(); document.getElementById('frm-logout').submit();">
-                                    <i class="ti ti-logout"></i>
-                                    <span>{{ __('Logout') }}</span>
-                                    <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        {{ csrf_field() }}
-                                    </form>
+                            @else
+                                <a href="{{ route('tenant.password.edit') }}" class="dropdown-item">
+                                    <i class="ti ti-lock"></i>
+                                    <span>{{ __('Change Password') }}</span>
                                 </a>
-                            </div>
+                            @endif
+                            <hr />
+                            @impersonating()
+                            <a href="{{ route('impersonate.leave') }}" class="dropdown-item" data-actions="Account">
+                                <i class="ti ti-transfer-out"></i>
+                                <span>{{ __('Leave') }}</span>
+                            </a>
+                            @endImpersonating
+                            <a href="{{ route('logout') }}" class="dropdown-item"  onclick="event.preventDefault(); document.getElementById('frm-logout').submit();">
+                                <i class="ti ti-logout"></i>
+                                <span>{{ __('Logout') }}</span>
+                                <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    {{ csrf_field() }}
+                                </form>
+                            </a>
                         </div>
                     </div>
                 </li>
