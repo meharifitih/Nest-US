@@ -424,6 +424,55 @@
             box-shadow: 0 4px 24px rgba(21,82,99,0.08);
         }
         .spacer-navbar { height: 100px; }
+        .interval-tab-outer {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .interval-tab-container.card {
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(25, 118, 210, 0.07);
+            background: #fff;
+            border: 1.5px solid #e3eafc;
+        }
+        .price-card .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .price-card .card-body ul {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            text-align: center !important;
+            margin: 0 auto !important;
+            padding: 0;
+        }
+        .price-card .card-body ul li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .price-card .card-body ul li i {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+        .price-card .card-body .price-price,
+        .price-card .card-body h2,
+        .price-card .card-body span,
+        .price-card .card-body p {
+            width: 100%;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 
@@ -486,7 +535,7 @@
                                 <?php echo e($Section_1_content_value['title']); ?>
 
                             <?php else: ?>
-                                Smart Tenant – Property Management System
+                                Nest – Property Management System
                             <?php endif; ?>
                         </h1>
                         <p class="lead text-muted mb-4">
@@ -798,26 +847,28 @@
                             </p>
                         </div>
                     </div>
-                    <div class="interval-tab-container mb-4">
-                        <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
-                            <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link <?php if($idx === 0): ?> active <?php endif; ?>" id="tab-<?php echo e($interval); ?>" data-bs-toggle="tab" data-bs-target="#interval-<?php echo e($interval); ?>" type="button" role="tab" aria-controls="interval-<?php echo e($interval); ?>" aria-selected="<?php echo e($idx === 0 ? 'true' : 'false'); ?>">
-                                        <?php echo e(__($interval)); ?>
+                    <div class="interval-tab-outer mb-4 d-flex justify-content-center">
+                        <div class="interval-tab-container card shadow-sm px-4 py-3 bg-white rounded-4" style="max-width: 420px;">
+                            <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
+                                <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link <?php if($idx === 0): ?> active <?php endif; ?>" id="tab-<?php echo e($interval); ?>" data-bs-toggle="tab" data-bs-target="#interval-<?php echo e($interval); ?>" type="button" role="tab" aria-controls="interval-<?php echo e($interval); ?>" aria-selected="<?php echo e($idx === 0 ? 'true' : 'false'); ?>">
+                                            <?php echo e(__($interval)); ?>
 
-                                    </button>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
+                                        </button>
+                                    </li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="tab-content" id="intervalTabsContent">
                         <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="tab-pane fade <?php if($idx === 0): ?> show active <?php endif; ?>" id="interval-<?php echo e($interval); ?>" role="tabpanel" aria-labelledby="tab-<?php echo e($interval); ?>">
-                                <div class="row text-center justify-content-center">
+                                <div class="row justify-content-center">
                                     <?php $__currentLoopData = $subscriptions->where('interval', $interval); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="col-md-6 col-lg-4">
-                                            <div class="card price-card">
+                                            <div class="card price-card text-center">
                                                 <div class="card-body">
                                                     <h2 class=""><?php echo e($subscription->title); ?></h2>
                                                     <div class="price-price mt-4">
@@ -826,11 +877,11 @@
 
                                                         <span>/<?php echo e($subscription->interval); ?></span>
                                                     </div>
-                                                    <ul class="list-unstyled mt-4">
-                                                        <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('User Limit')); ?>: <?php echo e($subscription->user_limit); ?></li>
-                                                        <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Property Limit')); ?>: <?php echo e($subscription->property_limit); ?></li>
-                                                        <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Tenant Limit')); ?>: <?php echo e($subscription->tenant_limit); ?></li>
-                                                        <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Unit Range')); ?>: <?php echo e($subscription->min_units); ?> - <?php echo e($subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units); ?></li>
+                                                    <ul class="list-unstyled text-center mb-4" style="margin: 0 auto;">
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('User Limit')); ?>: <?php echo e($subscription->user_limit); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Property Limit')); ?>: <?php echo e($subscription->property_limit); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Tenant Limit')); ?>: <?php echo e($subscription->tenant_limit); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Unit Range')); ?>: <?php echo e($subscription->min_units); ?> - <?php echo e($subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units); ?></li>
                                                     </ul>
                                                     <div class="mt-4">
                                                         <a href="<?php echo e(route('register')); ?>" class="btn btn-primary w-100"><?php echo e(__('Get Started')); ?></a>
@@ -841,13 +892,13 @@
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <!-- Enterprise Card for this interval -->
                                     <div class="col-md-6 col-lg-4">
-                                        <div class="card price-card enterprise-card">
+                                        <div class="card price-card text-center">
                                             <div class="card-body">
                                                 <h2 class=""><?php echo e(__('Enterprise')); ?></h2>
                                                 <div class="price-price mt-4">
                                                     <span><?php echo e(__('Contact us for pricing')); ?></span>
                                                 </div>
-                                                <ul class="list-unstyled mt-4">
+                                                <ul class="list-unstyled text-center mb-4" style="margin: 0 auto;">
                                                     <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom User Limit')); ?></li>
                                                     <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Property Limit')); ?></li>
                                                     <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Tenant Limit')); ?></li>

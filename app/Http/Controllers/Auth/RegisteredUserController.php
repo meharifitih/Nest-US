@@ -58,7 +58,6 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone_number' => ['required', 'string', 'regex:/^[79]\d{8}$/'],
-            'fayda_id' => ['required', 'string', 'max:255', 'unique:users'],
             'type' => ['required', 'string', 'in:tenant,maintainer,owner,super admin'],
         ]);
 
@@ -75,7 +74,6 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password),
                 'type' => $request->type,
                 'phone_number' => '+251' . $request->phone_number,
-                'fayda_id' => $request->fayda_id,
                 'profile' => 'avatar.png',
                 'lang' => 'english',
                 'subscription' => null,

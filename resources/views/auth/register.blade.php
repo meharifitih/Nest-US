@@ -81,16 +81,6 @@
                 @enderror
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="fayda_id" name="fayda_id"
-                    placeholder="{{ __('Fayda ID') }}" value="{{ old('fayda_id') }}" required />
-                <label for="fayda_id">{{ __('Fayda ID') }}</label>
-                @error('fayda_id')
-                    <span class="invalid-fayda_id text-danger" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
-            <div class="form-floating mb-3">
                 <div class="input-group">
                     <span class="input-group-text">+251</span>
                     <input type="text" class="form-control" id="phone_number" name="phone_number"

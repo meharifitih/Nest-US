@@ -97,23 +97,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="fayda_id" name="fayda_id"
-                    placeholder="<?php echo e(__('Fayda ID')); ?>" value="<?php echo e(old('fayda_id')); ?>" required />
-                <label for="fayda_id"><?php echo e(__('Fayda ID')); ?></label>
-                <?php $__errorArgs = ['fayda_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                    <span class="invalid-fayda_id text-danger" role="alert">
-                        <strong><?php echo e($message); ?></strong>
-                    </span>
-                <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-            </div>
-            <div class="form-floating mb-3">
                 <div class="input-group">
                     <span class="input-group-text">+251</span>
                     <input type="text" class="form-control" id="phone_number" name="phone_number"
