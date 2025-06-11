@@ -22,10 +22,10 @@ class UserController extends Controller
     {
         if (\Auth::user()->can('manage user')) {
             if (\Auth::user()->type == 'super admin') {
-                $users = User::where('parent_id', parentId())->where('type', 'owner')->get();
+                $users = User::where('parent_id', parentId())->where('type', 'owner')->paginate(10);
                 return view('user.index', compact('users'));
             } else {
-                $users = User::where('parent_id', '=', parentId())->whereNotIn('type', ['tenant', 'maintainer'])->get();
+                $users = User::where('parent_id', '=', parentId())->whereNotIn('type', ['tenant', 'maintainer'])->paginate(10);
                 return view('user.index', compact('users'));
             }
         } else {

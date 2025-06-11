@@ -60,6 +60,7 @@
 
     @stack('css-page')
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/pagination.css') }}" rel="stylesheet">
 
 
 </head>

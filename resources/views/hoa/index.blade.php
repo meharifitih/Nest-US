@@ -107,7 +107,7 @@
                             </tbody>
                         </table>
                         <div class="mt-4">
-                            {{ $hoas->links() }}
+                            {{ $hoas->links('vendor.pagination.bootstrap-5') }}
                         </div>
                     </div>
                 </div>

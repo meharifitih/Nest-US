@@ -91,7 +91,27 @@ class HomeController extends Controller
                     $subscriptions = Subscription::get();
                     $menus = Page::where('enabled', 1)->get();
                     $FAQs = FAQ::where('enabled', 1)->get();
-                    return view('layouts.landing', compact('subscriptions', 'menus', 'FAQs'));
+                    $testimonials = [
+                        (object)[
+                            'content' => 'This platform has streamlined our property management process!',
+                            'avatar' => 'https://randomuser.me/api/portraits/men/32.jpg',
+                            'name' => 'John Doe',
+                            'position' => 'Property Manager'
+                        ],
+                        (object)[
+                            'content' => 'Excellent support and easy to use interface.',
+                            'avatar' => 'https://randomuser.me/api/portraits/women/44.jpg',
+                            'name' => 'Jane Smith',
+                            'position' => 'Landlord'
+                        ],
+                        (object)[
+                            'content' => 'Highly recommend for anyone managing multiple properties.',
+                            'avatar' => 'https://randomuser.me/api/portraits/men/65.jpg',
+                            'name' => 'Mike Johnson',
+                            'position' => 'Real Estate Investor'
+                        ],
+                    ];
+                    return view('layouts.landing', compact('subscriptions', 'menus', 'FAQs', 'testimonials'));
                 } else {
                     return redirect()->route('login');
                 }

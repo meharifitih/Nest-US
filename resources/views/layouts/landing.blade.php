@@ -47,8 +47,7 @@
         type="image/x-icon" />
     <link href="{{ asset('assets/css/plugins/animate.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/plugins/swiper-bundle.css') }}" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-        id="main-font-link" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="{{ asset('assets/fonts/phosphor/duotone/style.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/fonts/feather.css') }}" />
@@ -69,67 +68,362 @@
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
     <style>
-        .enterprise-card {
-            border: 2px solid #007bff;
-            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
-            transform: scale(1.05);
-            z-index: 1;
+        :root {
+            --primary-color: #155263;
+            --secondary-color: #0D47A1;
+            --accent-color: #00BCD4;
+            --text-color: #2C3E50;
+            --light-bg: #F8FAFC;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .enterprise-card .price-price {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #007bff;
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background: var(--light-bg);
         }
 
-        .enterprise-card .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .enterprise-card .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+        .navbar-brand img {
+            height: 40px;
         }
 
-        .interval-tab-container {
-            background: #fff;
-            border-radius: 16px;
-            border: 1.5px solid #e0e4ea;
-            padding: 0 0 0 0;
-            margin: 0 auto 28px auto;
-            box-shadow: 0 4px 24px rgba(30, 34, 90, 0.07);
-            max-width: 600px;
-            position: relative;
-            top: -18px;
+        .nav-link {
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
         }
-        .nav-tabs {
-            border-bottom: none;
-            justify-content: center;
+
+        .nav-link:hover {
+            color: var(--primary-color);
         }
-        .nav-tabs .nav-link {
-            font-weight: 600;
-            color: #155263;
+
+        .btn-primary {
+            background: var(--primary-color);
             border: none;
-            border-bottom: 3px solid transparent;
-            background: none;
-            margin: 0 8px;
-            border-radius: 8px 8px 0 0;
-            transition: color 0.2s, border-bottom 0.2s, background 0.2s;
-            padding: 12px 32px 10px 32px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #fff 0%, var(--light-bg) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('assets/images/landing/img-header-bg.png') no-repeat right center;
+            background-size: contain;
+            opacity: 0.1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon i {
+            font-size: 32px;
+            color: var(--primary-color);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .feature-text {
+            color: #64748B;
+            line-height: 1.6;
+        }
+
+        .stats-section {
+            background: white;
+            padding: 4rem 0;
+            border-radius: 24px;
+            margin: 4rem 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        @media (max-width: 991.98px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-section {
+                padding: 80px 0 60px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Testimonials Section */
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .quote-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            opacity: 0.2;
+        }
+
+        .testimonial-text {
             font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
         }
-        .nav-tabs .nav-link.active {
-            color: #fff;
-            background: #155263;
-            border-bottom: 3px solid #155263;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 2px 8px rgba(21,82,99,0.08);
+
+        .testimonial-author img {
+            border: 2px solid var(--primary-color);
         }
-        .nav-tabs .nav-link:not(.active):hover {
-            background: #f0f4f8;
-            color: #155263;
+
+        /* Why Choose Us Section */
+        .choose-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
+
+        .choose-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .choose-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .choose-icon i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .choose-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .choose-text {
+            color: #64748B;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: #1a1f36;
+        }
+
+        .footer-brand img {
+            filter: brightness(0) invert(1);
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links a {
+            font-size: 1.25rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-links a:hover {
+            opacity: 0.8;
+        }
+
+        .text-light-50 {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .border-light-50 {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 767.98px) {
+            .testimonial-card,
+            .choose-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        .modern-hero-section {
+            background: linear-gradient(135deg, #f8fafc 60%, #e0f7fa 100%);
+            border-radius: 0 0 2rem 2rem;
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #155263, #00bcd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .modern-hero-img img {
+            max-width: 90%;
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px rgba(21,82,99,0.08);
+        }
+        .empower-section {
+            background: linear-gradient(120deg, #e0f7fa 0%, #fff 100%);
+            border-radius: 2rem;
+            margin-bottom: 2rem;
+        }
+        .empower-section h2 {
+            font-size: 2.2rem;
+        }
+        .empower-section ul li {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .modern-offers-section {
+            background: linear-gradient(120deg, #fff 0%, #e0f7fa 100%);
+            border-radius: 2rem;
+            margin-bottom: 2rem;
+        }
+        .modern-offers-section h2 {
+            font-size: 2rem;
+        }
+        .modern-offers-section .fw-semibold {
+            font-size: 1.15rem;
+        }
+        .modern-offers-section img {
+            max-height: 90px;
+            object-fit: contain;
+        }
+        .simple-hero-section {
+            padding-top: 180px !important;
+            background: linear-gradient(120deg, #f8fafc 60%, #e0f7fa 100%);
+            border-radius: 0 0 2rem 2rem;
+        }
+        .simple-hero-section h1 {
+            letter-spacing: -1px;
+        }
+        .simple-hero-section .btn-primary {
+            font-size: 1.1rem;
+            border-radius: 8px;
+        }
+        .simple-hero-section img[alt='dashboard preview'] {
+            margin-top: 2rem;
+            box-shadow: 0 4px 24px rgba(21,82,99,0.08);
+        }
+        .spacer-navbar { height: 100px; }
     </style>
 </head>
 
@@ -138,57 +432,42 @@
     data-pc-theme="{{ $settings['theme_mode'] }}">
 
 
-    <nav class="navbar navbar-expand-md navbar-light default">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand landing-logo" href="#">
+            <a class="navbar-brand" href="#">
                 <img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="logo"
-                    class="img-fluid " />
+                    class="img-fluid" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                 aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#home">{{ __('Home') }}</a>
+                        <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#pricing">{{ __('Pricing') }}</a>
+                        <a class="nav-link" href="#pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">{{ __('Features') }}</a>
-                    </li>
-                    @php
-                        $HomePage = App\Models\HomePage::where('section', 'Section 0')->first();
-                    @endphp
-                    @if (!empty($HomePage->content_value))
-                        @php
-                            $HomePage = json_decode($HomePage->content_value, true);
-                            $active_menus = !empty($HomePage['menu_pages']) ? $HomePage['menu_pages'] : [];
-                        @endphp
-                        @foreach ($menus as $menu)
-                            @if (in_array($menu->id, $active_menus))
-                                <li class="nav-item">
-                                    <a class="nav-link mb-2"
-                                        href="{{ route('page', $menu->slug) }}">{{ $menu->title }}</a>
-                                </li>
-                            @endif
-                        @endforeach
-                    @endif
-                    <li class="nav-item">
-                        <a class="nav-link me-2" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        <a class="nav-link" href="#privacy">Privacy Policy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-secondary" href="{{ route('register') }}">
-                            {{ __('Get Started') }}
-                        </a>
+                        <a class="nav-link" href="#terms">Terms & Conditions</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link" href="{{ route('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-primary" href="{{ route('register') }}">Get Started</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+    <div class="spacer-navbar"></div>
     <!-- [ Nav ] start -->
     <!-- [ Header ] start -->
     @php
@@ -198,94 +477,45 @@
             : [];
     @endphp
     @if (empty($Section_1_content_value['section_enabled']) || $Section_1_content_value['section_enabled'] == 'active')
-        <header id="home">
+        <header id="home" class="simple-hero-section py-5">
             <div class="container">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-lg-6 col-xl-6">
-                        <h1 class="mt-sm-3 mb-sm-4 f-w-600 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="row justify-content-center text-center">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="fw-bold mb-3" style="font-size:2.5rem;">
                             @if (!empty($Section_1_content_value['title']))
                                 {{ $Section_1_content_value['title'] }}
                             @else
-                                Smart Tenant - Property Management System
+                                Smart Tenant – Property Management System
                             @endif
                         </h1>
-                        <h4 class="mb-sm-4 text-muted wow fadeInUp" data-wow-delay="0.4s">
+                        <p class="lead text-muted mb-4">
                             @if (!empty($Section_1_content_value['sub_title']))
                                 {{ $Section_1_content_value['sub_title'] }}
                             @else
-                                Property management refers to the administration, operation, and oversight of real
-                                estate properties on behalf of property owners. It involves various tasks such as
-                                marketing rental properties, finding tenants, collecting rent and ensuring legal
-                                compliance.
+                                Property management made easy: streamline operations, manage tenants, and grow your business with confidence.
                             @endif
-                        </h4>
+                        </p>
                         @php
                             $Section_1_btn_link = !empty($Section_1_content_value['btn_link'])
                                 ? $Section_1_content_value['btn_link']
                                 : '#';
+                            $sec1_url = $Section_1_btn_link;
+                            if (in_array($Section_1_btn_link, ['#', ''])) {
+                                $sec1_url = route('register');
+                            }
                         @endphp
-                        <div class="my-3 my-xl-5 wow fadeInUp" data-wow-delay="0.6s">
-                            @php
-                                $sec1_url = $Section_1_btn_link;
-                                if (in_array($Section_1_btn_link, ['#', ''])) {
-                                    $sec1_url = route('register');
-                                }
-                            @endphp
-                            <a href="{{ $sec1_url }}" class="btn btn-secondary me-2">
-                                @if (!empty($Section_1_content_value['btn_name']))
-                                    {{ $Section_1_content_value['btn_name'] }}
-                                @else
-                                    {{ __('Get Started') }}
-                                @endif
-                            </a>
-
-                        </div>
-                        <div class="mb-4 mb-lg-0 d-inline-flex align-items-center wow fadeInUp" data-wow-delay="0.8s">
-                            <div class="flex-shrink-0">
-                                <div class="avtar avtar-l bg-light-secondary text-secondary">
-                                    @if (!empty($Section_1_content_value['section_footer_image_path']))
-                                        <img src="{{ asset(Storage::url($Section_1_content_value['section_footer_image_path'])) }}"
-                                            alt="user-image" class="img-fluid wid-80" />
-                                    @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32"
-                                            class="d-block" viewBox="0 0 118 94" role="img">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"
-                                                fill="currentColor"></path>
-                                        </svg>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h5 class="mb-0 text-start">
-                                    @if (!empty($Section_1_content_value['section_footer_text']))
-                                        {{ $Section_1_content_value['section_footer_text'] }}
-                                    @else
-                                        Manage your business efficiently with our all-in-one solution designed for
-                                        performance, security, and scalability.
-                                    @endif
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="hero-image">
-                            @if (!empty($Section_1_content_value['section_main_image_path']))
-                                <img src="{{ asset(Storage::url($Section_1_content_value['section_main_image_path'])) }}"
-                                    alt="user-image" class="img-fluid" />
+                        <a href="{{ $sec1_url }}" class="btn btn-primary btn-lg px-5 shadow-sm mb-3">
+                            @if (!empty($Section_1_content_value['btn_name']))
+                                {{ $Section_1_content_value['btn_name'] }}
                             @else
-                                <img src="assets/images/landing/img-header-main.svg" alt="image"
-                                    class="img-fluid img-bg wow fadeInUp" data-wow-delay="0.5s" />
-                                <div class="img-widget-1">
-                                    <img src="assets/images/landing/img-widget-1.svg" alt="image"
-                                        class="img-fluid wow fadeInDown" data-wow-delay="0.6s" />
-                                </div>
-                                <div class="img-widget-2">
-                                    <img src="assets/images/landing/img-widget-2.svg" alt="image"
-                                        class="img-fluid wow fadeInDown" data-wow-delay="0.7s" />
-                                </div>
+                                {{ __('Get Started') }}
                             @endif
-                        </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-5">
+                    <div class="col-lg-10 text-center">
+                        <img src="@if (!empty($Section_1_content_value['section_main_image_path'])){{ asset(Storage::url($Section_1_content_value['section_main_image_path'])) }}@else assets/images/landing/img-header-main.svg @endif" alt="dashboard preview" class="img-fluid rounded-4 shadow-sm" style="max-width: 80%;">
                     </div>
                 </div>
             </div>
@@ -376,73 +606,92 @@
             : [];
     @endphp
     @if (empty($Section_3_content_value['section_enabled']) || $Section_3_content_value['section_enabled'] == 'active')
-        <section class="bg-body">
+        <section class="minimal-feature-section py-5">
             <div class="container">
                 @for ($is3 = 1; $is3 <= 2; $is3++)
-                    <div class="row align-items-center g-4">
-                        @if ($is3 % 2 != 0)
-                            <div class="col-md-6 text-center mb-md-5">
-                                @if (!empty($Section_1_content_value['Box' . $is3 . '_image_path']))
-                                    <img src="{{ asset(Storage::url($Section_1_content_value['Box' . $is3 . '_image_path'])) }}"
-                                        alt="img" class="img-fluid w-75" />
-                                @else
-                                    <img src="assets/images/landing/img-customize-1.svg" alt="img"
-                                        class="img-fluid w-75" />
-                                @endif
+                    <div class="row align-items-center justify-content-center mb-5 flex-lg-row flex-column-reverse">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="minimal-feature-content pe-lg-5">
+                                <h2 class="fw-bold mb-3" style="font-size:2rem; color:#155263;">
+                                    {{ !empty($Section_3_content_value['Box' . $is3 . '_title']) ? $Section_3_content_value['Box' . $is3 . '_title'] : ($is3 == 1 ? 'Empower Your Business to Thrive with Us' : 'Eliminate Paperwork, Elevate Productivity') }}
+                                </h2>
+                                <p class="mb-4 text-muted" style="font-size:1.1rem;">
+                                    {{ !empty($Section_3_content_value['Box' . $is3 . '_info']) ? $Section_3_content_value['Box' . $is3 . '_info'] : ($is3 == 1 ? 'Unlock growth, streamline operations, and achieve success with our innovative solutions.' : 'Digitize your workflow and boost productivity with seamless automation and smart tools.') }}
+                                </p>
+                                <ul class="list-unstyled minimal-checklist">
+                                    @if (!empty($Section_3_content_value['Box' . $is3 . '_list']))
+                                        @foreach ($Section_3_content_value['Box' . $is3 . '_list'] as $box_item)
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> {{ $box_item }}</li>
+                                        @endforeach
+                                    @else
+                                        @if ($is3 == 1)
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Simplify and automate your business processes for maximum efficiency.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Receive tailored strategies to meet business needs and unlock potential.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Grow confidently with flexible solutions that adapt to your business needs.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Make smarter decisions with real-time analytics and performance tracking.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Rely on 24/7 expert assistance to keep your business running smoothly.</li>
+                                        @else
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Eliminate manual paperwork with digital forms and e-signatures.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Centralize documents for easy access and sharing.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Automate repetitive tasks to save time and reduce errors.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Collaborate in real-time with your team and clients.</li>
+                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Track progress and productivity with smart dashboards.</li>
+                                        @endif
+                                    @endif
+                                </ul>
                             </div>
-                        @endif
-                        <div class="col-md-6">
-                            <h2 class="h1">
-                                {{ !empty($Section_3_content_value['Box' . $is3 . '_title']) ? $Section_3_content_value['Box' . $is3 . '_title'] : 'Empower Your Business to Thrive with Us' }}
-                            </h2>
-                            <p class="text-lg w-75 my-3 my-md-4">
-                                {{ !empty($Section_3_content_value['Box' . $is3 . '_title']) ? $Section_3_content_value['Box' . $is3 . '_info'] : 'Unlock growth, streamline operations, and achieve success with our innovative solutions.' }}
-                            </p>
-                            <ul class="list-unstyled customize-list">
-                                @if (!empty($Section_3_content_value['Box' . $is3 . '_list']))
-                                    @foreach ($Section_3_content_value['Box' . $is3 . '_list'] as $box_item)
-                                        <li><i class="ti ti-circle-check f-20 text-secondary"></i> {{ $box_item }}
-                                        </li>
-                                    @endforeach
-                                @else
-                                    <li>
-                                        <i class="ti ti-circle-check f-20 text-secondary"></i>
-                                        Simplify and automate your business processes for maximum efficiency.
-                                    </li>
-                                    <li>
-                                        <i class="ti ti-circle-check f-20 text-secondary"></i>
-                                        Receive tailored strategies to meet business needs and unlock potential.
-                                    </li>
-                                    <li>
-                                        <i class="ti ti-circle-check f-20 text-secondary"></i>
-                                        Grow confidently with flexible solutions that adapt to your business needs.
-                                    </li>
-                                    <li>
-                                        <i class="ti ti-circle-check f-20 text-secondary"></i>
-                                        Make smarter decisions with real-time analytics and performance tracking.
-                                    </li>
-                                    <li>
-                                        <i class="ti ti-circle-check f-20 text-secondary"></i>
-                                        Rely on 24/7 expert assistance to keep your business running smoothly.
-                                    </li>
-                                @endif
-                            </ul>
                         </div>
-                        @if ($is3 % 2 == 0)
-                            <div class="col-md-6 text-center mb-md-5">
-                                @if (!empty($Section_1_content_value['Box' . $is3 . '_image_path']))
-                                    <img src="{{ asset(Storage::url($Section_1_content_value['Box' . $is3 . '_image_path'])) }}"
-                                        alt="img" class="img-fluid w-75" />
-                                @else
-                                    <img src="assets/images/landing/img-customize-2.svg" alt="img"
-                                        class="img-fluid w-75" />
-                                @endif
-                            </div>
-                        @endif
+                        <div class="col-lg-6 text-center mb-4 mb-lg-0">
+                            @if (!empty($Section_1_content_value['Box' . $is3 . '_image_path']))
+                                <img src="{{ asset(Storage::url($Section_1_content_value['Box' . $is3 . '_image_path'])) }}" alt="img" class="img-fluid minimal-feature-img" style="max-height:320px;object-fit:contain;" />
+                            @else
+                                <img src="assets/images/landing/img-customize-{{ $is3 }}.svg" alt="img" class="img-fluid minimal-feature-img" style="max-height:320px;object-fit:contain;" />
+                            @endif
+                        </div>
                     </div>
                 @endfor
             </div>
         </section>
+        <style>
+            .minimal-feature-section {
+                background: #fafdff;
+                border-radius: 2rem;
+            }
+            .minimal-feature-content {
+                background: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .minimal-feature-content h2 {
+                color: #155263;
+            }
+            .minimal-checklist {
+                margin-top: 2rem;
+            }
+            .minimal-checklist li {
+                font-size: 1.08rem;
+                display: flex;
+                align-items: flex-start;
+                color: #222;
+                margin-bottom: 1rem;
+            }
+            .minimal-icon {
+                color: #00bcd4;
+                font-size: 1.1rem;
+                margin-right: 12px;
+                margin-top: 4px;
+                display: inline-block;
+            }
+            .minimal-feature-img {
+                border-radius: 1.5rem;
+                background: #f3fafd;
+                padding: 1.5rem;
+            }
+            @media (max-width: 991.98px) {
+                .minimal-feature-section { border-radius: 1rem; }
+                .minimal-feature-img { padding: 1rem; }
+            }
+        </style>
     @endif
     <!-- [ section ] End -->
     <!-- [ section ] start -->
@@ -453,89 +702,64 @@
             : [];
     @endphp
     @if (empty($Section_4_content_value['section_enabled']) || $Section_4_content_value['section_enabled'] == 'active')
-        <section>
+        <section class="modern-offers-section py-5">
             <div class="container">
-                <div class="row justify-content-center title">
-                    <div class="col-md-9 col-lg-6 text-center">
-                        <h2 class="h1">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-md-9 col-lg-7 text-center">
+                        <h2 class="display-5 fw-bold mb-3 text-gradient">
                             {{ !empty($Section_4_content_value['Sec4_title']) ? $Section_4_content_value['Sec4_title'] : 'What does Smartweb offer?' }}
                         </h2>
-                        <p class="text-lg">
+                        <p class="lead text-muted">
                             {{ !empty($Section_4_content_value['Sec4_info']) ? $Section_4_content_value['Sec4_info'] : 'Smartweb is a reliable choice for your admin panel needs, offering a wide range of features to easily manage your backend panel' }}
                         </p>
                     </div>
                 </div>
                 <div class="row g-4 text-center">
-                    @php
-                        $is4_check = 0;
-                    @endphp
+                    @php $is4_check = 0; @endphp
                     @for ($is4 = 1; $is4 <= 6; $is4++)
-                        @if (
-                            !empty($Section_4_content_value['Sec4_box' . $is4 . '_enabled']) &&
-                                $Section_4_content_value['Sec4_box' . $is4 . '_enabled'] == 'active')
-                            @php
-                                $is4_check++;
-                            @endphp
+                        @if (!empty($Section_4_content_value['Sec4_box' . $is4 . '_enabled']) && $Section_4_content_value['Sec4_box' . $is4 . '_enabled'] == 'active')
+                            @php $is4_check++; @endphp
                             <div class="col-md-6 col-xl-4">
                                 @if (!empty($Section_4_content_value['Sec4_box' . $is4 . '_image_path']))
-                                    <img src="{{ asset(Storage::url($Section_4_content_value['Sec4_box' . $is4 . '_image_path'])) }}"
-                                        alt="img" class="img-fluid" />
+                                    <img src="{{ asset(Storage::url($Section_4_content_value['Sec4_box' . $is4 . '_image_path'])) }}" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
                                 @else
-                                    <img src="assets/images/landing/img-design-1.svg" alt="img"
-                                        class="img-fluid" />
+                                    <img src="assets/images/landing/img-design-{{ $is4 }}.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
                                 @endif
-                                <h3 class="my-4 fw-semibold">
-                                    {{ !empty($Section_4_content_value['Sec4_box' . $is4 . '_title']) ? $Section_4_content_value['Sec4_box' . $is4 . '_title'] : 'What Our Software Offers' }}
-                                </h3>
-                                <p>
-                                    {{ !empty($Section_4_content_value['Sec4_box' . $is4 . '_info']) ? $Section_4_content_value['Sec4_box' . $is4 . '_info'] : 'Our software provides powerful, scalable solutions designed to streamline your business operations.' }}
-                                </p>
+                                <h3 class="fw-semibold mb-2">{{ !empty($Section_4_content_value['Sec4_box' . $is4 . '_title']) ? $Section_4_content_value['Sec4_box' . $is4 . '_title'] : 'What Our Software Offers' }}</h3>
+                                <p class="text-muted">{{ !empty($Section_4_content_value['Sec4_box' . $is4 . '_info']) ? $Section_4_content_value['Sec4_box' . $is4 . '_info'] : 'Our software provides powerful, scalable solutions designed to streamline your business operations.' }}</p>
                             </div>
                         @endif
                     @endfor
-
                     @if ($is4_check == 0)
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-1.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">User-Friendly Interface</h3>
-                            <p>
-                                Simplify operations with an intuitive and easy-to-use platform.
-                            </p>
+                            <img src="assets/images/landing/img-design-1.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">User-Friendly Interface</h3>
+                            <p class="text-muted">Simplify operations with an intuitive and easy-to-use platform.</p>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-2.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">End-to-End Automation</h3>
-                            <p>
-                                Automate repetitive tasks to save time and increase efficiency.
-                            </p>
+                            <img src="assets/images/landing/img-design-2.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">End-to-End Automation</h3>
+                            <p class="text-muted">Automate repetitive tasks to save time and increase efficiency.</p>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-3.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">Customizable Solutions</h3>
-                            <p>
-                                Tailor features to fit your unique business needs and workflows.
-                            </p>
+                            <img src="assets/images/landing/img-design-3.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">Customizable Solutions</h3>
+                            <p class="text-muted">Tailor features to fit your unique business needs and workflows.</p>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-4.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">Scalable Features</h3>
-                            <p>
-                                Grow your business with flexible solutions that scale with you.
-                            </p>
+                            <img src="assets/images/landing/img-design-4.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">Scalable Features</h3>
+                            <p class="text-muted">Grow your business with flexible solutions that scale with you.</p>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-5.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">Enhanced Security</h3>
-                            <p>
-                                Protect your data with advanced encryption and security protocols.
-                            </p>
+                            <img src="assets/images/landing/img-design-5.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">Enhanced Security</h3>
+                            <p class="text-muted">Protect your data with advanced encryption and security protocols.</p>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-6.svg" alt="img" class="img-fluid" />
-                            <h3 class="my-4 fw-semibold">Real-Time Analytics</h3>
-                            <p>
-                                Gain actionable insights with live data tracking and reporting.
-                            </p>
+                            <img src="assets/images/landing/img-design-6.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
+                            <h3 class="fw-semibold mb-2">Real-Time Analytics</h3>
+                            <p class="text-muted">Gain actionable insights with live data tracking and reporting.</p>
                         </div>
                     @endif
                 </div>
@@ -744,69 +968,39 @@
         </section>
     @endif
     <!-- [ section ] End -->
-    <!-- [ section ] start -->
-    @php
-        $Section_7 = App\Models\HomePage::where('section', 'Section 7')->first();
-        $Section_7_content_value = !empty($Section_7->content_value)
-            ? json_decode($Section_7->content_value, true)
-            : [];
-    @endphp
-
-    @if (empty($Section_7_content_value['section_enabled']) || $Section_7_content_value['section_enabled'] == 'active')
-        <section class="bg-body">
-            <div class="container">
-                <div class="row justify-content-center title">
-                    <div class="col-md-9 col-lg-6 text-center">
-                        <h2 class="h1">
-                            {{ !empty($Section_7_content_value['Sec7_title']) ? $Section_7_content_value['Sec7_title'] : 'Testaments' }}
-                        </h2>
-                        <p class="text-lg">
-                            {{ !empty($Section_7_content_value['Sec7_info']) ? $Section_7_content_value['Sec7_info'] : 'We are so grateful for your positive review and appreciate your support of our product' }}
-                        </p>
-                    </div>
+    <!-- Testimonials Section -->
+    <section class="testimonials-section py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center text-center mb-5">
+                <div class="col-lg-6">
+                    <h2 class="display-5 fw-bold mb-3">What Our Customers Say</h2>
+                    <p class="lead text-muted">Trusted by property managers worldwide</p>
                 </div>
-                <div class="testaments-cards">
-                    @php
-                        $is7_check = 0;
-                    @endphp
-                    @for ($is7 = 1; $is7 <= 8; $is7++)
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="avtar avtar-l">
-                                            @if (!empty($Section_7_content_value['Sec7_box' . $is7 . '_image_path']))
-                                                <img src="{{ asset(Storage::url($Section_7_content_value['Sec7_box' . $is7 . '_image_path'])) }}"
-                                                    alt="img" class="img-fluid rounded-circle wid-40" />
-                                            @else
-                                                <img src="assets/images/user/avatar-1.jpg" alt="img"
-                                                    class="img-fluid rounded-circle wid-40" />
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h4 class="mb-0">
-                                            {{ !empty($Section_7_content_value['Sec7_box' . $is7 . '_name']) ? $Section_7_content_value['Sec7_box' . $is7 . '_name'] : 'Lenore Becker' }}
-                                        </h4>
-                                        <h6 class="mb-0 text-primary">
-                                            {{ !empty($Section_7_content_value['Sec7_box' . $is7 . '_tag']) ? $Section_7_content_value['Sec7_box' . $is7 . '_tag'] : '' }}
-                                        </h6>
-                                    </div>
+            </div>
+            <div class="row g-4">
+                @foreach($testimonials as $testimonial)
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <div class="quote-icon mb-3">
+                                <i class="ti ti-quote-left text-primary"></i>
+                            </div>
+                            <p class="testimonial-text">{{ $testimonial->content }}</p>
+                            <div class="testimonial-author d-flex align-items-center mt-4">
+                                <img src="{{ $testimonial->avatar }}" alt="{{ $testimonial->name }}" class="rounded-circle" width="50" height="50">
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ $testimonial->name }}</h5>
+                                    <p class="text-muted mb-0">{{ $testimonial->position }}</p>
                                 </div>
-                                <p class="mb-0">
-                                    {{ !empty($Section_7_content_value['Sec7_box' . $is7 . '_review'])
-                                        ? $Section_7_content_value['Sec7_box' . $is7 . '_review']
-                                        : 'Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Vestibulum rutrum, mi nec elementum vehicula, eros quam gravida nisl, id fringilla neque ante vel mi. Quisque ut nisi. Nulla porta dolor. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.' }}
-                                </p>
                             </div>
                         </div>
-                    @endfor
+                    </div>
                 </div>
-
+                @endforeach
             </div>
-        </section>
-    @endif
-    <!-- [ section ] End -->
+        </div>
+    </section>
+
     <!-- [ section ] start -->
     @php
         $Section_8 = App\Models\HomePage::where('section', 'Section 8')->first();
@@ -815,32 +1009,50 @@
             : [];
     @endphp
     @if (empty($Section_8_content_value['section_enabled']) || $Section_8_content_value['section_enabled'] == 'active')
-        <section class="bg-dark choose-section">
+        <section class="why-choose-section py-5">
             <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-9">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <h2 class="mb-0 text-white">
-                                    {{ !empty($Section_8_content_value['Sec8_title']) ? $Section_8_content_value['Sec8_title'] : 'Choose Smartweb for' }}
-                                </h2>
+                <div class="row justify-content-center text-center mb-5">
+                    <div class="col-lg-6">
+                        <h2 class="display-5 fw-bold mb-3">Why Choose Us</h2>
+                        <p class="lead text-muted">Experience the difference with our comprehensive property management solution</p>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="choose-card">
+                            <div class="choose-icon">
+                                <i class="ti ti-shield-check"></i>
                             </div>
-                            <div class="flex-grow-1 ms-3">
-                                <div class="swiper choose-slider">
-                                    <div class="swiper-wrapper">
-                                        @for ($is8 = 1; $is8 <= 8; $is8++)
-                                            <div class="swiper-slide">
-                                                <h2>{{ !empty($Section_8_content_value['Sec8_box' . $is8 . '_info']) ? $Section_8_content_value['Sec8_box' . $is8 . '_info'] : 'Highly Responsive' }}
-                                                </h2>
-                                            </div>
-                                        @endfor
-                                    </div>
-                                </div>
-                            </div>
+                            <h3 class="choose-title">Secure & Reliable</h3>
+                            <p class="choose-text">Bank-level security with regular backups and data protection</p>
                         </div>
                     </div>
-                    <div class="col-md-3 d-none d-md-block">
-                        <img src="assets/images/landing/img-bg-hand.png" alt="img" class="img-fluid hand-img" />
+                    <div class="col-md-6 col-lg-3">
+                        <div class="choose-card">
+                            <div class="choose-icon">
+                                <i class="ti ti-devices"></i>
+                            </div>
+                            <h3 class="choose-title">Cross-Platform</h3>
+                            <p class="choose-text">Access your dashboard from any device, anywhere</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="choose-card">
+                            <div class="choose-icon">
+                                <i class="ti ti-headset"></i>
+                            </div>
+                            <h3 class="choose-title">24/7 Support</h3>
+                            <p class="choose-text">Round-the-clock customer support for all your needs</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="choose-card">
+                            <div class="choose-icon">
+                                <i class="ti ti-chart-line"></i>
+                            </div>
+                            <h3 class="choose-title">Analytics</h3>
+                            <p class="choose-text">Detailed insights and reports for better decision making</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -966,190 +1178,68 @@
     @endif
     <!-- [ section ] End -->
     <!-- [ footer ] start -->
-    <footer class="bg-dark footer">
-        @php
-            $Section_10 = App\Models\HomePage::where('section', 'Section 10')->first();
-            $Section_10_content_value = !empty($Section_10->content_value)
-                ? json_decode($Section_10->content_value, true)
-                : [];
-        @endphp
-        @if (empty($Section_10_content_value['section_enabled']) || $Section_10_content_value['section_enabled'] == 'active')
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
-                        <div class="landing-logo">
-                            <img src="{{ asset(Storage::url('upload/logo/light_logo.png')) }}" alt="image"
-                                class="img-fluid" />
-                        </div>
-                        <h4 class="my-3 text-white">
-                            {{ !empty($Section_10_content_value['Sec10_title']) ? $Section_10_content_value['Sec10_title'] : 'About Smart Tenant' }}
-                        </h4>
-                        <p class="mb-4 text-white text-opacity-75">
-                            {!! !empty($Section_10_content_value['Sec10_info'])
-                                ? $Section_10_content_value['Sec10_info']
-                                : 'Property management refers to the administration, operation, and oversight of real estate properties on behalf of property owners. It involves various tasks such as marketing rental properties, finding tenants, collecting rent and ensuring legal compliance.' !!}
-                        </p>
+    <footer class="footer bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand mb-4">
+                        <img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="logo" class="img-fluid mb-3" style="max-height: 40px;">
+                        <p class="text-light-50">Streamline your property management with our comprehensive solution. Built for modern property managers.</p>
                     </div>
-                    <div class="col-md-8">
-                        <div class="row g-4">
-                            @php
-                                $footer_col = 0;
-                                if ($settings['footer_column_1_enabled'] == 'active') {
-                                    $footer_col = 12;
-                                }
-                                if ($settings['footer_column_2_enabled'] == 'active') {
-                                    $footer_col = 6;
-                                }
-                                if ($settings['footer_column_3_enabled'] == 'active') {
-                                    $footer_col = 4;
-                                }
-                                if ($settings['footer_column_4_enabled'] == 'active') {
-                                    $footer_col = 3;
-                                }
-                            @endphp
-                            @if ($footer_col > 0)
-                                @if ($settings['footer_column_1_enabled'] == 'active')
-                                    <div class="col-6 col-md-{{ $footer_col }} wow fadeInUp"
-                                        data-wow-delay="0.6s">
-                                        <h5 class="mb-3 mb-sm-4 text-white">{{ $settings['footer_column_1'] }}</h5>
-                                        @php
-                                            $active_footer_menu1 = !empty($settings['footer_column_1_pages'])
-                                                ? json_decode($settings['footer_column_1_pages'], true)
-                                                : [];
-                                        @endphp
-                                        <ul class="list-unstyled footer-link">
-                                            @if (!empty($active_footer_menu1))
-                                                @foreach ($menus as $menu)
-                                                    @if (in_array($menu->id, $active_footer_menu1))
-                                                        <li>
-                                                            <a target="_blank"
-                                                                href="{{ route('page', $menu->slug) }}">{{ $menu->title }}</a>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            @else
-                                                <li><a href="#" target="_blank">Blog</a></li>
-                                                <li><a href="#" target="_blank">Documentation</a></li>
-                                                <li><a href="#" target="_blank">ChangeLog</a></li>
-                                                <li><a href="#" target="_blank">Support</a></li>
-                                            @endif
-                                        </ul>
-                                    </div>
-                                @endif
-                                @if ($settings['footer_column_2_enabled'] == 'active')
-                                    <div class="col-6 col-md-{{ $footer_col }} wow fadeInUp"
-                                        data-wow-delay="0.6s">
-                                        <h5 class="mb-3 mb-sm-4 text-white">{{ $settings['footer_column_2'] }}</h5>
-                                        @php
-                                            $active_footer_menu2 = !empty($settings['footer_column_2_pages'])
-                                                ? json_decode($settings['footer_column_2_pages'], true)
-                                                : [];
-                                        @endphp
-                                        <ul class="list-unstyled footer-link">
-                                            @if (!empty($active_footer_menu2))
-                                                @foreach ($menus as $menu)
-                                                    @if (in_array($menu->id, $active_footer_menu2))
-                                                        <li>
-                                                            <a target="_blank"
-                                                                href="{{ route('page', $menu->slug) }}">{{ $menu->title }}</a>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            @else
-                                                <li><a href="#" target="_blank">Blog</a></li>
-                                                <li><a href="#" target="_blank">Documentation</a></li>
-                                                <li><a href="#" target="_blank">ChangeLog</a></li>
-                                                <li><a href="#" target="_blank">Support</a></li>
-                                            @endif
-                                        </ul>
-                                    </div>
-                                @endif
-                                @if ($settings['footer_column_3_enabled'] == 'active')
-                                    <div class="col-6 col-md-{{ $footer_col }} wow fadeInUp"
-                                        data-wow-delay="0.6s">
-                                        <h5 class="mb-3 mb-sm-4 text-white">{{ $settings['footer_column_3'] }}</h5>
-                                        @php
-                                            $active_footer_menu3 = !empty($settings['footer_column_3_pages'])
-                                                ? json_decode($settings['footer_column_3_pages'], true)
-                                                : [];
-                                        @endphp
-                                        <ul class="list-unstyled footer-link">
-                                            @if (!empty($active_footer_menu3))
-                                                @foreach ($menus as $menu)
-                                                    @if (in_array($menu->id, $active_footer_menu3))
-                                                        <li>
-                                                            <a target="_blank"
-                                                                href="{{ route('page', $menu->slug) }}">{{ $menu->title }}</a>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            @else
-                                                <li><a href="#" target="_blank">Blog</a></li>
-                                                <li><a href="#" target="_blank">Documentation</a></li>
-                                                <li><a href="#" target="_blank">ChangeLog</a></li>
-                                                <li><a href="#" target="_blank">Support</a></li>
-                                            @endif
-                                        </ul>
-                                    </div>
-                                @endif
-                                @if ($settings['footer_column_4_enabled'] == 'active')
-                                    <div class="col-6 col-md-{{ $footer_col }} wow fadeInUp"
-                                        data-wow-delay="0.6s">
-                                        <h5 class="mb-3 mb-sm-4 text-white">{{ $settings['footer_column_4'] }}</h5>
-                                        @php
-                                            $active_footer_menu4 = !empty($settings['footer_column_4_pages'])
-                                                ? json_decode($settings['footer_column_4_pages'], true)
-                                                : [];
-                                        @endphp
-                                        <ul class="list-unstyled footer-link">
-                                            @if (!empty($active_footer_menu4))
-                                                @foreach ($menus as $menu)
-                                                    @if (in_array($menu->id, $active_footer_menu4))
-                                                        <li>
-                                                            <a target="_blank"
-                                                                href="{{ route('page', $menu->slug) }}">{{ $menu->title }}</a>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            @else
-                                                <li><a href="#" target="_blank">Blog</a></li>
-                                                <li><a href="#" target="_blank">Documentation</a></li>
-                                                <li><a href="#" target="_blank">ChangeLog</a></li>
-                                                <li><a href="#" target="_blank">Support</a></li>
-                                            @endif
-                                        </ul>
-                                    </div>
-                                @endif
-                            @endif
-                        </div>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="ti ti-brand-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="ti ti-brand-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="ti ti-brand-linkedin"></i></a>
+                        <a href="#" class="text-light"><i class="ti ti-brand-instagram"></i></a>
                     </div>
                 </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-light mb-3">Product</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-light mb-3">Company</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-light mb-3">Legal</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#cookies">Cookie Policy</a></li>
+                        <li><a href="#gdpr">GDPR</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-light mb-3">Support</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#documentation">Documentation</a></li>
+                        <li><a href="#api">API</a></li>
+                        <li><a href="#status">Status</a></li>
+                    </ul>
+                </div>
             </div>
-        @endif
-
-        <div class="sub-footer">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col my-1 wow fadeInUp" data-wow-delay="0.4s">
-                        <p class="mb-0 text-white text-opacity-75">
-
-                            @if (!empty($settings['copyright']))
-                                {{ $settings['copyright'] }}
-                            @else
-                                {{ __('Copyright') }} {{ date('Y') }} {{ env('APP_NAME') }}
-                            @endif
-                        </p>
-                    </div>
-                    <div class="col-auto my-1">
-                        <ul class="list-inline footer-sos-link mb-0">
-                            <li class="list-inline-item wow fadeInUp" data-wow-delay="0.4s">
-                                <a href="#" class="link-primary">
-                                    <svg class="pc-icon">
-                                        <use xlink:href="#custom-facebook"></use>
-                                    </svg>
-                                </a>
-                            </li>
-                        </ul>
+            <hr class="my-4 border-light-50">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-light-50">&copy; {{ date('Y') }} {{ !empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME') }}. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <div class="footer-bottom-links">
+                        <a href="#privacy" class="text-light-50 me-3">Privacy</a>
+                        <a href="#terms" class="text-light-50 me-3">Terms</a>
+                        <a href="#cookies" class="text-light-50">Cookies</a>
                     </div>
                 </div>
             </div>

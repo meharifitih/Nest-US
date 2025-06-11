@@ -60,6 +60,7 @@
 
     <?php echo $__env->yieldPushContent('css-page'); ?>
     <link href="<?php echo e(asset('css/custom.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('assets/css/pagination.css')); ?>" rel="stylesheet">
 
 
 </head>

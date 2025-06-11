@@ -131,6 +131,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $users->links('vendor.pagination.bootstrap-5') }}
+                    </div>
                 </div>
             </div>
         </div>

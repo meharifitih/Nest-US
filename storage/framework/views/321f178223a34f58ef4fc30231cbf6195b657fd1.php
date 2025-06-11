@@ -8,10 +8,9 @@
 ?>
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
-        <div class="m-header">
-            <a href="#" class="b-brand text-primary">
-                <img src="<?php echo e(asset(Storage::url('upload/logo/')) . '/' . (isset($admin_logo) && !empty($admin_logo) ? $admin_logo : 'logo.png')); ?>"
-                    alt="" class="logo logo-lg" />
+        <div class="m-header text-center py-3">
+            <a href="#" class="b-brand text-primary d-inline-block">
+                <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid sidebar-modern-logo" style="max-height:48px; border-radius:10px; box-shadow:0 2px 8px rgba(21,82,99,0.07); background:#fff; padding:4px;" />
             </a>
         </div>
         <div class="navbar-content">
@@ -401,4 +400,16 @@
         </div>
     </div>
 </nav>
+
+<style>
+    .sidebar-modern-logo {
+        display: block;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(21,82,99,0.07);
+        padding: 4px;
+        max-height: 48px;
+    }
+</style>
 <?php /**PATH /Users/chipchip/Downloads/codecanyon-ytuZNl0y-smart-tenant-property-management-system-saas/main_file/resources/views/admin/menu.blade.php ENDPATH**/ ?>
