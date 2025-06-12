@@ -267,7 +267,7 @@ class UserController extends Controller
                         'name' => 'required',
                         'email' => 'required|email|unique:users,email,' . $id,
                         'phone_number' => 'required|regex:/^[79][0-9]{8}$/|unique:users,phone_number,' . $id,
-                        'fayda_id' => 'required|unique:users,fayda_id,' . $id,
+                        'fayda_id' => 'nullable|unique:users,fayda_id,' . $id,
                     ]
                 );
                 if ($validator->fails()) {
@@ -287,7 +287,7 @@ class UserController extends Controller
                         'email' => 'required|email|unique:users,email,' . $id,
                         'role' => 'required',
                         'phone_number' => 'required|regex:/^[79][0-9]{8}$/|unique:users,phone_number,' . $id,
-                        'fayda_id' => 'required|unique:users,fayda_id,' . $id,
+                        'fayda_id' => 'nullable|unique:users,fayda_id,' . $id,
                     ]
                 );
                 if ($validator->fails()) {

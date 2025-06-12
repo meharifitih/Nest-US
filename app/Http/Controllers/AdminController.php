@@ -75,4 +75,41 @@ class AdminController extends Controller
         $pendingPayments = PackageTransaction::where('status', 'pending')->with('user')->get();
         return view('admin.payments.pending', compact('pendingPayments'));
     }
+
+    public function reapproveUser($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            // Only allow re-approving rejected users
+            if ($user->approval_status !== 'rejected') {
+                return redirect()->back()->with('error', 'Only rejected users can be re-approved.');
+            }
+            
+            // Update user status
+            $user->approval_status = 'approved';
+            $user->is_active = 1;
+            $user->rejection_reason = null;
+            $user->save();
+
+            // Send email notification
+            $data = [
+                'subject' => 'Your Account Has Been Re-approved!',
+                'module' => 'account_reapproved',
+                'name' => $user->name,
+                'email' => $user->email,
+                'url' => env('APP_URL'),
+            ];
+            $to = $user->email;
+            commonEmailSend($to, $data);
+
+            return redirect()->back()->with('success', 'User has been re-approved successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error in reapproveUser', [
+                'error' => $e->getMessage(),
+                'user_id' => $id
+            ]);
+            return redirect()->back()->with('error', 'Error re-approving user: ' . $e->getMessage());
+        }
+    }
 } 

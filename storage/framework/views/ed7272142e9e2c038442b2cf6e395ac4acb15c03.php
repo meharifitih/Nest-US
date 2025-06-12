@@ -95,9 +95,9 @@
                                                         data-title="<?php echo e(__('Edit User')); ?>" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
                                                 <?php endif; ?>
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit user')): ?>
-                                                    <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-bs-toggle="tooltip"
+                                                    <a class="avtar avtar-xs btn-link-secondary text-secondary" data-bs-toggle="tooltip"
                                                         data-size="lg" data-bs-original-title="<?php echo e(__('Edit')); ?>"
-                                                        href="#" data-url="<?php echo e(route('users.edit', $user->id)); ?>"
+                                                        href="<?php echo e(route('users.edit', $user->id)); ?>"
                                                         data-title="<?php echo e(__('Edit User')); ?>" onclick="event.stopPropagation();"> <i data-feather="edit"></i></a>
                                                 <?php endif; ?>
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete user')): ?>
@@ -124,6 +124,17 @@
                                                             <i data-feather="check"></i>
                                                         </button>
                                                     </form>
+                                                <?php endif; ?>
+                                                <?php if(\Auth::user()->type == 'super admin' && $user->approval_status === 'rejected'): ?>
+                                                    <form action="<?php echo e(route('users.reapprove', $user->id)); ?>" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
+                                                        <?php echo csrf_field(); ?>
+                                                        <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="<?php echo e(__('Re-approve')); ?>">
+                                                            <i data-feather="refresh-cw"></i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                                <?php if(\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending'): ?>
                                                     <form action="<?php echo e(route('users.reject', $user->id)); ?>" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         <?php echo csrf_field(); ?>
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"

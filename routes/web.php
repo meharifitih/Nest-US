@@ -426,6 +426,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/users/{id}/approve', [AccountReviewController::class, 'approveUser'])->name('users.approve');
     Route::post('/users/{id}/reject', [AccountReviewController::class, 'rejectUser'])->name('users.reject');
+    Route::post('/users/{id}/reapprove', [AdminController::class, 'reapproveUser'])->name('users.reapprove');
 });
 
 // Payment Verification Routes

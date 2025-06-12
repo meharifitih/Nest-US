@@ -89,9 +89,9 @@
                                                         data-title="{{ __('Edit User') }}" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
                                                 @endcan
                                                 @can('edit user')
-                                                    <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-bs-toggle="tooltip"
+                                                    <a class="avtar avtar-xs btn-link-secondary text-secondary" data-bs-toggle="tooltip"
                                                         data-size="lg" data-bs-original-title="{{ __('Edit') }}"
-                                                        href="#" data-url="{{ route('users.edit', $user->id) }}"
+                                                        href="{{ route('users.edit', $user->id) }}"
                                                         data-title="{{ __('Edit User') }}" onclick="event.stopPropagation();"> <i data-feather="edit"></i></a>
                                                 @endcan
                                                 @can('delete user')
@@ -116,6 +116,17 @@
                                                             <i data-feather="check"></i>
                                                         </button>
                                                     </form>
+                                                @endif
+                                                @if(\Auth::user()->type == 'super admin' && $user->approval_status === 'rejected')
+                                                    <form action="{{ route('users.reapprove', $user->id) }}" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
+                                                        @csrf
+                                                        <button type="submit" class="avtar avtar-xs btn-link-success text-success" data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('Re-approve') }}">
+                                                            <i data-feather="refresh-cw"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                @if (\Auth::user()->type == 'super admin' && $user->type === 'owner' && $user->approval_status === 'pending')
                                                     <form action="{{ route('users.reject', $user->id) }}" method="POST" class="d-inline" onsubmit="event.stopPropagation();">
                                                         @csrf
                                                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger" data-bs-toggle="tooltip"
