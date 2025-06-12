@@ -9,7 +9,7 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header text-center py-3">
-            <a href="#" class="b-brand text-primary d-inline-block">
+            <a href="{{ route('dashboard') }}" class="b-brand text-primary d-inline-block">
                 <img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="logo" class="img-fluid sidebar-modern-logo" style="max-height:48px; border-radius:10px; box-shadow:0 2px 8px rgba(21,82,99,0.07); background:#fff; padding:4px;" />
             </a>
         </div>
