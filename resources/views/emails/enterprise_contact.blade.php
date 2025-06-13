@@ -24,6 +24,12 @@
                 <td class="label">Email:</td>
                 <td class="value">{{ $contact->email }}</td>
             </tr>
+            @if($contact->phone)
+            <tr>
+                <td class="label">Phone:</td>
+                <td class="value">{{ $contact->phone }}</td>
+            </tr>
+            @endif
             <tr>
                 <td class="label">Desired Property Limit:</td>
                 <td class="value">{{ $contact->property_limit }}</td>

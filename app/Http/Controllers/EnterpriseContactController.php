@@ -13,6 +13,7 @@ class EnterpriseContactController extends Controller
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:32',
             'property_limit' => 'required|string|max:255',
             'unit_limit' => 'required|string|max:255',
             'interval' => 'required|string|max:255',

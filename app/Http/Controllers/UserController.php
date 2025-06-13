@@ -130,6 +130,29 @@ class UserController extends Controller
                     }
                 }
 
+                // Save email settings for this user
+                $smtpSettings = [
+                    ['name' => 'FROM_EMAIL', 'value' => config('mail.from.address')],
+                    ['name' => 'FROM_NAME', 'value' => config('mail.from.name')],
+                    ['name' => 'SERVER_DRIVER', 'value' => config('mail.default')],
+                    ['name' => 'SERVER_HOST', 'value' => config('mail.mailers.smtp.host')],
+                    ['name' => 'SERVER_PORT', 'value' => config('mail.mailers.smtp.port')],
+                    ['name' => 'SERVER_USERNAME', 'value' => config('mail.mailers.smtp.username')],
+                    ['name' => 'SERVER_PASSWORD', 'value' => config('mail.mailers.smtp.password')],
+                    ['name' => 'SERVER_ENCRYPTION', 'value' => config('mail.mailers.smtp.encryption')],
+                ];
+                foreach ($smtpSettings as $setting) {
+                    \DB::table('settings')->updateOrInsert([
+                        'name' => $setting['name'],
+                        'type' => 'smtp',
+                        'parent_id' => $user->id,
+                    ], [
+                        'value' => $setting['value'],
+                        'updated_at' => now(),
+                        'created_at' => now(),
+                    ]);
+                }
+
                 return redirect()->route('users.index')->with('success', __('User successfully created.') . $errorMessage);
             } else {
 

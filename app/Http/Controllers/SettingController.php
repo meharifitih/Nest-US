@@ -406,12 +406,6 @@ class SettingController extends Controller
                 [
                     'sender_name' => 'required',
                     'sender_email' => 'required',
-                    'server_driver' => 'required',
-                    'server_host' => 'required',
-                    'server_port' => 'required',
-                    'server_username' => 'required',
-                    'server_password' => 'required',
-                    'server_encryption' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -423,12 +417,12 @@ class SettingController extends Controller
             $smtpArray = [
                 'FROM_NAME' => $request->sender_name,
                 'FROM_EMAIL' => $request->sender_email,
-                'SERVER_DRIVER' => $request->server_driver,
-                'SERVER_HOST' => $request->server_host,
-                'SERVER_PORT' => $request->server_port,
-                'SERVER_USERNAME' => $request->server_username,
-                'SERVER_PASSWORD' => $request->server_password,
-                'SERVER_ENCRYPTION' => $request->server_encryption,
+                'SERVER_DRIVER' => config('mail.default'),
+                'SERVER_HOST' => config('mail.mailers.smtp.host'),
+                'SERVER_PORT' => config('mail.mailers.smtp.port'),
+                'SERVER_USERNAME' => config('mail.mailers.smtp.username'),
+                'SERVER_PASSWORD' => config('mail.mailers.smtp.password'),
+                'SERVER_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
             ];
             foreach ($smtpArray as $key => $val) {
                 \DB::table('settings')->updateOrInsert(

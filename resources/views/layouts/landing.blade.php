@@ -1397,6 +1397,10 @@
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
+                            <label for="phone" class="form-label">{{ __('Phone (Optional)') }}</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter phone number (optional)">
+                        </div>
+                        <div class="mb-3">
                             <label for="property_limit" class="form-label">{{ __('Desired Property Limit') }}</label>
                             <input type="text" class="form-control" id="property_limit" name="property_limit" required>
                         </div>

@@ -9,6 +9,7 @@ class EnterpriseContact extends Model
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'property_limit',
         'unit_limit',
         'interval',

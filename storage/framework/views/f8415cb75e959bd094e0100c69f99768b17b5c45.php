@@ -1318,7 +1318,6 @@
     <script src="<?php echo e(asset('js/jquery.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/popper.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/simplebar.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('assets/js/plugins/bootstrap.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/fonts/custom-font.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/pcoded.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/feather.min.js')); ?>"></script>
@@ -1413,6 +1412,10 @@
                         <div class="mb-3">
                             <label for="email" class="form-label"><?php echo e(__('Email')); ?></label>
                             <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label"><?php echo e(__('Phone (Optional)')); ?></label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter phone number (optional)">
                         </div>
                         <div class="mb-3">
                             <label for="property_limit" class="form-label"><?php echo e(__('Desired Property Limit')); ?></label>

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
+            $table->string('phone')->nullable();
             $table->string('property_limit');
             $table->string('unit_limit');
             $table->string('interval');
