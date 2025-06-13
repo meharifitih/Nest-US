@@ -33,25 +33,88 @@
                         <div class="col">
                             <h5>{{ __('Expense List') }}</h5>
                         </div>
-                        <div class="col-auto">
-                            <form method="GET" action="">
-                                <select name="expense_type_filter" class="form-select" onchange="this.form.submit()">
-                                    <option value="">All Expense Types</option>
-                                    @foreach($types as $id => $title)
-                                        <option value="{{ $id }}" {{ request('expense_type_filter') == $id ? 'selected' : '' }}>{{ $title }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        </div>
-                        @if (Gate::check('create expense'))
-                            <div class="col-auto">
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                            @if (Gate::check('create expense'))
                                 <a class="btn btn-secondary customModal" href="#" data-size="lg" data-url="{{ route('expense.create') }}"
                                 data-title="{{ __('Create Expense') }}"> <i class="ti ti-circle-plus align-text-bottom"></i>{{ __('Create Expense') }}</a>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter Expense') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="{{ route('expense.index') }}">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
+                                                    <select name="property_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($properties as $property)
+                                                            <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                                                {{ $property->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
+                                                    <select name="unit_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($units as $unit)
+                                                            <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                                                {{ $unit->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('expense_type_filter', __('Expense Type'), ['class' => 'form-label']) }}
+                                                    <select name="expense_type_filter" class="form-select">
+                                                        <option value="">{{ __('All Types') }}</option>
+                                                        @foreach($types as $id => $title)
+                                                            <option value="{{ $id }}" {{ request('expense_type_filter') == $id ? 'selected' : '' }}>{{ $title }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('date', __('Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('date', request('date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
+                                                    {{ Form::number('amount', request('amount'), ['class' => 'form-control', 'placeholder' => __('Enter Amount')]) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('expense.index') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

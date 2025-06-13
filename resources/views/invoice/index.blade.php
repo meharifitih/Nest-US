@@ -3,42 +3,116 @@
 @section('page-title')
     {{ __('Invoice') }}
 @endsection
+
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
-    <li class="breadcrumb-item" aria-current="page"> {{ __('Invoice') }}</li>
+    <li class="breadcrumb-item" aria-current="page">{{ __('Invoice') }}</li>
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-sm-12">
-            <div class="card table-card">
+            <div class="card">
                 <div class="card-header">
-                    <div class="row align-items-center g-2">
+                    <div class="row align-items-center">
                         <div class="col">
-                            <h5>{{ __('Invoice List') }}</h5>
+                            <h5 class="mb-0">{{ __('Invoice List') }}</h5>
                         </div>
-                        <div class="col-auto">
-                            <form method="GET" action="">
-                                <select name="type_filter" class="form-select" onchange="this.form.submit()">
-                                    <option value="">All Types</option>
-                                    @foreach($types as $type)
-                                        <option value="{{ $type->id }}" {{ request('type_filter') == $type->id ? 'selected' : '' }}>{{ $type->title }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                            @if (Gate::check('create invoice'))
+                                <a href="{{ route('invoice.create') }}" class="btn btn-secondary px-3">
+                                    <i class="ti ti-plus me-1"></i> {{ __('Create Invoice') }}
+                                </a>
+                            @endif
                         </div>
-                        @if (Gate::check('create invoice'))
-                            <div class="col-auto">
-                                <a href="{{ route('invoice.create') }}" class="btn btn-secondary"> <i
-                                        class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Invoice') }}</a>
-                            </div>
-                        @endif
                     </div>
                 </div>
                 
-                <div class="card-body pt-0">
-                    <div class="dt-responsive table-responsive">
-                        <table class="table table-hover advance-datatable">
+                <div class="card-body">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter Invoices') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
+                                                    {{ Form::select('status', ['' => __('All')] + $statusOptions, request('status'), ['class' => 'form-select']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('tenant', __('Tenant'), ['class' => 'form-label']) }}
+                                                    <select name="tenant" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($tenants as $tenant)
+                                                            <option value="{{ $tenant->user_id }}" {{ request('tenant') == $tenant->user_id ? 'selected' : '' }}>
+                                                                {{ $tenant->user ? $tenant->user->name : '-' }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
+                                                    <select name="property_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($properties as $property)
+                                                            <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                                                {{ $property->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
+                                                    <select name="unit_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($units as $unit)
+                                                            <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                                                {{ $unit->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('invoice_month', __('Invoice Month'), ['class' => 'form-label']) }}
+                                                    {{ Form::month('invoice_month', request('invoice_month'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('end_date', __('End Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('end_date', request('end_date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('invoice.index') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>{{ __('Invoice') }}</th>
@@ -51,32 +125,18 @@
                                     <th>{{ __('Tenant') }}</th>
                                     <th>{{ __('Type') }}</th>
                                     @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
-                                        <th class="text-right">{{ __('Action') }}</th>
+                                        <th class="text-end">{{ __('Action') }}</th>
                                     @endif
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $rentInvoices = $invoices->filter(function($invoice) {
-                                        return $invoice->types->first() && $invoice->types->first()->types && $invoice->types->first()->types->type === 'rent';
-                                    });
-                                    $otherInvoices = $invoices->filter(function($invoice) {
-                                        return !($invoice->types->first() && $invoice->types->first()->types && $invoice->types->first()->types->type === 'rent');
-                                    });
-                                @endphp
-
-                                @if($rentInvoices->count() > 0)
-                                    <tr class="table-primary">
-                                        <td colspan="10"><strong>{{ __('Rent Invoices') }}</strong></td>
-                                    </tr>
-                                    @foreach ($rentInvoices as $invoice)
-                                        @include('invoice.partials.invoice_row', ['invoice' => $invoice])
-                                    @endforeach
-                                @endif
-
-                                @foreach ($otherInvoices as $invoice)
+                                @forelse($invoices as $invoice)
                                     @include('invoice.partials.invoice_row', ['invoice' => $invoice])
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted py-3">{{ __('No data available') }}</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -89,7 +149,6 @@
 @push('script-page')
 <script>
     $(document).on('click', '.clickable-invoice-row', function(e) {
-        // Only trigger if not clicking on a link or button
         if (!$(e.target).closest('a, button, input, .cart-action').length) {
             window.location = $(this).data('href');
         }

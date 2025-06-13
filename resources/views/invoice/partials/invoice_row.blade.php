@@ -1,19 +1,23 @@
 <tr class="clickable-invoice-row" data-href="{{ route('invoice.show', $invoice->id) }}">
-    <td>{{ invoicePrefix() . $invoice->invoice_id }} </td>
-    <td>{{ !empty($invoice->properties) ? $invoice->properties->name : '-' }} </td>
-    <td>{{ !empty($invoice->units) ? $invoice->units->name : '-' }} </td>
-    <td>{{ date('F Y', strtotime($invoice->invoice_month)) }} </td>
-    <td>{{ dateFormat($invoice->end_date) }} </td>
-    <td>{{ priceFormat($invoice->getInvoiceSubTotalAmount()) }}</td>
+    <td>
+        <span class="fw-medium">{{ invoicePrefix() . $invoice->invoice_id }}</span>
+    </td>
+    <td>{{ !empty($invoice->properties) ? $invoice->properties->name : '-' }}</td>
+    <td>{{ !empty($invoice->units) ? $invoice->units->name : '-' }}</td>
+    <td>{{ date('F Y', strtotime($invoice->invoice_month)) }}</td>
+    <td>{{ dateFormat($invoice->end_date) }}</td>
+    <td>
+        <span class="fw-medium">{{ priceFormat($invoice->getInvoiceSubTotalAmount()) }}</span>
+    </td>
     <td>
         @if ($invoice->status == 'pending')
-            <span class="badge bg-light-warning">Pending</span>
+            <span class="badge bg-warning-subtle text-warning">{{ __('Pending') }}</span>
         @elseif ($invoice->status == 'open')
-            <span class="badge bg-light-info">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+            <span class="badge bg-info-subtle text-info">{{ __('Open') }}</span>
         @elseif($invoice->status == 'paid')
-            <span class="badge bg-light-success">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+            <span class="badge bg-success-subtle text-success">{{ __('Paid') }}</span>
         @elseif($invoice->status == 'partial_paid')
-            <span class="badge bg-light-warning">{{ \App\Models\Invoice::$status[$invoice->status] }}</span>
+            <span class="badge bg-warning-subtle text-warning">{{ __('Partially Paid') }}</span>
         @endif
     </td>
     <td>{{ !empty($invoice->tenants()) && !empty($invoice->tenants()->user) ? $invoice->tenants()->user->name : '-' }}</td>
@@ -24,33 +28,31 @@
         @endphp
     </td>
     @if (auth()->user()->type == 'tenant')
-        <td>
-            <div class="cart-action">
+        <td class="text-end">
+            <div class="d-flex justify-content-end gap-2">
                 @if ($invoice->status == 'open')
-                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">Pay Now</a>
+                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-sm btn-primary px-3" onclick="event.stopPropagation();">
+                        {{ __('Pay Now') }}
+                    </a>
                 @else
-                    <a class="avtar avtar-xs btn-link-warning text-warning"
-                        href="{{ route('invoice.show', $invoice->id) }}"
-                        data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();"> <i data-feather="eye"></i></a>
+                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-sm btn-light" onclick="event.stopPropagation();" data-bs-toggle="tooltip" title="{{ __('View') }}">
+                        <i class="ti ti-eye"></i>
+                    </a>
                 @endif
             </div>
         </td>
     @else
-        <td>
-            <div class="cart-action d-flex align-items-center gap-2">
+        <td class="text-end">
+            <div class="d-flex justify-content-end gap-2">
                 @can('show invoice')
-                    <a class="avtar avtar-xs btn-link-warning text-warning"
-                        href="{{ route('invoice.show', $invoice->id) }}"
-                        data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();"> <i
-                            data-feather="eye"></i></a>
+                    <a href="{{ route('invoice.show', $invoice->id) }}" class="btn btn-sm btn-light" onclick="event.stopPropagation();" data-bs-toggle="tooltip" title="{{ __('View') }}">
+                        <i class="ti ti-eye"></i>
+                    </a>
                 @endcan
                 @can('edit invoice')
-                    <a class="avtar avtar-xs btn-link-secondary text-secondary" data-bs-original-title="{{ __('Edit') }}"
-                        href="{{ route('invoice.edit', $invoice->id) }}" data-bs-toggle="tooltip"
-                        data-bs-original-title="{{ __('Edit') }}" onclick="event.stopPropagation();"> <i
-                            data-feather="edit"></i></a>
+                    <a href="{{ route('invoice.edit', $invoice->id) }}" class="btn btn-sm btn-light" onclick="event.stopPropagation();" data-bs-toggle="tooltip" title="{{ __('Edit') }}">
+                        <i class="ti ti-pencil"></i>
+                    </a>
                 @endcan
                 @can('delete invoice')
                     @php
@@ -59,12 +61,11 @@
                             $isRent = true;
                         }
                     @endphp
-                    <form method="POST" action="{{ $isRent ? route('rent.destroy', $invoice->id) : route('invoice.destroy', $invoice->id) }}" style="display:inline;">
+                    <form method="POST" action="{{ $isRent ? route('rent.destroy', $invoice->id) : route('invoice.destroy', $invoice->id) }}" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                            data-bs-original-title="{{ __('Detete') }}" onclick="event.stopPropagation();">
-                            <i data-feather="trash-2"></i>
+                        <button type="submit" class="btn btn-sm btn-light text-danger" onclick="event.stopPropagation();" data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                            <i class="ti ti-trash"></i>
                         </button>
                     </form>
                 @endcan

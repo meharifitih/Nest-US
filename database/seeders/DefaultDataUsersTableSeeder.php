@@ -413,6 +413,26 @@ class DefaultDataUsersTableSeeder extends Seeder
                     'name' => 'delete types',
                     'guard_name' => 'web',
                 ],
+                [
+                    'name' => 'manage hoa',
+                    'guard_name' => 'web',
+                ],
+                [
+                    'name' => 'create hoa',
+                    'guard_name' => 'web',
+                ],
+                [
+                    'name' => 'edit hoa',
+                    'guard_name' => 'web',
+                ],
+                [
+                    'name' => 'delete hoa',
+                    'guard_name' => 'web',
+                ],
+                [
+                    'name' => 'show hoa',
+                    'guard_name' => 'web',
+                ],
 
             ];
             Permission::insert($allPermission);
@@ -575,6 +595,11 @@ class DefaultDataUsersTableSeeder extends Seeder
                 ['name' => 'create types'],
                 ['name' => 'edit types'],
                 ['name' => 'delete types'],
+                ['name' => 'manage hoa'],
+                ['name' => 'create hoa'],
+                ['name' => 'edit hoa'],
+                ['name' => 'delete hoa'],
+                ['name' => 'show hoa'],
 
             ];
             $systemOwnerRole->givePermissionTo($systemOwnerPermission);
@@ -662,6 +687,11 @@ class DefaultDataUsersTableSeeder extends Seeder
                 ['name' => 'create types'],
                 ['name' => 'edit types'],
                 ['name' => 'delete types'],
+                ['name' => 'manage hoa'],
+                ['name' => 'create hoa'],
+                ['name' => 'edit hoa'],
+                ['name' => 'delete hoa'],
+                ['name' => 'show hoa'],
 
             ];
             $systemManagerRole->givePermissionTo($systemManagerPermission);

@@ -348,6 +348,8 @@ Route::resource('expense', ExpenseController::class)->middleware(
     ]
 );
 
+Route::get('expense', [App\Http\Controllers\ExpenseController::class, 'index'])->name('expense.index');
+
 //-------------------------------Maintainer-------------------------------------------
 Route::resource('maintainer', MaintainerController::class)->middleware(
     [

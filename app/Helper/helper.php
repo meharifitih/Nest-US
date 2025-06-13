@@ -522,6 +522,8 @@ if (!function_exists('defaultTenantCreate')) {
             ['name' => 'delete maintenance request'],
             ['name' => 'show maintenance request'],
             ['name' => 'manage account settings'],
+            ['name' => 'manage hoa'],
+            ['name' => 'show hoa'],
         ];
         if ($systemTenantRole) {
             $systemTenantRole->givePermissionTo($systemTenantPermissions);

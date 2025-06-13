@@ -14,12 +14,26 @@ class ExpenseController extends Controller
     {
         if (\Auth::user()->can('manage expense')) {
             $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'expense')->pluck('title', 'id');
+            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
             $expenses = Expense::where('parent_id', parentId())
                 ->when($request->expense_type_filter, function($query) use ($request) {
                     $query->where('expense_type', $request->expense_type_filter);
                 })
+                ->when($request->property_id, function($query) use ($request) {
+                    $query->where('property_id', $request->property_id);
+                })
+                ->when($request->unit_id, function($query) use ($request) {
+                    $query->where('unit_id', $request->unit_id);
+                })
+                ->when($request->date, function($query) use ($request) {
+                    $query->whereDate('date', $request->date);
+                })
+                ->when($request->amount, function($query) use ($request) {
+                    $query->where('amount', $request->amount);
+                })
                 ->get();
-            return view('expense.index', compact('expenses', 'types'));
+            return view('expense.index', compact('expenses', 'types', 'properties', 'units'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

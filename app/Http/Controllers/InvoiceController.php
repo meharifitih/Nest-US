@@ -15,20 +15,42 @@ use App\Models\PropertyUnit;
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (\Auth::user()->can('manage invoice')) {
-            $typeFilter = request('type_filter');
+            $typeFilter = $request->type_filter;
+            $query = null;
             if (\Auth::user()->type == 'tenant') {
-                $tenant = Tenant::where('user_id', \Auth::user()->id)->first();
-                $query = Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->where('parent_id', parentId());
+                $tenant = \App\Models\Tenant::where('user_id', \Auth::user()->id)->first();
+                $query = \App\Models\Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->where('parent_id', parentId());
             } else {
-                $query = Invoice::where('parent_id', parentId());
+                $query = \App\Models\Invoice::where('parent_id', parentId());
             }
             if ($typeFilter) {
                 $query = $query->whereHas('types', function($q) use ($typeFilter) {
                     $q->where('invoice_type', $typeFilter);
                 });
+            }
+            if ($request->status) {
+                $query->where('status', $request->status);
+            }
+            if ($request->tenant) {
+                $query->whereHas('tenants', function($q) use ($request) {
+                    $q->where('user_id', $request->tenant);
+                });
+            }
+            if ($request->property_id) {
+                $query->where('property_id', $request->property_id);
+            }
+            if ($request->unit_id) {
+                $query->where('unit_id', $request->unit_id);
+            }
+            if ($request->invoice_month) {
+                $query->whereMonth('invoice_month', date('m', strtotime($request->invoice_month)));
+                $query->whereYear('invoice_month', date('Y', strtotime($request->invoice_month)));
+            }
+            if ($request->end_date) {
+                $query->whereDate('end_date', $request->end_date);
             }
             // Exclude rent invoices
             $query = $query->whereDoesntHave('types', function($q) {
@@ -38,7 +60,11 @@ class InvoiceController extends Controller
             });
             $invoices = $query->get();
             $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'invoice')->get();
-            return view('invoice.index', compact('invoices', 'types'));
+            $statusOptions = \App\Models\Invoice::$status;
+            $tenants = \App\Models\Tenant::with('user')->get();
+            $properties = \App\Models\Property::all();
+            $units = \App\Models\PropertyUnit::all();
+            return view('invoice.index', compact('invoices', 'types', 'statusOptions', 'tenants', 'properties', 'units'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

@@ -3,42 +3,123 @@
 @section('page-title')
     {{ __('HOA') }}
 @endsection
+
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
-    <li class="breadcrumb-item" aria-current="page"> {{ __('HOA') }}</li>
+    <li class="breadcrumb-item" aria-current="page">{{ __('HOA') }}</li>
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-sm-12">
-            <div class="card table-card">
+            <div class="card">
                 <div class="card-header">
-                    <div class="row align-items-center g-2">
+                    <div class="row align-items-center">
                         <div class="col">
-                            <h5>{{ __('HOA List') }}</h5>
+                            <h5 class="mb-0">{{ __('HOA List') }}</h5>
                         </div>
-                        <div class="col-auto">
-                            <form method="GET" action="">
-                                <select name="hoa_type_filter" class="form-select" onchange="this.form.submit()">
-                                    <option value="">All HOA Types</option>
-                                    @foreach($hoa_types as $id => $title)
-                                        <option value="{{ $id }}" {{ request('hoa_type_filter') == $id ? 'selected' : '' }}>{{ $title }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        </div>
-                        @if (Auth::user()->hasRole('owner'))
-                            <div class="col-auto">
-                                <a href="{{ route('hoa.create') }}" class="btn btn-secondary">
-                                    <i class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create HOA') }}
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                            @can('create hoa')
+                                <a href="{{ route('hoa.create') }}" class="btn btn-secondary px-3">
+                                    <i class="ti ti-plus me-1"></i> {{ __('Create HOA') }}
                                 </a>
-                            </div>
-                        @endif
+                            @endcan
+                        </div>
                     </div>
                 </div>
-                <div class="card-body pt-0">
-                    <div class="dt-responsive table-responsive">
-                        <table class="table table-hover advance-datatable">
+                
+                <div class="card-body">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter HOA') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="{{ route('hoa.index') }}">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
+                                                    <select name="property_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($properties as $property)
+                                                            <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                                                {{ $property->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
+                                                    <select name="unit_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($units as $unit)
+                                                            <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                                                {{ $unit->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('tenant', __('Tenant'), ['class' => 'form-label']) }}
+                                                    <select name="tenant" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($tenants as $tenant)
+                                                            <option value="{{ $tenant->user_id }}" {{ request('tenant') == $tenant->user_id ? 'selected' : '' }}>
+                                                                {{ $tenant->user ? $tenant->user->name : '-' }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('hoa_type', __('HOA Type'), ['class' => 'form-label']) }}
+                                                    <select name="hoa_type" class="form-select">
+                                                        <option value="">{{ __('All Types') }}</option>
+                                                        @foreach($hoaTypes as $type)
+                                                            <option value="{{ $type->id }}" {{ request('hoa_type') == $type->id ? 'selected' : '' }}>
+                                                                {{ $type->title }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
+                                                    {{ Form::select('status', ['' => __('All')] + $statusOptions, request('status'), ['class' => 'form-select']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('due_date', __('Due Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('due_date', request('due_date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('hoa.index') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>{{ __('Property') }}</th>
@@ -49,66 +130,19 @@
                                     <th>{{ __('Frequency') }}</th>
                                     <th>{{ __('Due Date') }}</th>
                                     <th>{{ __('Status') }}</th>
-                                    <th>{{ __('Action') }}</th>
+                                    <th class="text-end">{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($hoas as $hoa)
-                                    <tr class="clickable-hoa-row" data-href="{{ route('hoa.show', $hoa) }}">
-                                        <td>{{ $hoa->property->name ?? '-' }}</td>
-                                        <td>{{ $hoa->unit->name ?? '-' }}</td>
-                                        <td>{{ $hoa->unit && $hoa->unit->tenants && $hoa->unit->tenants->user ? $hoa->unit->tenants->user->name : '-' }}</td>
-                                        <td>{{ $hoa->hoaType->title ?? '-' }}</td>
-                                        <td>{{ priceFormat($hoa->amount) }}</td>
-                                        <td>{{ ucfirst($hoa->frequency) }}</td>
-                                        <td>{{ $hoa->due_date ? dateFormat($hoa->due_date) : '-' }}</td>
-                                        <td>
-                                            @if ($hoa->status == 'pending')
-                                                <span class="badge bg-light-warning">Pending</span>
-                                            @elseif ($hoa->status == 'open')
-                                                <span class="badge bg-light-warning">Open</span>
-                                            @elseif ($hoa->status == 'paid')
-                                                <span class="badge bg-light-success">Paid</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="cart-action">
-                                                @if(Auth::user()->hasRole('tenant') && $hoa->status == 'open')
-                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Pay Now') }}" onclick="event.stopPropagation();">
-                                                        <i class="ti ti-credit-card"></i> {{ __('Pay Now') }}
-                                                    </a>
-                                                @elseif(Auth::user()->hasRole('tenant'))
-                                                    <a class="avtar avtar-xs btn-link-warning text-warning"
-                                                        href="{{ route('hoa.show', $hoa) }}"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();">
-                                                        <i data-feather="eye"></i>
-                                                    </a>
-                                                @endif
-                                                @if(Auth::user()->hasRole('owner'))
-                                                    <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('View') }}" onclick="event.stopPropagation();">
-                                                        <i class="ti ti-eye"></i>
-                                                    </a>
-                                                    <a href="{{ route('hoa.edit', $hoa) }}" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}" onclick="event.stopPropagation();">
-                                                        <i class="ti ti-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('hoa.destroy', $hoa) }}" method="POST" style="display:inline;" onsubmit="event.stopPropagation();">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm confirm_dialog" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Delete') }}">
-                                                            <i class="ti ti-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </td>
+                                @forelse($hoas as $hoa)
+                                    @include('hoa.partials.hoa_row', ['hoa' => $hoa])
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-3">{{ __('No data available') }}</td>
                                     </tr>
-                                @endforeach
+                                @endforelse
                             </tbody>
                         </table>
-                        <div class="mt-4">
-                            {{ $hoas->links('vendor.pagination.bootstrap-5') }}
-                        </div>
                     </div>
                 </div>
             </div>

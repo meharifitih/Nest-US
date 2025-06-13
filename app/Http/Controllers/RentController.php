@@ -13,15 +13,42 @@ use Illuminate\Http\Request;
 
 class RentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::whereHas('types', function($q) {
+        $query = Invoice::whereHas('types', function($q) {
             $q->whereHas('types', function($q2) {
                 $q2->where('type', 'rent');
             });
-        })->get();
+        });
 
-        return view('rent.index', compact('invoices'));
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+        if ($request->tenant) {
+            $query->whereHas('tenants', function($q) use ($request) {
+                $q->where('user_id', $request->tenant);
+            });
+        }
+        if ($request->property_id) {
+            $query->where('property_id', $request->property_id);
+        }
+        if ($request->unit_id) {
+            $query->where('unit_id', $request->unit_id);
+        }
+        if ($request->invoice_month) {
+            $query->whereMonth('invoice_month', date('m', strtotime($request->invoice_month)));
+            $query->whereYear('invoice_month', date('Y', strtotime($request->invoice_month)));
+        }
+        if ($request->end_date) {
+            $query->whereDate('end_date', $request->end_date);
+        }
+
+        $invoices = $query->get();
+        $statusOptions = \App\Models\Invoice::$status;
+        $tenants = \App\Models\Tenant::with('user')->get();
+        $properties = \App\Models\Property::all();
+        $units = \App\Models\PropertyUnit::all();
+        return view('rent.index', compact('invoices', 'statusOptions', 'tenants', 'properties', 'units'));
     }
 
     public function create()
