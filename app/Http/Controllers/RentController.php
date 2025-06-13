@@ -94,6 +94,16 @@ class RentController extends Controller
         return redirect()->route('rent.index')->with('success', __('Rent invoice successfully created.'));
     }
 
+    public function destroy(Invoice $invoice)
+    {
+        if (\Auth::user()->can('delete invoice')) {
+            $invoice->delete();
+            return redirect()->route('rent.index')->with('success', __('Rent invoice successfully deleted.'));
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
+    }
+
     private function invoiceNumber()
     {
         $latest = Invoice::where('parent_id', parentId())->latest()->first();

@@ -53,7 +53,13 @@
                             data-feather="edit"></i></a>
                 @endcan
                 @can('delete invoice')
-                    <form method="POST" action="{{ route('invoice.destroy', $invoice->id) }}" style="display:inline;">
+                    @php
+                        $isRent = false;
+                        if (isset($invoice->types) && $invoice->types->first() && isset($invoice->types->first()->types) && $invoice->types->first()->types->type === 'rent') {
+                            $isRent = true;
+                        }
+                    @endphp
+                    <form method="POST" action="{{ $isRent ? route('rent.destroy', $invoice->id) : route('invoice.destroy', $invoice->id) }}" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"

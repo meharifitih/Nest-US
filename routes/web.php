@@ -460,6 +460,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');
 Route::get('rent/create', [App\Http\Controllers\RentController::class, 'create'])->name('rent.create');
 Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name('rent.store');
+Route::delete('rent/{invoice}', [App\Http\Controllers\RentController::class, 'destroy'])->name('rent.destroy');
 
 // Tenant Excel Upload Routes
 Route::get('tenant-excel-upload/select-property', [TenantExcelUploadController::class, 'selectProperty'])->name('tenant-excel-upload.select-property');
