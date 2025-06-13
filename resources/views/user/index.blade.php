@@ -36,16 +36,75 @@
                                 {{ __('User List') }}
                             @endif</h5>
                         </div>
-                        @if (Gate::check('create user'))
-                            <div class="col-auto">
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                            @if (Gate::check('create user'))
                                 <a href="#" class="btn btn-secondary customModal" data-size="lg"
                                     data-url="{{ route('users.create') }}" data-title="{{ __('Create User') }}"> <i
                                         class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create User') }}</a>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter Users') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="{{ route('users.index') }}">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('name', __('Name'), ['class' => 'form-label']) }}
+                                                    {{ Form::text('name', request('name'), ['class' => 'form-control', 'placeholder' => __('Enter name')]) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('email', __('Email'), ['class' => 'form-label']) }}
+                                                    {{ Form::text('email', request('email'), ['class' => 'form-control', 'placeholder' => __('Enter email')]) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('approval_status', __('Approval Status'), ['class' => 'form-label']) }}
+                                                    <select name="approval_status" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        <option value="approved" {{ request('approval_status') == 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                                        <option value="pending" {{ request('approval_status') == 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                        <option value="rejected" {{ request('approval_status') == 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('active_package', __('Active Package'), ['class' => 'form-label']) }}
+                                                    {{ Form::text('active_package', request('active_package'), ['class' => 'form-control', 'placeholder' => __('Enter package name')]) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('package_due_date', __('Package Due Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('package_due_date', request('package_due_date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('users.index') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

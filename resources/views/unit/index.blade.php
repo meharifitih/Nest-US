@@ -18,14 +18,15 @@
                         <div class="col">
                             <h5>{{ __('Unit List') }}</h5>
                         </div>
-                        @if (Gate::check('create unit'))
-                            <div class="col-auto">
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                            @if (Gate::check('create unit'))
                                 <a href="{{ route('unit.direct-create') }}" class="btn btn-secondary">
                                     <i class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}
                                 </a>
-                            </div>
-                        @endif
-                        <div class="col-auto">
+                            @endif
                             <a href="{{ route('tenant-excel-upload.select-property') }}" class="btn btn-secondary">
                                 <i class="ti ti-upload align-text-bottom"></i> {{ __('Tenant Excel Upload') }}
                             </a>
@@ -33,6 +34,82 @@
                     </div>
                 </div>
                 <div class="card-body pt-0">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter Units') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="{{ route('unit.index') }}">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
+                                                    <select name="property_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($properties as $property)
+                                                            <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                                                {{ $property->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('rent_type', __('Rent Type'), ['class' => 'form-label']) }}
+                                                    <select name="rent_type" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach(\App\Models\PropertyUnit::$rentTypes as $key => $label)
+                                                            <option value="{{ $key }}" {{ request('rent_type') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('rent', __('Rent'), ['class' => 'form-label']) }}
+                                                    {{ Form::number('rent', request('rent'), ['class' => 'form-control', 'placeholder' => __('Enter Rent')]) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('start_date', __('Rent Start Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('start_date', request('start_date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('end_date', __('Rent End Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('end_date', request('end_date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('tenant', __('Tenant'), ['class' => 'form-label']) }}
+                                                    <select name="tenant" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($tenants as $tenant)
+                                                            <option value="{{ $tenant->user_id }}" {{ request('tenant') == $tenant->user_id ? 'selected' : '' }}>
+                                                                {{ $tenant->user ? $tenant->user->name : '-' }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('unit.index') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

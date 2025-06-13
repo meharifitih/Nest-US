@@ -16,10 +16,96 @@
                         <div class="col">
                             <h5>{{ __('Pricing Package Transaction List') }}</h5>
                         </div>
-
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> {{ __('Filter') }}
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel">{{ __('Filter Transactions') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="{{ route('subscription.transaction') }}">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('user_id', __('User'), ['class' => 'form-label']) }}
+                                                    <select name="user_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($users as $user)
+                                                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                                                {{ $user->name ?? ($user->first_name . ' ' . $user->last_name) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('subscription_id', __('Subscription'), ['class' => 'form-label']) }}
+                                                    <select name="subscription_id" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        @foreach($subscriptions as $subscription)
+                                                            <option value="{{ $subscription->id }}" {{ request('subscription_id') == $subscription->id ? 'selected' : '' }}>
+                                                                {{ $subscription->title }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('payment_type', __('Payment Type'), ['class' => 'form-label']) }}
+                                                    <select name="payment_type" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        <option value="Stripe" {{ request('payment_type') == 'Stripe' ? 'selected' : '' }}>Stripe</option>
+                                                        <option value="Bank Transfer" {{ request('payment_type') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                                                        <option value="CBE" {{ request('payment_type') == 'CBE' ? 'selected' : '' }}>CBE</option>
+                                                        <option value="TELEBIRR" {{ request('payment_type') == 'TELEBIRR' ? 'selected' : '' }}>TELEBIRR</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('payment_status', __('Payment Status'), ['class' => 'form-label']) }}
+                                                    <select name="payment_status" class="form-select">
+                                                        <option value="">{{ __('All') }}</option>
+                                                        <option value="completed" {{ request('payment_status') == 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                                                        <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                        <option value="rejected" {{ request('payment_status') == 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('date', __('Date'), ['class' => 'form-label']) }}
+                                                    {{ Form::date('date', request('date'), ['class' => 'form-control']) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
+                                                    {{ Form::number('amount', request('amount'), ['class' => 'form-control', 'placeholder' => __('Enter Amount')]) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4">{{ __('Apply Filter') }}</button>
+                                        <a href="{{ route('subscription.transaction') }}" class="btn btn-light px-4">{{ __('Reset') }}</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

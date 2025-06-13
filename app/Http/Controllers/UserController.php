@@ -18,16 +18,41 @@ class UserController extends Controller
 {
     use PhoneNumberFormatter;
 
-    public function index()
+    public function index(Request $request)
     {
         if (\Auth::user()->can('manage user')) {
+            $query = null;
             if (\Auth::user()->type == 'super admin') {
-                $users = User::where('parent_id', parentId())->where('type', 'owner')->paginate(10);
-                return view('user.index', compact('users'));
+                $query = User::where('parent_id', parentId())->where('type', 'owner');
             } else {
-                $users = User::where('parent_id', '=', parentId())->whereNotIn('type', ['tenant', 'maintainer'])->paginate(10);
-                return view('user.index', compact('users'));
+                $query = User::where('parent_id', '=', parentId())->whereNotIn('type', ['tenant', 'maintainer']);
             }
+
+            // Filtering
+            if ($request->filled('name')) {
+                $query = $query->where(function($q) use ($request) {
+                    $q->where('name', 'like', "%{$request->name}%")
+                      ->orWhere('first_name', 'like', "%{$request->name}%")
+                      ->orWhere('last_name', 'like', "%{$request->name}%");
+                });
+            }
+            if ($request->filled('email')) {
+                $query = $query->where('email', 'like', "%{$request->email}%");
+            }
+            if ($request->filled('approval_status')) {
+                $query = $query->where('approval_status', $request->approval_status);
+            }
+            if ($request->filled('active_package')) {
+                $query = $query->whereHas('subscriptions', function($q) use ($request) {
+                    $q->where('title', 'like', "%{$request->active_package}%");
+                });
+            }
+            if ($request->filled('package_due_date')) {
+                $query = $query->whereDate('subscription_expire_date', $request->package_due_date);
+            }
+
+            $users = $query->paginate(10);
+            return view('user.index', compact('users'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied.'));
         }

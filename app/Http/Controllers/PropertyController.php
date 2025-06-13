@@ -256,11 +256,34 @@ class PropertyController extends Controller
     }
 
 
-    public function units()
+    public function units(Request $request)
     {
         if (\Auth::user()->can('manage unit')) {
-            $units = PropertyUnit::where('parent_id', parentId())->get();
-            return view('unit.index', compact('units'));
+            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            $tenants = \App\Models\Tenant::with('user')->where('parent_id', parentId())->get();
+            $units = \App\Models\PropertyUnit::where('parent_id', parentId())
+                ->when($request->property_id, function($query) use ($request) {
+                    $query->where('property_id', $request->property_id);
+                })
+                ->when($request->rent_type, function($query) use ($request) {
+                    $query->where('rent_type', $request->rent_type);
+                })
+                ->when($request->rent, function($query) use ($request) {
+                    $query->where('rent', $request->rent);
+                })
+                ->when($request->start_date, function($query) use ($request) {
+                    $query->whereDate('start_date', $request->start_date);
+                })
+                ->when($request->end_date, function($query) use ($request) {
+                    $query->whereDate('end_date', $request->end_date);
+                })
+                ->when($request->tenant, function($query) use ($request) {
+                    $query->whereHas('tenants', function($q) use ($request) {
+                        $q->where('user_id', $request->tenant);
+                    });
+                })
+                ->get();
+            return view('unit.index', compact('units', 'properties', 'tenants'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

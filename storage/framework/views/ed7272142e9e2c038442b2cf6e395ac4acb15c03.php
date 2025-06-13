@@ -41,16 +41,85 @@
 
                             <?php endif; ?></h5>
                         </div>
-                        <?php if(Gate::check('create user')): ?>
-                            <div class="col-auto">
+                        <div class="col-auto d-flex gap-2">
+                            <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="ti ti-filter me-1"></i> <?php echo e(__('Filter')); ?>
+
+                            </button>
+                            <?php if(Gate::check('create user')): ?>
                                 <a href="#" class="btn btn-secondary customModal" data-size="lg"
                                     data-url="<?php echo e(route('users.create')); ?>" data-title="<?php echo e(__('Create User')); ?>"> <i
                                         class="ti ti-circle-plus align-text-bottom"></i> <?php echo e(__('Create User')); ?></a>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
+                    <!-- Filter Modal -->
+                    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="filterModalLabel"><?php echo e(__('Filter Users')); ?></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="GET" action="<?php echo e(route('users.index')); ?>">
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <?php echo e(Form::label('name', __('Name'), ['class' => 'form-label'])); ?>
+
+                                                    <?php echo e(Form::text('name', request('name'), ['class' => 'form-control', 'placeholder' => __('Enter name')])); ?>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <?php echo e(Form::label('email', __('Email'), ['class' => 'form-label'])); ?>
+
+                                                    <?php echo e(Form::text('email', request('email'), ['class' => 'form-control', 'placeholder' => __('Enter email')])); ?>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <?php echo e(Form::label('approval_status', __('Approval Status'), ['class' => 'form-label'])); ?>
+
+                                                    <select name="approval_status" class="form-select">
+                                                        <option value=""><?php echo e(__('All')); ?></option>
+                                                        <option value="approved" <?php echo e(request('approval_status') == 'approved' ? 'selected' : ''); ?>><?php echo e(__('Approved')); ?></option>
+                                                        <option value="pending" <?php echo e(request('approval_status') == 'pending' ? 'selected' : ''); ?>><?php echo e(__('Pending')); ?></option>
+                                                        <option value="rejected" <?php echo e(request('approval_status') == 'rejected' ? 'selected' : ''); ?>><?php echo e(__('Rejected')); ?></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <?php echo e(Form::label('active_package', __('Active Package'), ['class' => 'form-label'])); ?>
+
+                                                    <?php echo e(Form::text('active_package', request('active_package'), ['class' => 'form-control', 'placeholder' => __('Enter package name')])); ?>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <?php echo e(Form::label('package_due_date', __('Package Due Date'), ['class' => 'form-label'])); ?>
+
+                                                    <?php echo e(Form::date('package_due_date', request('package_due_date'), ['class' => 'form-control'])); ?>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary px-4"><?php echo e(__('Apply Filter')); ?></button>
+                                        <a href="<?php echo e(route('users.index')); ?>" class="btn btn-light px-4"><?php echo e(__('Reset')); ?></a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

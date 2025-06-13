@@ -135,16 +135,36 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function transaction()
+    public function transaction(Request $request)
     {
         if (\Auth::user()->can('manage pricing transation')) {
-            if (\Auth::user()->type == 'super admin') {
-                $transactions = PackageTransaction::with(['subscription', 'user'])->orderBy('created_at', 'DESC')->get();
-            } else {
-                $transactions = PackageTransaction::with(['subscription', 'user'])->where('user_id', \Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+            $users = \App\Models\User::all();
+            $subscriptions = \App\Models\Subscription::all();
+            $query = \App\Models\PackageTransaction::with(['subscription', 'user']);
+            if (\Auth::user()->type != 'super admin') {
+                $query->where('user_id', \Auth::user()->id);
             }
+            $query->when($request->user_id, function($q) use ($request) {
+                $q->where('user_id', $request->user_id);
+            });
+            $query->when($request->subscription_id, function($q) use ($request) {
+                $q->where('subscription_id', $request->subscription_id);
+            });
+            $query->when($request->payment_type, function($q) use ($request) {
+                $q->where('payment_type', $request->payment_type);
+            });
+            $query->when($request->payment_status, function($q) use ($request) {
+                $q->where('payment_status', $request->payment_status);
+            });
+            $query->when($request->date, function($q) use ($request) {
+                $q->whereDate('created_at', $request->date);
+            });
+            $query->when($request->amount, function($q) use ($request) {
+                $q->where('amount', $request->amount);
+            });
+            $transactions = $query->orderBy('created_at', 'DESC')->get();
             $settings = settings();
-            return view('subscription.transaction', compact('transactions', 'settings'));
+            return view('subscription.transaction', compact('transactions', 'settings', 'users', 'subscriptions'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
