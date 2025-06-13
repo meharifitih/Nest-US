@@ -10,7 +10,7 @@
     <div class="navbar-wrapper">
         <div class="m-header text-center py-3">
             <a href="<?php echo e(route('dashboard')); ?>" class="b-brand text-primary d-inline-block">
-                <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid sidebar-modern-logo" style="max-height:48px; border-radius:10px; box-shadow:0 2px 8px rgba(21,82,99,0.07); background:#fff; padding:4px;" />
+                <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid sidebar-modern-logo" style="max-height:48px; display:block; margin:0 auto;" />
             </a>
         </div>
         <div class="navbar-content">
@@ -405,10 +405,6 @@
     .sidebar-modern-logo {
         display: block;
         margin: 0 auto;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(21,82,99,0.07);
-        padding: 4px;
         max-height: 48px;
     }
 </style>

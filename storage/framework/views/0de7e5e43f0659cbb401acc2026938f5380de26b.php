@@ -74,7 +74,7 @@
             <div class="auth-form">
                 <div class="logo text-center mb-4">
                     <a class="navbar-brand landing-logo d-inline-block" href="<?php echo e(route('home')); ?>">
-                        <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid modern-login-logo" style="max-height:56px; border-radius:12px; box-shadow:0 2px 12px rgba(21,82,99,0.07); background:#fff; padding:6px;" />
+                        <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid modern-login-logo" style="max-height:56px; display:block; margin:0 auto;" />
                     </a>
                 </div>
                 <?php echo $__env->yieldContent('content'); ?>
@@ -117,7 +117,6 @@
     <script src="<?php echo e(asset('js/jquery.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/popper.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/simplebar.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('assets/js/plugins/bootstrap.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/fonts/custom-font.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/pcoded.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/js/plugins/feather.min.js')); ?>"></script>
@@ -134,10 +133,6 @@
     .modern-login-logo {
         display: block;
         margin: 0 auto;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(21,82,99,0.07);
-        padding: 6px;
         max-height: 56px;
     }
 </style>
