@@ -97,7 +97,7 @@ class RegisteredUserController extends Controller
             if ($request->type === 'owner') {
                 $module = 'owner_create';
                 $setting = settings();
-                $data['subject'] = 'Welcome to Smart Tenant!';
+                $data['subject'] = 'Welcome to Nest!';
                 $data['module'] = $module;
                 $data['name'] = $user->first_name;
                 $data['email'] = $user->email;
@@ -110,7 +110,7 @@ class RegisteredUserController extends Controller
             } else {
                 $module = 'welcome';
                 $setting = settings();
-                $data['subject'] = 'Welcome to Smart Tenant!';
+                $data['subject'] = 'Welcome to Nest!';
                 $data['module'] = $module;
                 $data['name'] = $user->first_name;
                 $data['email'] = $user->email;

@@ -1035,7 +1035,7 @@ if (!function_exists('HomePageSection')) {
                                 </div>
                                 <div class="col-md-6">
                                     <h2 class="h1">Easy Developer Experience</h2>
-                                    <p class="text-lg w-75 my-3 my-md-4">Smart Tenant has made it easy for developers of any skill level to
+                                    <p class="text-lg w-75 my-3 my-md-4">Nest has made it easy for developers of any skill level to
                                         use their product.</p>
                                     <ul class="list-unstyled customize-list">
                                         <li>
@@ -1106,9 +1106,9 @@ if (!function_exists('HomePageSection')) {
                     <div class="container">
                         <div class="row justify-content-center title">
                             <div class="col-md-9 col-lg-6 text-center">
-                                <h2 class="h1">What does Smart Tenant offer?</h2>
+                                <h2 class="h1">What does Nest offer?</h2>
                                 <p class="text-lg">
-                                    Smart Tenant is a reliable choice for your admin panel needs, offering a wide range of features to
+                                    Nest is a reliable choice for your admin panel needs, offering a wide range of features to
                                     easily manage your backend panel
                                 </p>
                             </div>
@@ -1118,7 +1118,7 @@ if (!function_exists('HomePageSection')) {
                                 <img src="assets/images/landing/img-design-1.svg" alt="img" class="img-fluid" />
                                 <h3 class="my-4 fw-semibold">Beautiful User Interface</h3>
                                 <p>
-                                    Smart Tenant can improve the user experience of your web application by providing a clear and intuitive
+                                    Nest can improve the user experience of your web application by providing a clear and intuitive
                                     layout, and consistent look
                                     and feel.
                                 </p>
@@ -1127,7 +1127,7 @@ if (!function_exists('HomePageSection')) {
                                 <img src="assets/images/landing/img-design-2.svg" alt="img" class="img-fluid" />
                                 <h3 class="my-4 fw-semibold">Time and Cost Savings</h3>
                                 <p>
-                                    Smart Tenant can save developers time and effort by providing a pre-built user interface, allowing them
+                                    Nest can save developers time and effort by providing a pre-built user interface, allowing them
                                     to focus on other aspects of
                                     the project.
                                 </p>
@@ -1135,14 +1135,14 @@ if (!function_exists('HomePageSection')) {
                             <div class="col-md-6 col-xl-4">
                                 <img src="assets/images/landing/img-design-3.svg" alt="img" class="img-fluid" />
                                 <h3 class="my-4 fw-semibold">Reduce Development Complexity</h3>
-                                <p>Smart Tenant simplifies admin panel development with easy theme setup and clear code with flexible
+                                <p>Nest simplifies admin panel development with easy theme setup and clear code with flexible
                                     layouts options.</p>
                             </div>
                             <div class="col-md-6 col-xl-4">
                                 <img src="assets/images/landing/img-design-4.svg" alt="img" class="img-fluid" />
                                 <h3 class="my-4 fw-semibold">Improved Scalability</h3>
                                 <p>
-                                    Smart Tenant uses scalable technologies and resources to ensure that your admin panel remains efficient
+                                    Nest uses scalable technologies and resources to ensure that your admin panel remains efficient
                                     and effective as your needs
                                     evolve.
                                 </p>
@@ -1152,13 +1152,13 @@ if (!function_exists('HomePageSection')) {
                                 <h3 class="my-4 fw-semibold">Well-Documented and Supported</h3>
                                 <p>
                                     With a range of resources including user guides, tutorials, and FAQs to help users understand
-                                    and effectively use the Smart Tenant.
+                                    and effectively use the Nest.
                                 </p>
                             </div>
                             <div class="col-md-6 col-xl-4">
                                 <img src="assets/images/landing/img-design-6.svg" alt="img" class="img-fluid" />
                                 <h3 class="my-4 fw-semibold">Performance Centric</h3>
-                                <p>Smart Tenant is a performance-centric dashboard template that is designed to deliver optimal performance
+                                <p>Nest is a performance-centric dashboard template that is designed to deliver optimal performance
                                     for your admin panel.</p>
                             </div>
                         </div>
@@ -1176,7 +1176,7 @@ if (!function_exists('HomePageSection')) {
                         <div class="row justify-content-center title">
                             <div class="col-md-9 col-lg-6 text-center">
                                 <h2 class="h1">Affordable Pricing Based On Your Needs</h2>
-                                <p class="text-lg">Smart Tenant has conceptul working apps like Chat, Inbox, E-commerce, Invoice,
+                                <p class="text-lg">Nest has conceptul working apps like Chat, Inbox, E-commerce, Invoice,
                                     Kanban,and Calendar</p>
                             </div>
                         </div>
@@ -1297,7 +1297,7 @@ if (!function_exists('HomePageSection')) {
                         <div class="row justify-content-center title">
                             <div class="col-md-9 col-lg-6 text-center">
                                 <h2 class="h1">Explore Concenputal Apps</h2>
-                                <p class="text-lg">Smart Tenant has conceptul working apps like Chat, Inbox, E-commerce, Invoice, Kanban,
+                                <p class="text-lg">Nest has conceptul working apps like Chat, Inbox, E-commerce, Invoice, Kanban,
                                     and Calendar</p>
                             </div>
                         </div>
@@ -1580,7 +1580,7 @@ if (!function_exists('HomePageSection')) {
                             <div class="col-md-9">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
-                                        <h2 class="mb-0 text-white">Choose Smart Tenant for</h2>
+                                        <h2 class="mb-0 text-white">Choose Nest for</h2>
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <div class="swiper choose-slider">
@@ -1667,13 +1667,13 @@ if (!function_exists('HomePageSection')) {
                                     <h2 class="accordion-header" id="flush-headingThree">
                                         <button class="accordion-button collapsed text-muted" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                                        <b>Is Smart Tenant Support Typescript?</b>
+                                        <b>Is Nest Support Typescript?</b>
                                         </button>
                                     </h2>
                                     <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
                                         data-bs-parent="#accordionFlushExample">
                                         <div class="accordion-body text-muted">
-                                        Yes, Smart Tenant Support the TypeScript and it is only available in Plus and Extended License.
+                                        Yes, Nest Support the TypeScript and it is only available in Plus and Extended License.
                                         </div>
                                     </div>
                                     </div>
@@ -1681,13 +1681,13 @@ if (!function_exists('HomePageSection')) {
                                     <h2 class="accordion-header" id="flush-headingfour">
                                         <button class="accordion-button collapsed text-muted" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#flush-collapse-four" aria-expanded="false" aria-controls="flush-collapseThree">
-                                        <b>Is there any Road map for Smart Tenant?</b>
+                                        <b>Is there any Road map for Nest?</b>
                                         </button>
                                     </h2>
                                     <div id="flush-collapse-four" class="accordion-collapse collapse" aria-labelledby="flush-headingfour"
                                         data-bs-parent="#accordionFlushExample">
                                         <div class="accordion-body text-muted">
-                                        Smart Tenant is our flagship React Dashboard Template and we always add the new features for the long
+                                        Nest is our flagship React Dashboard Template and we always add the new features for the long
                                         run. You can check
                                         the Road map in Documentation.
                                         </div>
@@ -1703,16 +1703,16 @@ if (!function_exists('HomePageSection')) {
             [
                 'title' => 'AboutUS - Footer',
                 'section' => 'Section 10',
-                'content_value' => '{"name":"AboutUS - Footer","section_enabled":"active","Sec10_title":"About Smart Tenant","Sec10_info":"Property management refers to the administration, operation, and oversight of real estate properties on behalf of property owners. It involves various tasks such as marketing rental properties, finding tenants, collecting rent and ensuring legal compliance.","section_footer_image_path":"","section_main_image_path":"","box_image_1_path":"","box_image_2_path":"","box_image_3_path":"","Box1_image_path":"","Box2_image_path":"","Sec4_box1_image_path":"","Sec4_box2_image_path":"","Sec4_box3_image_path":"","Sec4_box4_image_path":"","Sec4_box5_image_path":"","Sec4_box6_image_path":"","Sec7_box1_image_path":"","Sec7_box2_image_path":"","Sec7_box3_image_path":"","Sec7_box4_image_path":"","Sec7_box5_image_path":"","Sec7_box6_image_path":"","Sec7_box7_image_path":"","Sec7_box8_image_path":""}',
+                'content_value' => '{"name":"AboutUS - Footer","section_enabled":"active","Sec10_title":"About Nest","Sec10_info":"Property management refers to the administration, operation, and oversight of real estate properties on behalf of property owners. It involves various tasks such as marketing rental properties, finding tenants, collecting rent and ensuring legal compliance.","section_footer_image_path":"","section_main_image_path":"","box_image_1_path":"","box_image_2_path":"","box_image_3_path":"","Box1_image_path":"","Box2_image_path":"","Sec4_box1_image_path":"","Sec4_box2_image_path":"","Sec4_box3_image_path":"","Sec4_box4_image_path":"","Sec4_box5_image_path":"","Sec4_box6_image_path":"","Sec7_box1_image_path":"","Sec7_box2_image_path":"","Sec7_box3_image_path":"","Sec7_box4_image_path":"","Sec7_box5_image_path":"","Sec7_box6_image_path":"","Sec7_box7_image_path":"","Sec7_box8_image_path":""}',
                 'content' => '
                 <footer class="bg-dark footer">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
                                 <img src="assets/images/logo-white.svg" alt="image" class="img-fluid" />
-                                <h4 class="my-3 text-white">About Smart Tenant</h4>
+                                <h4 class="my-3 text-white">About Nest</h4>
                                 <p class="mb-4 text-white text-opacity-75">
-                                    Smart Tenant React is a dashboard template that utilizes the Material-UI framework and the React
+                                    Nest React is a dashboard template that utilizes the Material-UI framework and the React
                                     JavaScript library. It offers a
                                     range of features and customization options to help you create a powerful and user-friendly
                                     admin panel.
@@ -1744,7 +1744,7 @@ if (!function_exists('HomePageSection')) {
                                         </ul>
                                     </div>
                                     <div class="col-6 col-md-3 wow fadeInUp" data-wow-delay="0.6s">
-                                        <h5 class="mb-3 mb-sm-4 text-white">Smart Tenant Eco-System</h5>
+                                        <h5 class="mb-3 mb-sm-4 text-white">Nest Eco-System</h5>
                                         <ul class="list-unstyled footer-link">
                                             <li><a href="#" target="_blank">Bootstrap 5</a></li>
                                             <li><a href="#" target="_blank">Angular</a></li>

@@ -1,6 +1,6 @@
 <?php
 
-// Product Name : Smart Tenant SaaS
+// Product Name : Nest SaaS
 // Version      : 2.2.1
 
 /**
