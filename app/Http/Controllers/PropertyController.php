@@ -349,7 +349,7 @@ class PropertyController extends Controller
 
     public function unitdirectCreate()
     {
-        $name = Property::all('name', 'id')->pluck('name', 'id');
+        $name = Property::where('parent_id', parentId())->pluck('name', 'id');
         $types = PropertyUnit::$Types;
         $rentTypes = PropertyUnit::$rentTypes;
         return view('unit.directcreate', compact('types', 'rentTypes', 'name'));

@@ -29,6 +29,16 @@ class PaymentController extends Controller
         // CBE/Telebirr logic
         if ($request->has('receipt_number') && $request->has('receipt_type')) {
             $type = strtolower($request->receipt_type);
+            
+            // Check for existing transaction with same receipt number
+            $existingTransaction = PackageTransaction::where('receipt_number', $request->receipt_number)
+                ->where('payment_type', strtoupper($type))
+                ->first();
+                
+            if ($existingTransaction) {
+                return response()->json(['error' => 'This receipt number has already been used for a payment.'], 422);
+            }
+            
             if ($type === 'cbe') {
                 $receiptUrl = 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number);
                 $paymentType = 'CBE';

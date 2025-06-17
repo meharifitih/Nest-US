@@ -13,26 +13,28 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         if (\Auth::user()->can('manage expense')) {
-            $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'expense')->pluck('title', 'id');
-            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            $query = Expense::where('parent_id', parentId());
+
+            // For owners, only show expenses for their properties
+            $query->whereHas('properties', function($q) {
+                $q->where('parent_id', parentId());
+            });
+
+            if ($request->type) {
+                $query->where('expense_type', $request->type);
+            }
+            if ($request->property_id) {
+                $query->where('property_id', $request->property_id);
+            }
+            if ($request->unit_id) {
+                $query->where('unit_id', $request->unit_id);
+            }
+
+            $expenses = $query->get();
+            $types = Type::where('parent_id', parentId())->where('type', 'expense')->get();
+            $properties = Property::where('parent_id', parentId())->get();
             $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
-            $expenses = Expense::where('parent_id', parentId())
-                ->when($request->expense_type_filter, function($query) use ($request) {
-                    $query->where('expense_type', $request->expense_type_filter);
-                })
-                ->when($request->property_id, function($query) use ($request) {
-                    $query->where('property_id', $request->property_id);
-                })
-                ->when($request->unit_id, function($query) use ($request) {
-                    $query->where('unit_id', $request->unit_id);
-                })
-                ->when($request->date, function($query) use ($request) {
-                    $query->whereDate('date', $request->date);
-                })
-                ->when($request->amount, function($query) use ($request) {
-                    $query->where('amount', $request->amount);
-                })
-                ->get();
+
             return view('expense.index', compact('expenses', 'types', 'properties', 'units'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));

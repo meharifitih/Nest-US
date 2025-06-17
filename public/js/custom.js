@@ -27,38 +27,39 @@ $(document).on("click", ".customModal", function () {
                     4000
                 );
             } else {
-                $("#customModal .body").html(result);
+                $("#customModal .modal-body").html(result);
                 $("#customModal").modal("show");
                 select2();
                 ckediter();
             }
         },
-        error: function (result) {},
+        error: function (result) {
+            notifier.show(
+                "Error!",
+                "Failed to load content",
+                "error",
+                errorImg,
+                4000
+            );
+        },
     });
 });
 
 // basic message
 $(document).on("click", ".confirm_dialog", function (e) {
     "use strict";
-    var title = $(this).attr("data-dialog-title");
-    if (title == undefined) {
-        var title = "Are you sure you want to delete this record ?";
-    }
-    var text = $(this).attr("data-dialog-text");
-    if (text == undefined) {
-        var text = "This record can not be restore after delete. Do you want to confirm?";
-    }
+    e.preventDefault();
     var dialogForm = $(this).closest("form");
     Swal.fire({
-        title: title,
-        text: text,
+        title: "Are you sure you want to delete this expense?",
+        text: "This expense cannot be restored after deletion.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-    }).then((data) => {
-        if (data.isConfirmed) {
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
             dialogForm.submit();
         }
     });
@@ -206,3 +207,21 @@ function datatable() {
         });
     }
 }
+
+$(document).on("submit", "form[action*='expense'][method='delete'], form[action*='expense'][method='DELETE']", function(e) {
+    e.preventDefault();
+    var form = this;
+    Swal.fire({
+        title: "Are you sure you want to delete this expense?",
+        text: "This expense cannot be restored after deletion.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+});

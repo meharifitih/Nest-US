@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Hoa;
 use App\Models\Property;
+use App\Models\PropertyUnit;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,45 +13,48 @@ class HoaController extends Controller
 {
     public function index(Request $request)
     {
-        if (\Auth::user()->can('manage hoa')) {
-            $query = \App\Models\Hoa::query();
+        $query = Hoa::query();
 
-            if ($request->property_id) {
-                $query->where('property_id', $request->property_id);
-            }
-            if ($request->unit_id) {
-                $query->where('unit_id', $request->unit_id);
-            }
-            if ($request->tenant) {
-                $query->whereHas('unit.tenants', function($q) use ($request) {
-                    $q->where('user_id', $request->tenant);
-                });
-            }
-            if ($request->hoa_type) {
-                $query->where('hoa_type_id', $request->hoa_type);
-            }
-            if ($request->status) {
-                $query->where('status', $request->status);
-            }
-            if ($request->due_date) {
-                $query->whereDate('due_date', $request->due_date);
-            }
-
-            $hoas = $query->get();
-            $properties = \App\Models\Property::all();
-            $units = \App\Models\PropertyUnit::all();
-            $tenants = \App\Models\Tenant::with('user')->get();
-            $hoaTypes = \App\Models\Type::where('type', 'hoa')->get();
-            $statusOptions = [
-                'pending' => __('Pending'),
-                'open' => __('Open'),
-                'paid' => __('Paid')
-            ];
-
-            return view('hoa.index', compact('hoas', 'properties', 'units', 'tenants', 'hoaTypes', 'statusOptions'));
+        if (Auth::user()->type == 'tenant') {
+            // For tenants, only show HOA for their unit
+            $tenant = Tenant::where('user_id', Auth::user()->id)->first();
+            $query->where('unit_id', $tenant->unit);
+            
+            // Filter properties and units for tenant
+            $properties = Property::where('id', $tenant->property)->get();
+            $units = PropertyUnit::where('id', $tenant->unit)->get();
+            $tenants = Tenant::where('id', $tenant->id)->with('user')->get();
         } else {
-            return redirect()->back()->with('error', __('Permission Denied!'));
+            // For owners, show all HOA for their properties
+            $query->whereHas('property', function($q) {
+                $q->where('parent_id', parentId());
+            });
+            
+            // Get all properties and units for owner
+            $properties = Property::where('parent_id', parentId())->get();
+            $units = PropertyUnit::where('parent_id', parentId())->get();
+            $tenants = Tenant::with('user')->where('parent_id', parentId())->get();
         }
+
+        if ($request->property_id) {
+            $query->where('property_id', $request->property_id);
+        }
+        if ($request->unit_id) {
+            $query->where('unit_id', $request->unit_id);
+        }
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $hoas = $query->get();
+        $hoaTypes = \App\Models\Type::where('type', 'hoa')->get();
+        $statusOptions = [
+            'pending' => __('Pending'),
+            'open' => __('Open'),
+            'paid' => __('Paid')
+        ];
+
+        return view('hoa.index', compact('hoas', 'properties', 'units', 'tenants', 'hoaTypes', 'statusOptions'));
     }
 
     public function create(Request $request)

@@ -20,12 +20,18 @@ class InvoiceController extends Controller
         if (\Auth::user()->can('manage invoice')) {
             $typeFilter = $request->type_filter;
             $query = null;
+            
             if (\Auth::user()->type == 'tenant') {
+                // For tenants, only show invoices for their unit
                 $tenant = \App\Models\Tenant::where('user_id', \Auth::user()->id)->first();
-                $query = \App\Models\Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->where('parent_id', parentId());
+                $query = \App\Models\Invoice::where('unit_id', $tenant->unit)->where('parent_id', parentId());
             } else {
-                $query = \App\Models\Invoice::where('parent_id', parentId());
+                // For owners, show all invoices for their properties
+                $query = \App\Models\Invoice::whereHas('properties', function($q) {
+                    $q->where('parent_id', parentId());
+                })->where('parent_id', parentId());
             }
+
             if ($typeFilter) {
                 $query = $query->whereHas('types', function($q) use ($typeFilter) {
                     $q->where('invoice_type', $typeFilter);
@@ -58,12 +64,23 @@ class InvoiceController extends Controller
                     $q2->where('type', 'rent');
                 });
             });
+            
             $invoices = $query->get();
             $types = \App\Models\Type::where('parent_id', parentId())->where('type', 'invoice')->get();
             $statusOptions = \App\Models\Invoice::$status;
-            $tenants = \App\Models\Tenant::with('user')->get();
-            $properties = \App\Models\Property::all();
-            $units = \App\Models\PropertyUnit::all();
+            
+            // Only show relevant properties and units based on user type
+            if (\Auth::user()->type == 'tenant') {
+                $tenant = \App\Models\Tenant::where('user_id', \Auth::user()->id)->first();
+                $properties = \App\Models\Property::where('id', $tenant->property)->get();
+                $units = \App\Models\PropertyUnit::where('id', $tenant->unit)->get();
+                $tenants = \App\Models\Tenant::where('id', $tenant->id)->with('user')->get();
+            } else {
+                $properties = \App\Models\Property::where('parent_id', parentId())->get();
+                $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
+                $tenants = \App\Models\Tenant::with('user')->get();
+            }
+            
             return view('invoice.index', compact('invoices', 'types', 'statusOptions', 'tenants', 'properties', 'units'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));

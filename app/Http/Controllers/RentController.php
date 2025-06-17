@@ -21,6 +21,27 @@ class RentController extends Controller
             });
         });
 
+        if (\Auth::user()->type == 'tenant') {
+            // For tenants, only show rent invoices for their unit
+            $tenant = \App\Models\Tenant::where('user_id', \Auth::user()->id)->first();
+            $query->where('unit_id', $tenant->unit);
+            
+            // Filter properties and units for tenant
+            $properties = \App\Models\Property::where('id', $tenant->property)->get();
+            $units = \App\Models\PropertyUnit::where('id', $tenant->unit)->get();
+            $tenants = \App\Models\Tenant::where('id', $tenant->id)->with('user')->get();
+        } else {
+            // For owners, show all rent invoices for their properties
+            $query->whereHas('properties', function($q) {
+                $q->where('parent_id', parentId());
+            });
+            
+            // Get all properties and units for owner
+            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
+            $tenants = \App\Models\Tenant::with('user')->get();
+        }
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
@@ -45,9 +66,7 @@ class RentController extends Controller
 
         $invoices = $query->get();
         $statusOptions = \App\Models\Invoice::$status;
-        $tenants = \App\Models\Tenant::with('user')->get();
-        $properties = \App\Models\Property::all();
-        $units = \App\Models\PropertyUnit::all();
+        
         return view('rent.index', compact('invoices', 'statusOptions', 'tenants', 'properties', 'units'));
     }
 

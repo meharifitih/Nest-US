@@ -162,17 +162,22 @@
                                                                 data-feather="eye"></i></a>
                                                     @endcan
                                                     @can('edit expense')
-                                                        <a class="avtar avtar-xs btn-link-secondary text-secondary customModal" data-size="lg"
+                                                        <a class="avtar avtar-xs btn-link-secondary text-secondary" 
+                                                            href="{{ route('expense.edit', $expense->id) }}"
                                                             data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Edit') }}" href="#"
-                                                            data-url="{{ route('expense.edit', $expense->id) }}"
-                                                            data-title="{{ __('Edit Expense') }}" onclick="event.stopPropagation();"> <i
-                                                                data-feather="edit"></i></a>
+                                                            data-bs-original-title="{{ __('Edit') }}" 
+                                                            onclick="event.stopPropagation();"> 
+                                                            <i data-feather="edit"></i>
+                                                        </a>
                                                     @endcan
                                                     @can('delete expense')
-                                                        <a class="avtar avtar-xs btn-link-danger text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Detete') }}" href="#" onclick="event.stopPropagation();"> <i
-                                                                data-feather="trash-2"></i></a>
+                                                        <button type="submit"
+                                                            class="avtar avtar-xs btn-link-danger text-danger"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-original-title="{{ __('Delete') }}"
+                                                            onclick="event.stopPropagation();">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
                                                     @endcan
                                                     {!! Form::close() !!}
                                                 </div>
