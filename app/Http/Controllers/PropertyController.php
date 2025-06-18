@@ -562,12 +562,51 @@ class PropertyController extends Controller
         }
     }
 
+    public function downloadUnitExcelTemplate()
+    {
+        if (\Auth::user()->can('edit property')) {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = [
+                [
+                    'name' => 'Unit 101',
+                    'bedroom' => 2,
+                    'kitchen' => 1,
+                    'baths' => 1,
+                    'rent' => 5000,
+                    'rent_type' => 'monthly',
+                    'deposit_type' => 'fixed',
+                    'deposit_amount' => 1000,
+                    'late_fee_type' => 'fixed',
+                    'late_fee_amount' => 100,
+                    'incident_receipt_amount' => 0,
+                    'notes' => 'Sample unit',
+                ]
+            ];
+            $headers = array_keys($data[0]);
+            foreach ($headers as $i => $header) {
+                $sheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+            }
+            foreach ($data as $rowIndex => $row) {
+                foreach ($headers as $colIndex => $header) {
+                    $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+                }
+            }
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            return response()->streamDownload(function () use ($writer) {
+                $writer->save('php://output');
+            }, 'unit_template.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
+        }
+    }
+
     public function downloadTenantExcelTemplate()
     {
         if (\Auth::user()->can('edit property')) {
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
-
             $data = [
                 [
                     'first_name' => 'John',
@@ -580,41 +619,28 @@ class PropertyController extends Controller
                     'house_number' => '123',
                     'location' => 'Main Road',
                     'city' => 'Addis Ababa',
-                    'unit_name' => 'Unit 101',
-                    'bedroom' => 2,
-                    'baths' => 1,
-                    'rent' => 5000,
-                    'rent_type' => 'monthly',
+                    'unit_name' => '',
                     'lease_start_date' => '2024-01-01',
                     'lease_end_date' => '2025-01-01',
                     'notes' => 'Test tenant',
                 ]
             ];
-
-            // Add headers
             $headers = array_keys($data[0]);
             foreach ($headers as $i => $header) {
                 $sheet->setCellValueByColumnAndRow($i + 1, 1, $header);
             }
-
-            // Add sample data
             foreach ($data as $rowIndex => $row) {
                 foreach ($headers as $colIndex => $header) {
                     $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
                 }
             }
-
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-
-            // Output to browser
             return response()->streamDownload(function () use ($writer) {
                 $writer->save('php://output');
             }, 'tenant_template.xlsx', [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 'Cache-Control' => 'max-age=0',
             ]);
-        } else {
-            return redirect()->back()->with('error', __('Permission Denied!'));
         }
     }
 
@@ -639,5 +665,89 @@ class PropertyController extends Controller
             'location' => $property->location,
             'city' => $property->city,
         ]);
+    }
+
+    public function uploadUnitExcel(Request $request, Property $property)
+    {
+        if (\Auth::user()->can('edit property')) {
+            $validator = \Validator::make(
+                $request->all(),
+                [
+                    'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048'
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => $validator->errors()->first()
+                ]);
+            }
+
+            try {
+                $file = $request->file('excel_file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('upload/unit_excel', $fileName);
+
+                // Import units only
+                \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\UnitImport($property->id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+                    'batchSize' => 100,
+                    'chunkSize' => 100,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'msg' => __('Unit information successfully imported.')
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => __('Error importing unit information: ') . $e->getMessage()
+                ]);
+            }
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
+    }
+
+    public function unitExcelUploadForm()
+    {
+        $properties = \App\Models\Property::where('parent_id', parentId())->get();
+        $uploads = \App\Models\UnitExcelUpload::orderBy('created_at', 'desc')->get();
+        return view('unit.upload_form', compact('properties', 'uploads'));
+    }
+
+    public function unitExcelUpload(Request $request)
+    {
+        $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+        try {
+            $file = $request->file('excel_file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('upload/unit_excel', $fileName);
+            $excelUpload = new \App\Models\UnitExcelUpload();
+            $excelUpload->property_id = $request->property_id;
+            $excelUpload->file_name = $fileName;
+            $excelUpload->original_name = $file->getClientOriginalName();
+            $excelUpload->parent_id = parentId();
+            $excelUpload->status = 'pending';
+            $excelUpload->save();
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\UnitImport($request->property_id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+                'batchSize' => 100,
+                'chunkSize' => 100,
+            ]);
+            $excelUpload->status = 'completed';
+            $excelUpload->save();
+            return redirect()->back()->with('success', __('Unit information successfully imported.'));
+        } catch (\Exception $e) {
+            if (isset($excelUpload)) {
+                $excelUpload->status = 'failed';
+                $excelUpload->error_log = $e->getMessage();
+                $excelUpload->save();
+            }
+            return redirect()->back()->with('error', __('Error importing unit information: ') . $e->getMessage());
+        }
     }
 }

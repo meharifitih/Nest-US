@@ -22,6 +22,12 @@
                                         class="ti ti-circle-plus align-text-bottom"></i> <?php echo e(__('Create Tenant')); ?></a>
                             </div>
                         <?php endif; ?>
+                        <div class="col-auto d-flex gap-2">
+                            <a href="<?php echo e(route('tenant-excel-upload.form')); ?>" class="btn btn-secondary">
+                                <i class="ti ti-upload align-text-bottom"></i> <?php echo e(__('Tenant Excel Upload')); ?>
+
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -89,7 +95,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 <?php $__env->stopSection(); ?>
@@ -221,6 +226,34 @@
 function goToTenantDetail(url) {
     window.location = url;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('tenantExcelUploadForm');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        // You may want to select property context or make property optional
+        const propertyId = null; // or get from UI if needed
+        let url = propertyId ? `/tenant-excel-upload/${propertyId}` : '/tenant-excel-upload';
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.msg);
+                location.reload();
+            } else {
+                alert(data.msg);
+            }
+        })
+        .catch(() => alert('Upload failed'));
+    };
+});
 </script>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /Users/chipchip/Downloads/codecanyon-ytuZNl0y-smart-tenant-property-management-system-saas/main_file/resources/views/tenant/index.blade.php ENDPATH**/ ?>

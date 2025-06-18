@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TenantExcelUpload extends Model
+class UnitExcelUpload extends Model
 {
     use HasFactory;
     
     protected $fillable = [
+        'property_id',
         'file_name',
         'original_name',
         'status',

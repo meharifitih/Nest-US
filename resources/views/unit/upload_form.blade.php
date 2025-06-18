@@ -1,13 +1,13 @@
 @extends('layouts.app')
 @section('page-title')
-    {{ __('Tenant Excel Upload') }}
+    {{ __('Unit Excel Upload') }}
 @endsection
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h5>{{ __('Upload Tenant Excel') }}</h5>
+                <h5>{{ __('Upload Unit Excel') }}</h5>
             </div>
             <div class="card-body">
                 @if(session('success'))
@@ -16,8 +16,17 @@
                 @if(session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
-                <form method="POST" action="{{ route('tenant-excel-upload.upload') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('unit-excel-upload.upload') }}" enctype="multipart/form-data">
                     @csrf
+                    <div class="form-group mb-3">
+                        <label for="property_id">{{ __('Select Property') }}</label>
+                        <select class="form-control" id="property_id" name="property_id" required>
+                            <option value="">{{ __('Select Property') }}</option>
+                            @foreach($properties as $property)
+                                <option value="{{ $property->id }}">{{ $property->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="form-group mb-3">
                         <label for="excel_file">{{ __('Excel File') }}</label>
                         <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx,.xls,.csv" required>
@@ -26,7 +35,7 @@
                         </small>
                     </div>
                     <button type="submit" class="btn btn-primary">{{ __('Upload') }}</button>
-                    <a href="{{ route('tenant-excel-template') }}" class="btn btn-secondary ms-2">
+                    <a href="{{ route('unit-excel-template') }}" class="btn btn-secondary ms-2">
                         <i class="material-icons-two-tone me-2">download</i>
                         {{ __('Download Sample Excel') }}
                     </a>
@@ -35,7 +44,7 @@
         </div>
         <div class="card mt-4">
             <div class="card-header">
-                <h5>{{ __('Tenant Upload History') }}</h5>
+                <h5>{{ __('Unit Upload History') }}</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

@@ -27,8 +27,8 @@
                                     <i class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}
                                 </a>
                             @endif
-                            <a href="{{ route('tenant-excel-upload.select-property') }}" class="btn btn-secondary">
-                                <i class="ti ti-upload align-text-bottom"></i> {{ __('Tenant Excel Upload') }}
+                            <a href="{{ route('unit-excel-upload.form') }}" class="btn btn-secondary">
+                                <i class="ti ti-upload align-text-bottom"></i> {{ __('Unit Excel Upload') }}
                             </a>
                         </div>
                     </div>
@@ -110,6 +110,71 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Unit Excel Upload Modal -->
+                    <div class="modal fade" id="unitExcelUploadModal" tabindex="-1" aria-labelledby="unitExcelUploadModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="unitExcelUploadModalLabel">{{ __('Upload Unit Excel') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form id="unitExcelUploadForm" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="property_id" class="form-label">{{ __('Select Property') }}</label>
+                                            <select class="form-control" id="property_id" name="property_id" required>
+                                                <option value="">{{ __('Select Property') }}</option>
+                                                @foreach($properties as $property)
+                                                    <option value="{{ $property->id }}">{{ $property->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="unit_excel_file" class="form-label">{{ __('Excel File') }}</label>
+                                            <input type="file" class="form-control" id="unit_excel_file" name="excel_file" accept=".xlsx,.xls,.csv" required>
+                                            <small class="form-text text-muted">{{ __('Supported formats: XLSX, XLS, CSV. Maximum file size: 2MB') }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ __('Upload') }}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const form = document.getElementById('unitExcelUploadForm');
+                            form.onsubmit = function(e) {
+                                e.preventDefault();
+                                const formData = new FormData(form);
+                                const propertyId = document.getElementById('property_id').value;
+                                if (!propertyId) {
+                                    alert('Please select a property.');
+                                    return;
+                                }
+                                fetch(`/property/${propertyId}/upload-unit-excel`, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        alert(data.msg);
+                                        location.reload();
+                                    } else {
+                                        alert(data.msg);
+                                    }
+                                })
+                                .catch(() => alert('Upload failed'));
+                            };
+                        });
+                    </script>
                     <div class="dt-responsive table-responsive">
                         <table class="table table-hover advance-datatable">
                             <thead>

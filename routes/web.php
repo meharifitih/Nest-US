@@ -465,9 +465,8 @@ Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name
 Route::delete('rent/{invoice}', [App\Http\Controllers\RentController::class, 'destroy'])->name('rent.destroy');
 
 // Tenant Excel Upload Routes
-Route::get('tenant-excel-upload/select-property', [TenantExcelUploadController::class, 'selectProperty'])->name('tenant-excel-upload.select-property');
-Route::get('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'uploadForm'])->name('tenant-excel-upload.form');
-Route::post('tenant-excel-upload/{property}', [TenantExcelUploadController::class, 'upload'])->name('tenant-excel-upload.upload');
+Route::get('tenant-excel-upload', [App\Http\Controllers\TenantExcelUploadController::class, 'uploadForm'])->name('tenant-excel-upload.form');
+Route::post('tenant-excel-upload', [App\Http\Controllers\TenantExcelUploadController::class, 'upload'])->name('tenant-excel-upload.upload');
 
 // Payment Account Routes
 Route::middleware(['auth'])->group(function () {
@@ -486,3 +485,12 @@ Route::group([
 });
 
 Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store'])->name('enterprise.contact');
+
+// Unit Excel Upload Route
+Route::post('property/{property}/upload-unit-excel', [App\Http\Controllers\PropertyController::class, 'uploadUnitExcel'])->name('property.upload.unit.excel');
+
+Route::get('unit-excel-template', [App\Http\Controllers\PropertyController::class, 'downloadUnitExcelTemplate'])->name('unit-excel-template');
+Route::get('tenant-excel-template', [App\Http\Controllers\PropertyController::class, 'downloadTenantExcelTemplate'])->name('tenant-excel-template');
+
+Route::get('unit-excel-upload', [App\Http\Controllers\PropertyController::class, 'unitExcelUploadForm'])->name('unit-excel-upload.form');
+Route::post('unit-excel-upload', [App\Http\Controllers\PropertyController::class, 'unitExcelUpload'])->name('unit-excel-upload.upload');

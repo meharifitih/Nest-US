@@ -27,7 +27,7 @@ class TenantsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         // Validate required fields
-        $requiredFields = ['first_name', 'last_name', 'email', 'phone_number', 'unit_name'];
+        $requiredFields = ['first_name', 'last_name', 'email', 'phone_number'];
         foreach ($requiredFields as $field) {
             if (empty($row[$field])) {
                 throw new \Exception("Missing required field: {$field}");
@@ -76,30 +76,33 @@ class TenantsImport implements ToModel, WithHeadingRow
         $user->save();
         $user->assignRole($userRole);
 
-        // Send password notification
+        // Always send password notification
         $user->notify(new PasswordChangeNotification($password));
 
-        // Find or create unit with all info
-        $unit = PropertyUnit::firstOrCreate(
-            [
-                'property_id' => $this->propertyId,
-                'name' => $row['unit_name'] ?? ''
-            ],
-            [
-                'bedroom' => $row['bedroom'] ?? 0,
-                'kitchen' => $row['kitchen'] ?? 0,
-                'baths' => $row['baths'] ?? 0,
-                'rent' => $row['rent'] ?? 0,
-                'rent_type' => $row['rent_type'] ?? 'monthly',
-                'deposit_type' => $row['deposit_type'] ?? 'fixed',
-                'deposit_amount' => $row['deposit_amount'] ?? 0,
-                'late_fee_type' => $row['late_fee_type'] ?? 'fixed',
-                'late_fee_amount' => $row['late_fee_amount'] ?? 0,
-                'incident_receipt_amount' => $row['incident_receipt_amount'] ?? 0,
-                'notes' => $row['notes'] ?? '',
-                'parent_id' => parentId(),
-            ]
-        );
+        // If unit_name is present, assign unit, else skip
+        $unit = null;
+        if (!empty($row['unit_name'])) {
+            $unit = PropertyUnit::firstOrCreate(
+                [
+                    'property_id' => $this->propertyId,
+                    'name' => $row['unit_name'] ?? ''
+                ],
+                [
+                    'bedroom' => $row['bedroom'] ?? 0,
+                    'kitchen' => $row['kitchen'] ?? 0,
+                    'baths' => $row['baths'] ?? 0,
+                    'rent' => $row['rent'] ?? 0,
+                    'rent_type' => $row['rent_type'] ?? 'monthly',
+                    'deposit_type' => $row['deposit_type'] ?? 'fixed',
+                    'deposit_amount' => $row['deposit_amount'] ?? 0,
+                    'late_fee_type' => $row['late_fee_type'] ?? 'fixed',
+                    'late_fee_amount' => $row['late_fee_amount'] ?? 0,
+                    'incident_receipt_amount' => $row['incident_receipt_amount'] ?? 0,
+                    'notes' => $row['notes'] ?? '',
+                    'parent_id' => parentId(),
+                ]
+            );
+        }
 
         // Parse lease_start_date and lease_end_date to Y-m-d
         $leaseStartDate = null;
@@ -120,8 +123,8 @@ class TenantsImport implements ToModel, WithHeadingRow
         $tenant->house_number = $row['house_number'] ?? '';
         $tenant->location = $row['location'] ?? '';
         $tenant->city = $row['city'] ?? '';
-        $tenant->property = $this->propertyId;
-        $tenant->unit = $unit->id;
+        $tenant->property = $this->propertyId ?? 0;
+        $tenant->unit = $unit ? $unit->id : 0;
         $tenant->lease_start_date = $leaseStartDate;
         $tenant->lease_end_date = $leaseEndDate;
         $tenant->parent_id = parentId();
