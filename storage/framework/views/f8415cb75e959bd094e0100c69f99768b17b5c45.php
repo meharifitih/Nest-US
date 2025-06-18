@@ -126,18 +126,6 @@
             overflow: hidden;
         }
 
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: url('assets/images/landing/img-header-bg.png') no-repeat right center;
-            background-size: contain;
-            opacity: 0.1;
-        }
-
         .hero-content h1 {
             font-size: 3.5rem;
             font-weight: 700;
@@ -473,6 +461,213 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .hero-section-clean {
+            min-height: calc(100vh - 72px);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            background: #fff;
+        }
+        .hero-row-clean {
+            min-height: 70vh;
+            display: flex;
+            align-items: stretch;
+        }
+        .hero-text-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
+        }
+        .hero-text-col h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #16263a;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        .hero-text-col p {
+            font-size: 1.25rem;
+            color: #222;
+            margin-bottom: 2.2rem;
+            line-height: 1.6;
+        }
+        .hero-img-col {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 0;
+        }
+        .hero-img-clean {
+            width: 100%;
+            max-width: 540px;
+            height: 80vh;
+            min-height: 400px;
+            object-fit: cover;
+            border-radius: 0 0 0 0;
+            box-shadow: none;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            background: #fff;
+            margin-right: 0;
+        }
+        @media (max-width: 991.98px) {
+            .hero-section-clean {
+                min-height: unset;
+                padding: 40px 0 20px;
+            }
+            .hero-row-clean {
+                min-height: unset;
+                display: block;
+            }
+            .hero-text-col {
+                padding: 1.2rem;
+            }
+            .hero-img-col {
+                justify-content: center;
+                align-items: center;
+                padding: 0;
+            }
+            .hero-img-clean {
+                height: 220px;
+                min-height: 120px;
+                max-width: 100%;
+                margin: 0 auto;
+                display: block;
+            }
+        }
+        .footer-logo-white {
+            filter: brightness(0) invert(1) !important;
+        }
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .footer-social-link {
+            color: #fff;
+            font-size: 1.35rem;
+            transition: color 0.2s, transform 0.2s;
+            opacity: 0.85;
+        }
+        .footer-social-link:hover {
+            color: #1a7f5a;
+            opacity: 1;
+            transform: translateY(-2px) scale(1.1);
+        }
+        .footer-flex {
+            gap: 2.5rem !important;
+            flex-wrap: wrap;
+        }
+        .footer-logo-white {
+            filter: brightness(0) invert(1) !important;
+        }
+        .footer-social-link {
+            color: #fff;
+            font-size: 1.35rem;
+            transition: color 0.2s, transform 0.2s;
+            opacity: 0.85;
+        }
+        .footer-social-link:hover {
+            color: #1a7f5a;
+            opacity: 1;
+            transform: translateY(-2px) scale(1.1);
+        }
+        @media (max-width: 767.98px) {
+            .footer-flex {
+                flex-direction: column !important;
+                gap: 1rem !important;
+                text-align: center;
+            }
+        }
+        .footer-modern {
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+        .footer-brand {
+            gap: 0.7rem;
+        }
+        .footer-logo-white {
+            filter: brightness(0) invert(1) !important;
+        }
+        .footer-social-link {
+            color: #fff;
+            font-size: 1.35rem;
+            transition: color 0.2s, transform 0.2s;
+            opacity: 0.85;
+        }
+        .footer-social-link:hover {
+            color: #1a7f5a;
+            opacity: 1;
+            transform: translateY(-2px) scale(1.1);
+        }
+        @media (max-width: 991.98px) {
+            .footer-modern {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.2rem;
+                text-align: center;
+            }
+            .footer-copyright {
+                text-align: center !important;
+                min-width: unset !important;
+            }
+        }
+        .custom-swiper-nav {
+            position: absolute;
+            top: 50%;
+            z-index: 10;
+            width: 48px;
+            height: 48px;
+            background: #16263a;
+            color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.2;
+            transition: opacity 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+        }
+        .swiper-button-prev.custom-swiper-nav {
+            left: -70px;
+        }
+        .swiper-button-next.custom-swiper-nav {
+            right: -70px;
+        }
+        .custom-swiper-nav:after {
+            font-family: 'Font Awesome 5 Free', 'FontAwesome';
+            font-weight: 900;
+            font-size: 2rem;
+        }
+        .swiper-button-prev.custom-swiper-nav:after {
+            content: '\f053'; /* FontAwesome left arrow */
+        }
+        .swiper-button-next.custom-swiper-nav:after {
+            content: '\f054'; /* FontAwesome right arrow */
+        }
+        .custom-swiper-nav:hover,
+        .custom-swiper-nav:focus,
+        .custom-swiper-nav:active {
+            opacity: 1;
+        }
+        @media (max-width: 991.98px) {
+            .swiper-button-prev.custom-swiper-nav {
+                left: -20px;
+            }
+            .swiper-button-next.custom-swiper-nav {
+                right: -20px;
+            }
+            .custom-swiper-nav {
+                width: 38px;
+                height: 38px;
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 
@@ -480,276 +675,41 @@
     data-pc-sidebar-caption="<?php echo e($settings['sidebar_caption']); ?>" data-pc-direction="<?php echo e($settings['theme_layout']); ?>"
     data-pc-theme="<?php echo e($settings['theme_mode']); ?>">
 
-
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo"
-                    class="img-fluid" />
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#pricing">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#privacy">Privacy Policy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#terms">Terms & Conditions</a>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a>
-                    </li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="btn btn-primary" href="<?php echo e(route('register')); ?>">Get Started</a>
-                    </li>
-                </ul>
-            </div>
+<!-- New Nav/Header from screenshot -->
+<nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+  <div class="container">
+    <a class="navbar-brand" href="#" style="font-size:2rem;font-weight:700;letter-spacing:-1px;"><span style="color:#222;">Nes</span><span style="color:#1a7f5a;">t</span></a>
+    <div class="d-flex align-items-center gap-4">
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a>
+      <a class="btn btn-primary" href="<?php echo e(route('register')); ?>" style="background:#16263a;border:none;">Get Started</a>
+    </div>
+  </div>
+</nav>
+<div class="spacer-navbar"></div>
+<!-- Hero Section -->
+<header id="home" class="hero-section hero-section-clean">
+  <div class="container-fluid">
+    <div class="row hero-row-clean" style="width:100%;">
+      <div class="col-lg-6 hero-text-col">
+        <h1>Welcome to<br> <span style="color:#1a7f5a;">Nest</span></h1>
+        <p>Property management software built to help and maximize your real estate needs and profits.<br><br>With Nest you get to optimize tenants, Maintemace report, profit and loss report, and much more.</p>
+        <div class="d-flex gap-3">
+          <a href="<?php echo e(route('login')); ?>" class="btn btn-primary" style="background:#16263a;border:none;min-width:120px;">Log in</a>
+          <a href="<?php echo e(route('register')); ?>" class="btn btn-outline-secondary" style="min-width:120px;">Get Started</a>
         </div>
-    </nav>
-    <div class="spacer-navbar"></div>
-    <!-- [ Nav ] start -->
-    <!-- [ Header ] start -->
-    <?php
-        $Section_1 = App\Models\HomePage::where('section', 'Section 1')->first();
-        $Section_1_content_value = !empty($Section_1->content_value)
-            ? json_decode($Section_1->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_1_content_value['section_enabled']) || $Section_1_content_value['section_enabled'] == 'active'): ?>
-        <header id="home" class="simple-hero-section py-5">
-            <div class="container">
-                <div class="row justify-content-center text-center">
-                    <div class="col-lg-8 mx-auto">
-                        <h1 class="fw-bold mb-3" style="font-size:2.5rem;">
-                            <?php if(!empty($Section_1_content_value['title'])): ?>
-                                <?php echo e($Section_1_content_value['title']); ?>
+      </div>
+      <div class="col-lg-6 hero-img-col p-0">
+        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80" 
+             alt="Modern apartment building" class="hero-img-clean">
+      </div>
+    </div>
+  </div>
+</header>
+<!-- End Hero -->
 
-                            <?php else: ?>
-                                Nest – Property Management System
-                            <?php endif; ?>
-                        </h1>
-                        <p class="lead text-muted mb-4">
-                            <?php if(!empty($Section_1_content_value['sub_title'])): ?>
-                                <?php echo e($Section_1_content_value['sub_title']); ?>
-
-                            <?php else: ?>
-                                Property management made easy: streamline operations, manage tenants, and grow your business with confidence.
-                            <?php endif; ?>
-                        </p>
-                        <?php
-                            $Section_1_btn_link = !empty($Section_1_content_value['btn_link'])
-                                ? $Section_1_content_value['btn_link']
-                                : '#';
-                            $sec1_url = $Section_1_btn_link;
-                            if (in_array($Section_1_btn_link, ['#', ''])) {
-                                $sec1_url = route('register');
-                            }
-                        ?>
-                        <a href="<?php echo e($sec1_url); ?>" class="btn btn-primary btn-lg px-5 shadow-sm mb-3">
-                            <?php if(!empty($Section_1_content_value['btn_name'])): ?>
-                                <?php echo e($Section_1_content_value['btn_name']); ?>
-
-                            <?php else: ?>
-                                <?php echo e(__('Get Started')); ?>
-
-                            <?php endif; ?>
-                        </a>
-                    </div>
-                </div>
-                <div class="row justify-content-center mt-5">
-                    <div class="col-lg-10 text-center">
-                        <img src="<?php if(!empty($Section_1_content_value['section_main_image_path'])): ?><?php echo e(asset(Storage::url($Section_1_content_value['section_main_image_path']))); ?><?php else: ?> assets/images/landing/img-header-main.svg <?php endif; ?>" alt="dashboard preview" class="img-fluid rounded-4 shadow-sm" style="max-width: 80%;">
-                    </div>
-                </div>
-            </div>
-        </header>
-    <?php endif; ?>
-    <!-- [ Header ] End -->
-    <!-- [ section ] start -->
-    <?php
-        $Section_2 = App\Models\HomePage::where('section', 'Section 2')->first();
-        $Section_2_content_value = !empty($Section_2->content_value)
-            ? json_decode($Section_2->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_2_content_value['section_enabled']) || $Section_2_content_value['section_enabled'] == 'active'): ?>
-        <section>
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card feature-card mb-0 bg-secondary">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <div class="avtar avtar-l">
-                                            <img src="<?php echo e(!empty($Section_2_content_value['box_image_1_path']) ? asset(Storage::url($Section_2_content_value['box_image_1_path'])) : 'assets/images/landing/img-feature-1.svg'); ?>"
-                                                alt="img" class="img-fluid" />
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3 text-end">
-                                        <span
-                                            class="h1 mb-0 d-block fw-semibold"><?php echo e(!empty($Section_2_content_value['Box1_number']) ? $Section_2_content_value['Box1_number'] : '500+'); ?></span>
-                                        <span
-                                            class="h5 mb-0 d-block"><?php echo e(!empty($Section_2_content_value['Box1_title']) ? $Section_2_content_value['Box1_title'] : 'Customers'); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card feature-card mb-0 bg-blue-200">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <div class="avtar avtar-l">
-                                            <img src="<?php echo e(!empty($Section_2_content_value['box_image_2_path']) ? asset(Storage::url($Section_2_content_value['box_image_2_path'])) : 'assets/images/landing/img-feature-2.svg'); ?>"
-                                                alt="img" class="img-fluid" />
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3 text-end">
-                                        <span
-                                            class="h1 mb-0 d-block fw-semibold"><?php echo e(!empty($Section_2_content_value['Box2_number']) ? $Section_2_content_value['Box2_number'] : '4+'); ?></span>
-                                        <span
-                                            class="h5 mb-0 d-block"><?php echo e(!empty($Section_2_content_value['Box2_title']) ? $Section_2_content_value['Box2_title'] : 'Subscription Plan'); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 col-lg-4">
-                        <div class="card feature-card mb-0 bg-purple-200">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <div class="avtar avtar-l">
-                                            <img src="<?php echo e(!empty($Section_2_content_value['box_image_3_path']) ? asset(Storage::url($Section_2_content_value['box_image_3_path'])) : 'assets/images/landing/img-feature-3.svg'); ?>"
-                                                alt="img" class="img-fluid" />
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3 text-end">
-                                        <span
-                                            class="h1 mb-0 d-block fw-semibold"><?php echo e(!empty($Section_2_content_value['Box3_number']) ? $Section_2_content_value['Box3_number'] : '11+'); ?></span>
-                                        <span
-                                            class="h5 mb-0 d-block"><?php echo e(!empty($Section_2_content_value['Box3_title']) ? $Section_2_content_value['Box3_title'] : 'Language'); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
-    <!-- [ section ] End -->
-    <!-- [ section ] start -->
-    <?php
-        $Section_3 = App\Models\HomePage::where('section', 'Section 3')->first();
-        $Section_3_content_value = !empty($Section_3->content_value)
-            ? json_decode($Section_3->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_3_content_value['section_enabled']) || $Section_3_content_value['section_enabled'] == 'active'): ?>
-        <section class="minimal-feature-section py-5">
-            <div class="container">
-                <?php for($is3 = 1; $is3 <= 2; $is3++): ?>
-                    <div class="row align-items-center justify-content-center mb-5 flex-lg-row flex-column-reverse">
-                        <div class="col-lg-6 mb-4 mb-lg-0">
-                            <div class="minimal-feature-content pe-lg-5">
-                                <h2 class="fw-bold mb-3" style="font-size:2rem; color:#155263;">
-                                    <?php echo e(!empty($Section_3_content_value['Box' . $is3 . '_title']) ? $Section_3_content_value['Box' . $is3 . '_title'] : ($is3 == 1 ? 'Empower Your Business to Thrive with Us' : 'Eliminate Paperwork, Elevate Productivity')); ?>
-
-                                </h2>
-                                <p class="mb-4 text-muted" style="font-size:1.1rem;">
-                                    <?php echo e(!empty($Section_3_content_value['Box' . $is3 . '_info']) ? $Section_3_content_value['Box' . $is3 . '_info'] : ($is3 == 1 ? 'Unlock growth, streamline operations, and achieve success with our innovative solutions.' : 'Digitize your workflow and boost productivity with seamless automation and smart tools.')); ?>
-
-                                </p>
-                                <ul class="list-unstyled minimal-checklist">
-                                    <?php if(!empty($Section_3_content_value['Box' . $is3 . '_list'])): ?>
-                                        <?php $__currentLoopData = $Section_3_content_value['Box' . $is3 . '_list']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box_item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> <?php echo e($box_item); ?></li>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    <?php else: ?>
-                                        <?php if($is3 == 1): ?>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Simplify and automate your business processes for maximum efficiency.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Receive tailored strategies to meet business needs and unlock potential.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Grow confidently with flexible solutions that adapt to your business needs.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Make smarter decisions with real-time analytics and performance tracking.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Rely on 24/7 expert assistance to keep your business running smoothly.</li>
-                                        <?php else: ?>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Eliminate manual paperwork with digital forms and e-signatures.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Centralize documents for easy access and sharing.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Automate repetitive tasks to save time and reduce errors.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Collaborate in real-time with your team and clients.</li>
-                                            <li class="mb-3"><span class="minimal-icon">&#9679;</span> Track progress and productivity with smart dashboards.</li>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 text-center mb-4 mb-lg-0">
-                            <?php if(!empty($Section_1_content_value['Box' . $is3 . '_image_path'])): ?>
-                                <img src="<?php echo e(asset(Storage::url($Section_1_content_value['Box' . $is3 . '_image_path']))); ?>" alt="img" class="img-fluid minimal-feature-img" style="max-height:320px;object-fit:contain;" />
-                            <?php else: ?>
-                                <img src="assets/images/landing/img-customize-<?php echo e($is3); ?>.svg" alt="img" class="img-fluid minimal-feature-img" style="max-height:320px;object-fit:contain;" />
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endfor; ?>
-            </div>
-        </section>
-        <style>
-            .minimal-feature-section {
-                background: #fafdff;
-                border-radius: 2rem;
-            }
-            .minimal-feature-content {
-                background: none;
-                box-shadow: none;
-                padding: 0;
-            }
-            .minimal-feature-content h2 {
-                color: #155263;
-            }
-            .minimal-checklist {
-                margin-top: 2rem;
-            }
-            .minimal-checklist li {
-                font-size: 1.08rem;
-                display: flex;
-                align-items: flex-start;
-                color: #222;
-                margin-bottom: 1rem;
-            }
-            .minimal-icon {
-                color: #00bcd4;
-                font-size: 1.1rem;
-                margin-right: 12px;
-                margin-top: 4px;
-                display: inline-block;
-            }
-            .minimal-feature-img {
-                border-radius: 1.5rem;
-                background: #f3fafd;
-                padding: 1.5rem;
-            }
-            @media (max-width: 991.98px) {
-                .minimal-feature-section { border-radius: 1rem; }
-                .minimal-feature-img { padding: 1rem; }
-            }
-        </style>
-    <?php endif; ?>
-    <!-- [ section ] End -->
-    <!-- [ section ] start -->
+<!-- What Our Software Offers (Section 4) -->
     <?php
         $Section_4 = App\Models\HomePage::where('section', 'Section 4')->first();
         $Section_4_content_value = !empty($Section_4->content_value)
@@ -824,7 +784,7 @@
         </section>
     <?php endif; ?>
 
-    <!-- [ section ] End -->
+<!-- Pricing (Section 5) -->
     <?php
         $Section_5 = App\Models\HomePage::where('section', 'Section 5')->first();
         $Section_5_content_value = !empty($Section_5->content_value)
@@ -861,7 +821,6 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="tab-content" id="intervalTabsContent">
                         <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="tab-pane fade <?php if($idx === 0): ?> show active <?php endif; ?>" id="interval-<?php echo e($interval); ?>" role="tabpanel" aria-labelledby="tab-<?php echo e($interval); ?>">
@@ -923,393 +882,83 @@
             </section>
         <?php endif; ?>
     <?php endif; ?>
-    <!-- [ section ] start -->
 
-    <?php
-        $Section_6 = App\Models\HomePage::where('section', 'Section 6')->first();
-        $Section_6_content_value = !empty($Section_6->content_value)
-            ? json_decode($Section_6->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_6_content_value['section_enabled']) || $Section_6_content_value['section_enabled'] == 'active'): ?>
-        <section class="application-slider" id="features">
-            <div class="container">
-                <div class="row justify-content-center title">
-                    <div class="col-md-9 col-lg-6 text-center">
-                        <h2 class="h1">
-                            <?php echo e(!empty($Section_6_content_value['Sec6_title']) ? $Section_6_content_value['Sec6_title'] : 'Explore Concenputal Apps'); ?>
+<!-- Core Features (Section 6) -->
+<?php
+    $Section_6 = App\Models\HomePage::where('section', 'Section 6')->first();
+    $Section_6_content_value = !empty($Section_6->content_value)
+        ? json_decode($Section_6->content_value, true)
+        : [];
+?>
+<?php if(empty($Section_6_content_value['section_enabled']) || $Section_6_content_value['section_enabled'] == 'active'): ?>
+    <section class="application-slider" id="features">
+        <div class="container position-relative">
+            <div class="row justify-content-center title">
+                <div class="col-md-9 col-lg-6 text-center">
+                    <h2 class="h1">
+                        <?php echo e(!empty($Section_6_content_value['Sec6_title']) ? $Section_6_content_value['Sec6_title'] : 'Explore Concenputal Apps'); ?>
 
-                        </h2>
-                        <p class="text-lg">
-                            <?php echo e(!empty($Section_6_content_value['Sec6_info']) ? $Section_6_content_value['Sec6_info'] : 'Smartweb has conceptul working apps like Chat, Inbox, E-commerce, Invoice, Kanban, and Calendar'); ?>
+                    </h2>
+                    <p class="text-lg">
+                        <?php echo e(!empty($Section_6_content_value['Sec6_info']) ? $Section_6_content_value['Sec6_info'] : 'Smartweb has conceptul working apps like Chat, Inbox, E-commerce, Invoice, Kanban, and Calendar'); ?>
 
-                        </p>
-                    </div>
-                </div>
-                <div class="row text-center justify-content-center">
-                    <div class="col-11 col-md-9 col-lg-7 position-relative">
-                        <div class="swiper app-slider">
-                            <div class="swiper-wrapper">
-                                <?php if(!empty($Section_6_content_value['Sec6_Box_title'])): ?>
-                                    <?php $__currentLoopData = $Section_6_content_value['Sec6_Box_title']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s6_key => $s6_item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="swiper-slide">
-                                            <?php if(!empty($Section_6_content_value['Sec6_box' . $s6_key . '_image_path'])): ?>
-                                                <img src="<?php echo e(asset(Storage::url($Section_6_content_value['Sec6_box' . $s6_key . '_image_path']))); ?>"
-                                                    alt="img" class="img-fluid" />
-                                            <?php else: ?>
-                                                <img src="assets/images/landing/slider-light-1.png" alt="images"
-                                                    class="img-fluid" />
-                                            <?php endif; ?>
-                                            <h3> <?php echo e($s6_item); ?> <i class="ti ti-link"></i> </h3>
-                                            <p><?php echo e($Section_6_content_value['Sec6_Box_subtitle'][$s6_key]); ?></p>
-                                        </div>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                <?php else: ?>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-1.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Social Profile
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Social profile with all possible option</p>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-2.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Mail/Message App
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Mail/Message App with all possible option</p>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-3.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Mail/Message App
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Chat App with all possible option</p>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-4.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Kanban App
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Kanban App with all possible option</p>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-5.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Calendar App
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Calendar App with all possible option</p>
-                                    </div>
-                                    <div class="swiper-slide">
-                                        <img src="assets/images/landing/slider-light-6.png" alt="images"
-                                            class="img-fluid" />
-                                        <h3>
-                                            Ecommerce App
-                                            <i class="ti ti-link"></i>
-                                        </h3>
-                                        <p>Complete Ecommerce App with all possible option</p>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="swiper-button-next avtar">
-                                <i class="ti ti-chevron-right"></i>
-                            </div>
-                            <div class="swiper-button-prev avtar">
-                                <i class="ti ti-chevron-left"></i>
-                            </div>
-                        </div>
-                    </div>
+                    </p>
                 </div>
             </div>
-        </section>
-    <?php endif; ?>
-    <!-- [ section ] End -->
-    <!-- Testimonials Section -->
-    <section class="testimonials-section py-5 bg-light">
-        <div class="container">
-            <div class="row justify-content-center text-center mb-5">
-                <div class="col-lg-6">
-                    <h2 class="display-5 fw-bold mb-3">What Our Customers Say</h2>
-                    <p class="lead text-muted">Trusted by property managers worldwide</p>
-                </div>
-            </div>
-            <div class="row g-4">
-                <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="col-md-4">
-                    <div class="testimonial-card">
-                        <div class="testimonial-content">
-                            <div class="quote-icon mb-3">
-                                <i class="ti ti-quote-left text-primary"></i>
-                            </div>
-                            <p class="testimonial-text"><?php echo e($testimonial->content); ?></p>
-                            <div class="testimonial-author d-flex align-items-center mt-4">
-                                <img src="<?php echo e($testimonial->avatar); ?>" alt="<?php echo e($testimonial->name); ?>" class="rounded-circle" width="50" height="50">
-                                <div class="ms-3">
-                                    <h5 class="mb-0"><?php echo e($testimonial->name); ?></h5>
-                                    <p class="text-muted mb-0"><?php echo e($testimonial->position); ?></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- [ section ] start -->
-    <?php
-        $Section_8 = App\Models\HomePage::where('section', 'Section 8')->first();
-        $Section_8_content_value = !empty($Section_8->content_value)
-            ? json_decode($Section_8->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_8_content_value['section_enabled']) || $Section_8_content_value['section_enabled'] == 'active'): ?>
-        <section class="why-choose-section py-5">
-            <div class="container">
-                <div class="row justify-content-center text-center mb-5">
-                    <div class="col-lg-6">
-                        <h2 class="display-5 fw-bold mb-3">Why Choose Us</h2>
-                        <p class="lead text-muted">Experience the difference with our comprehensive property management solution</p>
-                    </div>
-                </div>
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="choose-card">
-                            <div class="choose-icon">
-                                <i class="ti ti-shield-check"></i>
-                            </div>
-                            <h3 class="choose-title">Secure & Reliable</h3>
-                            <p class="choose-text">Bank-level security with regular backups and data protection</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="choose-card">
-                            <div class="choose-icon">
-                                <i class="ti ti-devices"></i>
-                            </div>
-                            <h3 class="choose-title">Cross-Platform</h3>
-                            <p class="choose-text">Access your dashboard from any device, anywhere</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="choose-card">
-                            <div class="choose-icon">
-                                <i class="ti ti-headset"></i>
-                            </div>
-                            <h3 class="choose-title">24/7 Support</h3>
-                            <p class="choose-text">Round-the-clock customer support for all your needs</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="choose-card">
-                            <div class="choose-icon">
-                                <i class="ti ti-chart-line"></i>
-                            </div>
-                            <h3 class="choose-title">Analytics</h3>
-                            <p class="choose-text">Detailed insights and reports for better decision making</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <!-- [ section ] End -->
-    <!-- [ section ] start -->
-    <?php
-        $Section_9 = App\Models\HomePage::where('section', 'Section 9')->first();
-        $Section_9_content_value = !empty($Section_9->content_value)
-            ? json_decode($Section_9->content_value, true)
-            : [];
-    ?>
-    <?php if(empty($Section_9_content_value['section_enabled']) || $Section_9_content_value['section_enabled'] == 'active'): ?>
-        <section class="frameworks-section" id="faqs">
-            <div class="container">
-                <div class="row justify-content-center title">
-                    <div class="col-md-9 col-lg-6 text-center">
-                        <h2 class="h1">
-                            <?php echo e(!empty($Section_9_content_value['Sec9_title']) ? $Section_9_content_value['Sec9_title'] : 'Frequently Asked Questions (FAQ)'); ?>
-
-                        </h2>
-                        <p class="text-lg">
-                            <?php echo e(!empty($Section_9_content_value['Sec9_info']) ? $Section_9_content_value['Sec9_info'] : 'Please refer the Frequently ask question for your quick help'); ?>
-
-                        </p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="accordion accordion-flush" id="accordionFlushExample">
-                            <?php if(!empty($FAQs->toArray())): ?>
-                                <?php $__currentLoopData = $FAQs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $FAQ_key => $FAQ): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="flush-<?php echo e($FAQ->id); ?>">
-                                            <button
-                                                class="accordion-button <?php echo e($FAQ_key == 0 ? '' : 'collapsed'); ?> text-muted"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#flush-collapse-<?php echo e($FAQ->id); ?>"
-                                                aria-expanded="false" aria-controls="flush-collapseThree">
-                                                <b><?php echo e($FAQ->question); ?></b>
-                                            </button>
-                                        </h2>
-                                        <div id="flush-collapse-<?php echo e($FAQ->id); ?>"
-                                            class="accordion-collapse collapse <?php echo e($FAQ_key == 0 ? 'collapse show' : ''); ?>"
-                                            aria-labelledby="flush-<?php echo e($FAQ->id); ?>"
-                                            data-bs-parent="#accordionFlushExample">
-                                            <div class="accordion-body text-muted"><?php echo $FAQ->description; ?></div>
-                                        </div>
+            <div class="row text-center justify-content-center">
+                <div class="col-11 col-md-9 col-lg-7 position-relative">
+                    <div class="swiper app-slider">
+                        <div class="swiper-wrapper">
+                            <?php if(!empty($Section_6_content_value['Sec6_Box_title'])): ?>
+                                <?php $__currentLoopData = $Section_6_content_value['Sec6_Box_title']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s6_key => $s6_item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="swiper-slide">
+                                        <?php if(!empty($Section_6_content_value['Sec6_box' . $s6_key . '_image_path'])): ?>
+                                            <img src="<?php echo e(asset(Storage::url($Section_6_content_value['Sec6_box' . $s6_key . '_image_path']))); ?>"
+                                                alt="img" class="img-fluid" />
+                                        <?php else: ?>
+                                            <img src="assets/images/landing/slider-light-1.png" alt="images"
+                                                class="img-fluid" />
+                                        <?php endif; ?>
+                                        <h3> <?php echo e($s6_item); ?> <i class="ti ti-link"></i> </h3>
+                                        <p><?php echo e($Section_6_content_value['Sec6_Box_subtitle'][$s6_key]); ?></p>
                                     </div>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php else: ?>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingOne">
-                                        <button class="accordion-button text-muted" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                                            aria-expanded="false">
-                                            <b>What features does your software offer?</b>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseOne" class="accordion-collapse collapse show"
-                                        aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body text-muted">
-                                            Our software provides a range of features including automation tools,
-                                            real-time analytics, cloud-based access, secure data storage, seamless
-                                            integrations, and customizable solutions tailored to your business needs.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingTwo">
-                                        <button class="accordion-button collapsed text-muted" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
-                                            aria-expanded="false" aria-controls="flush-collapseTwo">
-                                            <b>Is your software easy to use?</b>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseTwo" class="accordion-collapse collapse"
-                                        aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body text-muted">
-                                            Yes! Our platform is designed to be user-friendly and intuitive, so your
-                                            team can get started quickly without a steep learning curve.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingThree">
-                                        <button class="accordion-button collapsed text-muted" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"
-                                            aria-expanded="false" aria-controls="flush-collapseThree">
-                                            <b>Can I integrate your software with my existing systems?</b>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseThree" class="accordion-collapse collapse"
-                                        aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body text-muted">
-                                            Absolutely! Our software is built to easily integrate with your current
-                                            tools and systems, making the transition seamless and efficient.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingfour">
-                                        <button class="accordion-button collapsed text-muted" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#flush-collapse-four"
-                                            aria-expanded="false" aria-controls="flush-collapseThree">
-                                            <b>Is customer support available?</b>
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapse-four" class="accordion-collapse collapse"
-                                        aria-labelledby="flush-headingfour" data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body text-muted">
-                                            Yes! We offer 24/7 customer support. Our dedicated team is ready to assist
-                                            you with any questions or issues you may have.
-                                        </div>
-                                    </div>
+                                <div class="swiper-slide">
+                                    <img src="assets/images/landing/slider-light-1.png" alt="images"
+                                        class="img-fluid" />
+                                    <h3>Social Profile <i class="ti ti-link"></i></h3>
+                                    <p>Complete Social profile with all possible option</p>
                                 </div>
                             <?php endif; ?>
                         </div>
                     </div>
+                    <!-- Swiper navigation buttons, custom styled and at page edge -->
+                    <div class="custom-swiper-nav swiper-button-prev"></div>
+                    <div class="custom-swiper-nav swiper-button-next"></div>
                 </div>
             </div>
-        </section>
-    <?php endif; ?>
-    <!-- [ section ] End -->
+        </div>
+    </section>
+<?php endif; ?>
+
+    <!-- Testimonials Section -->
+    <!-- [ section ] start -->
     <!-- [ footer ] start -->
-    <footer class="footer bg-dark text-light py-5">
+    <footer class="footer bg-dark text-light py-4" style="border-top:1px solid #222;">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="footer-brand mb-4">
-                        <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid mb-3" style="max-height: 40px;">
-                        <p class="text-light-50">Streamline your property management with our comprehensive solution. Built for modern property managers.</p>
-                    </div>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3"><i class="ti ti-brand-facebook"></i></a>
-                        <a href="#" class="text-light me-3"><i class="ti ti-brand-twitter"></i></a>
-                        <a href="#" class="text-light me-3"><i class="ti ti-brand-linkedin"></i></a>
-                        <a href="#" class="text-light"><i class="ti ti-brand-instagram"></i></a>
-                    </div>
+            <div class="footer-modern d-flex flex-wrap align-items-center justify-content-between">
+                <div class="footer-brand d-flex align-items-center gap-2">
+                    <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid footer-logo-white" style="max-height: 36px; filter: brightness(0) invert(1);">
+                    <span class="footer-appname" style="font-weight:600;letter-spacing:1px; font-size:1.1rem;"><?php echo e(!empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME')); ?></span>
                 </div>
-                <div class="col-6 col-lg-2">
-                    <h5 class="text-light mb-3">Product</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="#testimonials">Testimonials</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                    </ul>
+                <div class="footer-social d-flex gap-3 justify-content-center my-2">
+                    <a href="#" class="footer-social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="footer-social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                 </div>
-                <div class="col-6 col-lg-2">
-                    <h5 class="text-light mb-3">Company</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#careers">Careers</a></li>
-                        <li><a href="#blog">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="col-6 col-lg-2">
-                    <h5 class="text-light mb-3">Legal</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
-                        <li><a href="#cookies">Cookie Policy</a></li>
-                        <li><a href="#gdpr">GDPR</a></li>
-                    </ul>
-                </div>
-                <div class="col-6 col-lg-2">
-                    <h5 class="text-light mb-3">Support</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="#help">Help Center</a></li>
-                        <li><a href="#documentation">Documentation</a></li>
-                        <li><a href="#api">API</a></li>
-                        <li><a href="#status">Status</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4 border-light-50">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 text-light-50">&copy; <?php echo e(date('Y')); ?> <?php echo e(!empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME')); ?>. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                    <div class="footer-bottom-links">
-                        <a href="#privacy" class="text-light-50 me-3">Privacy</a>
-                        <a href="#terms" class="text-light-50 me-3">Terms</a>
-                        <a href="#cookies" class="text-light-50">Cookies</a>
-                    </div>
-                </div>
+                <div class="footer-copyright text-light-50 small text-end" style="min-width:180px;">&copy; <?php echo e(date('Y')); ?> <?php echo e(!empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME')); ?>. All rights reserved.</div>
             </div>
         </div>
     </footer>
@@ -1500,4 +1149,5 @@
 </body>
 
 </html>
+
 <?php /**PATH /Users/chipchip/Downloads/codecanyon-ytuZNl0y-smart-tenant-property-management-system-saas/main_file/resources/views/layouts/landing.blade.php ENDPATH**/ ?>
