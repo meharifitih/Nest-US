@@ -49,10 +49,18 @@ class HomeController extends Controller
                 if (\Auth::user()->type == 'tenant') {
                     $tenant = Tenant::where('user_id', \Auth::user()->id)->first();
                     if (!empty($tenant)) {
-                        $result['totalInvoice'] = Invoice::where('property_id', $tenant->property)->where('unit_id', $tenant->unit)->count();
+                        $result['totalInvoice'] = Invoice::where('property_id', $tenant->property)
+                            ->where('unit_id', $tenant->unit)
+                            ->whereNotIn('status', ['pending', 'open'])
+                            ->count();
+                        $result['pendingInvoice'] = Invoice::where('property_id', $tenant->property)
+                            ->where('unit_id', $tenant->unit)
+                            ->whereIn('status', ['pending', 'open'])
+                            ->count();
                         $result['unit'] = PropertyUnit::find($tenant->unit);
                     } else {
                         $result['totalInvoice'] = 0;
+                        $result['pendingInvoice'] = 0;
                         $result['unit'] ='';
                     }
 
@@ -76,6 +84,9 @@ class HomeController extends Controller
                 $result['recentTenant'] = Tenant::where('parent_id', parentId())->orderby('id', 'desc')->limit(5)->get();
                 $result['incomeExpenseByMonth'] = $this->incomeByMonth();
                 $result['settings'] = settings();
+                $result['pendingInvoice'] = Invoice::where('parent_id', parentId())
+                    ->whereIn('status', ['pending', 'open'])
+                    ->count();
 
 
 

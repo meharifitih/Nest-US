@@ -84,44 +84,53 @@
         }
 
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: #fff !important;
+            box-shadow: none !important;
+            padding: 0.5rem 0 0.5rem 0 !important;
+            border-bottom: none !important;
         }
 
-        .navbar-brand img {
-            height: 40px;
+        .navbar .container {
+            align-items: center;
         }
 
-        .nav-link {
-            color: var(--text-color);
+        .navbar .navbar-brand {
+            font-size:2.7rem;
+            font-weight:700;
+            letter-spacing:-1px;
+            margin-right: 2rem;
+        }
+
+        .navbar .d-flex.align-items-center.gap-4 {
+            gap: 2.2rem !important;
+        }
+
+        .navbar .nav-link {
+            color: #222;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: color 0.3s ease;
+            font-size: 0.98rem;
+            padding: 0.5rem 0.8rem;
+            transition: color 0.2s;
         }
 
-        .nav-link:hover {
-            color: var(--primary-color);
+        .navbar .nav-link:hover {
+            color: #1a7f5a;
         }
 
-        .btn-primary {
-            background: var(--primary-color);
+        .navbar .btn.btn-primary {
+            background: #16263a !important;
             border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
+            border-radius: 12px;
+            font-weight: 700;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.98rem;
+            box-shadow: none;
+            margin-left: 1.2rem;
         }
 
         .hero-section {
             padding: 120px 0 80px;
-            background: linear-gradient(135deg, #fff 0%, var(--light-bg) 100%);
+            background: #fff;
             position: relative;
             overflow: hidden;
         }
@@ -411,7 +420,7 @@
             margin-top: 2rem;
             box-shadow: 0 4px 24px rgba(21,82,99,0.08);
         }
-        .spacer-navbar { height: 100px; }
+        .spacer-navbar { display: none !important; }
         .interval-tab-outer {
             width: 100%;
             margin-bottom: 2rem;
@@ -465,8 +474,9 @@
             min-height: calc(100vh - 72px);
             display: flex;
             align-items: center;
-            padding: 0;
+            padding: 24px 0 0 0;
             background: #fff;
+            position: relative;
         }
         .hero-row-clean {
             min-height: 70vh;
@@ -502,15 +512,25 @@
         }
         .hero-img-clean {
             width: 100%;
-            max-width: 540px;
+            max-width: none;
             height: 80vh;
             min-height: 400px;
             object-fit: cover;
-            border-radius: 0 0 0 0;
+            border-radius: 0;
             box-shadow: none;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
             background: #fff;
             margin-right: 0;
+            margin-top: 32px;
+            position: relative;
+            z-index: 2;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%), linear-gradient(to top, transparent 0%, #000 15%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 100%);
+            mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%), linear-gradient(to top, transparent 0%, #000 15%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 100%);
+            -webkit-mask-composite: intersect;
+            mask-composite: intersect;
+        }
+        .hero-section-clean::after {
+            display: none;
         }
         @media (max-width: 991.98px) {
             .hero-section-clean {
@@ -535,6 +555,7 @@
                 max-width: 100%;
                 margin: 0 auto;
                 display: block;
+                border-radius: 0;
             }
         }
         .footer-logo-white {
@@ -668,6 +689,11 @@
                 font-size: 1.3rem;
             }
         }
+        header:after {
+            display: none !important;
+            background: none !important;
+            content: none !important;
+        }
     </style>
 </head>
 
@@ -678,7 +704,7 @@
 <!-- New Nav/Header from screenshot -->
 <nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
   <div class="container">
-    <a class="navbar-brand" href="#" style="font-size:2rem;font-weight:700;letter-spacing:-1px;"><span style="color:#222;">Nes</span><span style="color:#1a7f5a;">t</span></a>
+    <a class="navbar-brand" href="#" style="font-size:2.7rem;font-weight:700;letter-spacing:-1px;"><span style="color:#222;">Nes</span><span style="color:#1a7f5a;">t</span></a>
     <div class="d-flex align-items-center gap-4">
       <a class="nav-link" href="#features">Features</a>
       <a class="nav-link" href="#pricing">Pricing</a>
@@ -693,16 +719,15 @@
   <div class="container-fluid">
     <div class="row hero-row-clean" style="width:100%;">
       <div class="col-lg-6 hero-text-col">
-        <h1>Welcome to<br> <span style="color:#1a7f5a;">Nest</span></h1>
-        <p>Property management software built to help and maximize your real estate needs and profits.<br><br>With Nest you get to optimize tenants, Maintemace report, profit and loss report, and much more.</p>
+        <h1>Welcome to <span style="color:#1a7f5a;">Nest</span></h1>
+        <p>Nest is the all-in-one property management software designed to simplify your workflow and boost your profits. Easily manage tenants, track maintenance requests, view profit & loss reports, and much more — all in one powerful platform.</p>
         <div class="d-flex gap-3">
           <a href="{{ route('login') }}" class="btn btn-primary" style="background:#16263a;border:none;min-width:120px;">Log in</a>
           <a href="{{ route('register') }}" class="btn btn-outline-secondary" style="min-width:120px;">Get Started</a>
         </div>
       </div>
       <div class="col-lg-6 hero-img-col p-0">
-        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80" 
-             alt="Modern apartment building" class="hero-img-clean">
+        <img src="assets/images/landing/building.png" alt="Modern apartment building" class="hero-img-clean">
       </div>
     </div>
   </div>

@@ -94,99 +94,65 @@
 
 ?>
 <?php $__env->startSection('content'); ?>
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avtar bg-light-secondary">
-                                <i class="ti ti-building f-24"></i>
-                            </div>
+    <div class="d-flex justify-content-center">
+        <div class="row mb-4 mt-4 g-3 justify-content-center" style="max-width: 1100px;">
+            <div class="col-lg-2 col-md-4">
+                <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="avtar bg-light-secondary mb-2">
+                            <i class="ti ti-building f-24"></i>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="mb-1"><?php echo e(__('Total Property')); ?></p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0"><?php echo e($result['totalProperty']); ?></h4>
-
-                            </div>
+                        <p class="mb-1"><?php echo e(__('Total Property')); ?></p>
+                        <h4 class="mb-0"><?php echo e($result['totalProperty']); ?></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="avtar bg-light-warning mb-2">
+                            <i class="ti ti-3d-cube-sphere f-24"></i>
                         </div>
+                        <p class="mb-1"><?php echo e(__('Total Unit')); ?></p>
+                        <h4 class="mb-0"><?php echo e($result['totalUnit']); ?></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="avtar bg-light-primary mb-2">
+                            <i class="ti ti-file-invoice f-24"></i>
+                        </div>
+                        <p class="mb-1"><?php echo e(__('Total Invoice')); ?></p>
+                        <h4 class="mb-0"><?php echo e($settings['CURRENCY_SYMBOL']); ?><span class="count"><?php echo e($result['totalIncome']); ?></span></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="avtar bg-light-warning mb-2">
+                            <i class="ti ti-file-invoice f-24"></i>
+                        </div>
+                        <p class="mb-1"><?php echo e(__('Pending Invoices')); ?></p>
+                        <h4 class="mb-0"><?php echo e($result['pendingInvoice']); ?></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
+                        <div class="avtar bg-light-danger mb-2">
+                            <i class="ti ti-exposure f-24"></i>
+                        </div>
+                        <p class="mb-1"><?php echo e(__('Total Expense')); ?></p>
+                        <h4 class="mb-0"><?php echo e($settings['CURRENCY_SYMBOL']); ?><span class="count"><?php echo e($result['totalExpense']); ?></span></h4>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avtar bg-light-warning">
-                                <i class="ti ti-3d-cube-sphere f-24"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="mb-1"><?php echo e(__('Total Unit')); ?></p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0"><?php echo e($result['totalUnit']); ?></h4>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avtar bg-light-primary">
-                                <i class="ti ti-file-invoice f-24"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="mb-1"><?php echo e(__('Total Invoice')); ?></p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0"><?php echo e($settings['CURRENCY_SYMBOL']); ?><span
-                                        class="count"><?php echo e($result['totalIncome']); ?></h4>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="avtar bg-light-danger">
-                                <i class="ti ti-exposure f-24"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="mb-1"><?php echo e(__('Total Expense')); ?></p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0"><?php echo e($settings['CURRENCY_SYMBOL']); ?><span
-                                        class="count"><?php echo e($result['totalExpense']); ?></h4>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
     </div>
-
-
-
 
     <div class="col-lg-12 col-md-12">
         <div class="card">
