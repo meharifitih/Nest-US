@@ -151,33 +151,43 @@
         }
 
         .feature-card {
-            background: white;
+            background: #ffffff;
             border-radius: 16px;
             padding: 2rem;
-            height: 100%;
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            height: 100%;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .feature-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--light-bg);
+            background: rgba(26, 127, 90, 0.1);
             border-radius: 12px;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            margin: 0 auto 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .feature-icon i {
-            font-size: 32px;
-            color: var(--primary-color);
+        .feature-card:hover .feature-icon {
+            background: rgba(26, 127, 90, 0.15);
+            transform: scale(1.1);
+        }
+
+        .feature-icon svg {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon svg {
+            transform: scale(1.1);
         }
 
         .feature-title {
@@ -390,15 +400,29 @@
             font-weight: 500;
         }
         .modern-offers-section {
-            background: linear-gradient(120deg, #fff 0%, #e0f7fa 100%);
-            border-radius: 2rem;
-            margin-bottom: 2rem;
+            padding: 6rem 0;
+            background: linear-gradient(180deg, #fff 0%, var(--light-bg) 100%);
         }
         .modern-offers-section h2 {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
-        .modern-offers-section .fw-semibold {
-            font-size: 1.15rem;
+        .modern-offers-section .lead {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .modern-offers-section h3 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+        .modern-offers-section .text-muted {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #64748b !important;
         }
         .modern-offers-section img {
             max-height: 90px;
@@ -431,44 +455,61 @@
             background: #fff;
             border: 1.5px solid #e3eafc;
         }
+        .price-card {
+            background: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px rgba(21,82,99,0.10);
+            border: 1.5px solid #e3eafc;
+            transition: box-shadow 0.2s, transform 0.2s;
+            margin-bottom: 2rem;
+        }
+        .price-card:hover {
+            box-shadow: 0 8px 32px rgba(21,82,99,0.13);
+            transform: translateY(-6px) scale(1.03);
+        }
         .price-card .card-body {
+            padding: 2.5rem 1.5rem;
+        }
+        .price-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #16263a;
+            margin-bottom: 0.5rem;
+        }
+        .price-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #155263;
+            margin-bottom: 1.2rem;
+        }
+        .price-card ul {
+            margin-bottom: 1.5rem;
+        }
+        .price-card ul li {
+            font-size: 1.08rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
         }
-        .price-card .card-body ul {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            text-align: center !important;
-            margin: 0 auto !important;
-            padding: 0;
-        }
-        .price-card .card-body ul li {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .price-card .card-body ul li i {
+        .price-card ul li i {
             margin-right: 8px;
             font-size: 1.1em;
         }
-        .price-card .card-body .price-price,
-        .price-card .card-body h2,
-        .price-card .card-body span,
-        .price-card .card-body p {
-            width: 100%;
-            text-align: center;
-            margin-left: auto;
-            margin-right: auto;
+        .price-card .btn {
+            border-radius: 0.7rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.7rem 0;
+        }
+        @media (max-width: 991.98px) {
+            .price-card .card-body {
+                padding: 1.5rem 0.7rem;
+            }
+            .price-card {
+                margin-bottom: 1.2rem;
+            }
         }
         .hero-section-clean {
             min-height: calc(100vh - 72px);
@@ -604,37 +645,61 @@
             }
         }
         .footer-modern {
-            gap: 1.5rem;
-            padding: 0.5rem 0;
+            background: #f8fafc;
+            border-top: 2px solid #00bcd4;
+            padding: 2.2rem 0 1.2rem 0;
+            text-align: center;
         }
-        .footer-brand {
+        .footer-modern .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 0.7rem;
+            margin-bottom: 1.2rem;
         }
-        .footer-logo-white {
-            filter: brightness(0) invert(1) !important;
+        .footer-modern .footer-brand img {
+            height: 36px;
+            width: auto;
+            filter: none;
         }
-        .footer-social-link {
-            color: #fff;
+        .footer-modern .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.2rem;
+            list-style: none;
+            padding: 0;
+        }
+        .footer-modern .footer-links a {
+            color: #155263;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-modern .footer-links a:hover {
+            color: #00bcd4;
+        }
+        .footer-modern .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .footer-modern .footer-social-link {
+            color: #155263;
             font-size: 1.35rem;
             transition: color 0.2s, transform 0.2s;
             opacity: 0.85;
         }
-        .footer-social-link:hover {
-            color: #1a7f5a;
+        .footer-modern .footer-social-link:hover {
+            color: #00bcd4;
             opacity: 1;
             transform: translateY(-2px) scale(1.1);
         }
-        @media (max-width: 991.98px) {
-            .footer-modern {
-                flex-direction: column;
-                align-items: center;
-                gap: 1.2rem;
-                text-align: center;
-            }
-            .footer-copyright {
-                text-align: center !important;
-                min-width: unset !important;
-            }
+        .footer-modern .footer-copyright {
+            color: #64748b;
+            font-size: 0.98rem;
+            margin-top: 0.5rem;
         }
         .custom-swiper-nav {
             position: absolute;
@@ -694,6 +759,62 @@
             background: none !important;
             content: none !important;
         }
+        .footer-oneline {
+            background: #f8fafc;
+            padding: 1.1rem 2.5rem 1.1rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.2rem;
+            font-size: 1rem;
+            color: #155263;
+            box-shadow: 0 -4px 24px rgba(21,82,99,0.08);
+        }
+        .footer-oneline .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #155263;
+        }
+        .footer-oneline .footer-brand img {
+            height: 28px;
+            width: auto;
+        }
+        .footer-oneline .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+        .footer-oneline .footer-social-link {
+            color: #155263;
+            font-size: 1.15rem;
+            transition: color 0.2s, transform 0.2s;
+            opacity: 0.85;
+        }
+        .footer-oneline .footer-social-link:hover {
+            color: #00bcd4;
+            opacity: 1;
+            transform: translateY(-2px) scale(1.1);
+        }
+        .footer-oneline .footer-copyright {
+            color: #64748b;
+            font-size: 0.97rem;
+            margin-left: 1.2rem;
+            white-space: nowrap;
+        }
+        @media (max-width: 991.98px) {
+            .footer-oneline {
+                flex-direction: column;
+                gap: 0.7rem;
+                font-size: 0.98rem;
+                text-align: center;
+                padding: 1.1rem 1rem 1.1rem 1rem;
+            }
+            .footer-oneline .footer-copyright {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 
@@ -702,9 +823,9 @@
     data-pc-theme="<?php echo e($settings['theme_mode']); ?>">
 
 <!-- New Nav/Header from screenshot -->
-<nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-  <div class="container">
-    <a class="navbar-brand" href="#" style="font-size:2.7rem;font-weight:700;letter-spacing:-1px;"><span style="color:#222;">Nes</span><span style="color:#1a7f5a;">t</span></a>
+<nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: 80px; display: flex; align-items: center;">
+  <div class="container" style="max-width: 1320px; padding-left: 40px; padding-right: 40px;">
+    <a class="navbar-brand" href="#" style="padding: 0;"><img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid" style="height:120px; margin-top: -20px; margin-bottom: -20px;" /></a>
     <div class="d-flex align-items-center gap-4">
       <a class="nav-link" href="#features">Features</a>
       <a class="nav-link" href="#pricing">Pricing</a>
@@ -716,11 +837,11 @@
 <div class="spacer-navbar"></div>
 <!-- Hero Section -->
 <header id="home" class="hero-section hero-section-clean">
-  <div class="container-fluid">
-    <div class="row hero-row-clean" style="width:100%;">
-      <div class="col-lg-6 hero-text-col">
-        <h1>Welcome to <span style="color:#1a7f5a;">Nest</span></h1>
-        <p>Nest is the all-in-one property management software designed to simplify your workflow and boost your profits. Easily manage tenants, track maintenance requests, view profit & loss reports, and much more — all in one powerful platform.</p>
+  <div class="container" style="max-width: 1320px; padding-left: 40px;">
+    <div class="row hero-row-clean">
+      <div class="col-lg-6 hero-text-col" style="padding-top: 40px;">
+        <h1 class="display-4 fw-bold mb-4">Welcome to <span style="color:#1a7f5a;">Nest</span></h1>
+        <p class="lead" style="font-size: 1.25rem; line-height: 1.8; color: #4a5568; max-width: 600px; margin-bottom: 2rem;">Nest is the all-in-one property management software designed to simplify your workflow and boost your profits. Easily manage tenants, track maintenance requests, view profit & loss reports, and much more — all in one powerful platform.</p>
         <div class="d-flex gap-3">
           <a href="<?php echo e(route('login')); ?>" class="btn btn-primary" style="background:#16263a;border:none;min-width:120px;">Log in</a>
           <a href="<?php echo e(route('register')); ?>" class="btn btn-outline-secondary" style="min-width:120px;">Get Started</a>
@@ -746,62 +867,78 @@
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-9 col-lg-7 text-center">
-                        <h2 class="display-5 fw-bold mb-3 text-gradient">
-                            <?php echo e(!empty($Section_4_content_value['Sec4_title']) ? $Section_4_content_value['Sec4_title'] : 'What does Smartweb offer?'); ?>
-
-                        </h2>
-                        <p class="lead text-muted">
-                            <?php echo e(!empty($Section_4_content_value['Sec4_info']) ? $Section_4_content_value['Sec4_info'] : 'Smartweb is a reliable choice for your admin panel needs, offering a wide range of features to easily manage your backend panel'); ?>
-
-                        </p>
+                        <h2 class="display-4 fw-bold mb-3" style="background: linear-gradient(120deg, #155263, #1a7f5a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">What Our Software Offers</h2>
+                        <p class="lead text-muted">Discover the powerful features that make Nest the perfect solution for your property management needs.</p>
                     </div>
                 </div>
                 <div class="row g-4 text-center">
                     <?php $is4_check = 0; ?>
-                    <?php for($is4 = 1; $is4 <= 6; $is4++): ?>
-                        <?php if(!empty($Section_4_content_value['Sec4_box' . $is4 . '_enabled']) && $Section_4_content_value['Sec4_box' . $is4 . '_enabled'] == 'active'): ?>
-                            <?php $is4_check++; ?>
-                            <div class="col-md-6 col-xl-4">
-                                <?php if(!empty($Section_4_content_value['Sec4_box' . $is4 . '_image_path'])): ?>
-                                    <img src="<?php echo e(asset(Storage::url($Section_4_content_value['Sec4_box' . $is4 . '_image_path']))); ?>" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                                <?php else: ?>
-                                    <img src="assets/images/landing/img-design-<?php echo e($is4); ?>.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                                <?php endif; ?>
-                                <h3 class="fw-semibold mb-2"><?php echo e(!empty($Section_4_content_value['Sec4_box' . $is4 . '_title']) ? $Section_4_content_value['Sec4_box' . $is4 . '_title'] : 'What Our Software Offers'); ?></h3>
-                                <p class="text-muted"><?php echo e(!empty($Section_4_content_value['Sec4_box' . $is4 . '_info']) ? $Section_4_content_value['Sec4_box' . $is4 . '_info'] : 'Our software provides powerful, scalable solutions designed to streamline your business operations.'); ?></p>
-                            </div>
-                        <?php endif; ?>
-                    <?php endfor; ?>
                     <?php if($is4_check == 0): ?>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-1.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">User-Friendly Interface</h3>
-                            <p class="text-muted">Simplify operations with an intuitive and easy-to-use platform.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 4.5V7.5M12 7.5L9 5.5M12 7.5L15 5.5M3 19H21M5 16H19C19.5523 16 20 15.5523 20 15V9C20 8.44772 19.5523 8 19 8H5C4.44772 8 4 8.44772 4 9V15C4 15.5523 4.44772 16 5 16Z" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">Dual Language Support</h3>
+                                <p class="text-muted">Use Nest in both English and Amharic, making it simple and accessible for all users.</p>
+                            </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-2.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">End-to-End Automation</h3>
-                            <p class="text-muted">Automate repetitive tasks to save time and increase efficiency.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">Tenant Management</h3>
+                                <p class="text-muted">Easily create or remove tenants at any time for better communication and streamlined operations.</p>
+                            </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-3.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">Customizable Solutions</h3>
-                            <p class="text-muted">Tailor features to fit your unique business needs and workflows.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">Maintenance Requests</h3>
+                                <p class="text-muted">Tenants can conveniently submit maintenance requests from home and connect directly with building managers.</p>
+                            </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-4.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">Scalable Features</h3>
-                            <p class="text-muted">Grow your business with flexible solutions that scale with you.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 1V23M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">Financial Management</h3>
+                                <p class="text-muted">A hassle-free finance system that helps track expenses, profits, and losses — all in one place.</p>
+                            </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-5.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">Enhanced Security</h3>
-                            <p class="text-muted">Protect your data with advanced encryption and security protocols.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3ZM7.5 7V17M12 7V17M16.5 7V17" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">In-App Payments</h3>
+                                <p class="text-muted">Tenants can make payments directly through the app, ensuring fast, easy, and trackable transactions.</p>
+                            </div>
                         </div>
                         <div class="col-md-6 col-xl-4">
-                            <img src="assets/images/landing/img-design-6.svg" alt="img" class="img-fluid mb-3 rounded-3 shadow-sm" />
-                            <h3 class="fw-semibold mb-2">Real-Time Analytics</h3>
-                            <p class="text-muted">Gain actionable insights with live data tracking and reporting.</p>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 20V10M12 20V4M6 20V14" stroke="#1a7f5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3 class="fw-semibold mb-2">Real-Time Data Insights</h3>
+                                <p class="text-muted">Access live data on tenant activity, finances, and building operations to make smarter decisions.</p>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -818,7 +955,7 @@
     ?>
     <?php if($settings['pricing_feature'] == 'on'): ?>
         <?php if(empty($Section_5_content_value['section_enabled']) || $Section_5_content_value['section_enabled'] == 'active'): ?>
-            <section class="bg-body pricingpricing" id="pricing">
+            <section class="modern-offers-section" id="pricing">
                 <div class="container">
                     <div class="row justify-content-center title">
                         <div class="col-md-9 col-lg-6 text-center">
@@ -970,21 +1107,19 @@
     <!-- Testimonials Section -->
     <!-- [ section ] start -->
     <!-- [ footer ] start -->
-    <footer class="footer bg-dark text-light py-4" style="border-top:1px solid #222;">
-        <div class="container">
-            <div class="footer-modern d-flex flex-wrap align-items-center justify-content-between">
-                <div class="footer-brand d-flex align-items-center gap-2">
-                    <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="logo" class="img-fluid footer-logo-white" style="max-height: 36px; filter: brightness(0) invert(1);">
-                    <span class="footer-appname" style="font-weight:600;letter-spacing:1px; font-size:1.1rem;"><?php echo e(!empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME')); ?></span>
-                </div>
-                <div class="footer-social d-flex gap-3 justify-content-center my-2">
-                    <a href="#" class="footer-social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="footer-social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="footer-social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="footer-social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                </div>
-                <div class="footer-copyright text-light-50 small text-end" style="min-width:180px;">&copy; <?php echo e(date('Y')); ?> <?php echo e(!empty($settings['app_name']) ? $settings['app_name'] : env('APP_NAME')); ?>. All rights reserved.</div>
-            </div>
+    <footer class="footer-oneline">
+        <div class="footer-brand">
+            <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="Nest Logo" />
+            Yene Bet
+        </div>
+        <div class="footer-social">
+            <a href="#" class="footer-social-link"><i class="ti ti-brand-facebook"></i></a>
+            <a href="#" class="footer-social-link"><i class="ti ti-brand-twitter"></i></a>
+            <a href="#" class="footer-social-link"><i class="ti ti-brand-linkedin"></i></a>
+            <a href="#" class="footer-social-link"><i class="ti ti-brand-instagram"></i></a>
+        </div>
+        <div class="footer-copyright">
+            &copy; <?php echo e(date('Y')); ?> Yene Bet. All rights reserved.
         </div>
     </footer>
     <!-- [ footer ] End -->
