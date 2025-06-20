@@ -400,7 +400,7 @@
             font-weight: 500;
         }
         .modern-offers-section {
-            padding: 6rem 0;
+            padding: 2rem 0;
             background: linear-gradient(180deg, #fff 0%, var(--light-bg) 100%);
         }
         .modern-offers-section h2 {
@@ -457,51 +457,43 @@
         }
         .price-card {
             background: #fff;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 24px rgba(21,82,99,0.10);
-            border: 1.5px solid #e3eafc;
-            transition: box-shadow 0.2s, transform 0.2s;
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 24px rgba(21,82,99,0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
             margin-bottom: 2rem;
+            max-width: 310px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .price-card:hover {
-            box-shadow: 0 8px 32px rgba(21,82,99,0.13);
-            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(21,82,99,0.1);
+            transform: translateY(-8px) scale(1.02);
         }
         .price-card .card-body {
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
-        .price-card h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #16263a;
-            margin-bottom: 0.5rem;
-        }
-        .price-price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #155263;
-            margin-bottom: 1.2rem;
+        .price-card h2, .price-card .price-price {
+            text-align: center;
         }
         .price-card ul {
             margin-bottom: 1.5rem;
         }
-        .price-card ul li {
-            font-size: 1.08rem;
-            color: #475569;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .price-card .features-list ul {
+            display: inline-block;
+            text-align: left;
+            list-style: none;
+            padding: 0;
         }
-        .price-card ul li i {
-            margin-right: 8px;
-            font-size: 1.1em;
+        .price-card .features-list {
+            text-align: center;
+            flex-grow: 1;
         }
-        .price-card .btn {
-            border-radius: 0.7rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 0.7rem 0;
+        .price-card .action-button-wrapper {
+            margin-top: auto;
         }
         @media (max-width: 991.98px) {
             .price-card .card-body {
@@ -815,7 +807,34 @@
                 margin-left: 0;
             }
         }
+        .application-slider {
+            padding-top: 2rem; /* Reduced top padding */
+        }
     </style>
+    <style>
+    .price-card {
+        max-width: 360px; /* Reduce card size */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .price-card .card-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .price-card ul {
+        text-align: center; /* Center list items text */
+    }
+    .price-card .features-list {
+        flex-grow: 1;
+    }
+    .price-card .action-button-wrapper {
+        margin-top: auto; /* Pushes button to the bottom */
+    }
+    .price-card ul li{
+        justify-content: center; /* Center the li content (icon and text) */
+    }
+</style>
 </head>
 
 <body class="landing-page" data-pc-preset="<?php echo e(!empty($settings['color_type']) && $settings['color_type'] == 'custom' ? 'custom' : $settings['accent_color']); ?>" data-pc-sidebar-theme="light"
@@ -958,23 +977,23 @@
             <section class="modern-offers-section" id="pricing">
                 <div class="container">
                     <div class="row justify-content-center title">
-                        <div class="col-md-9 col-lg-6 text-center">
-                            <h2 class="h1">
+                        <div class="col-md-9 col-lg-8 text-center">
+                            <h2 class="h1" style="font-size: 2.5rem; margin-bottom: 0.5rem;">
                                 <?php echo e(!empty($Section_5_content_value['Sec5_title']) ? $Section_5_content_value['Sec5_title'] : 'Flexible Pricing'); ?>
 
                             </h2>
-                            <p class="text-lg">
+                            <p class="text-lg" style="color: #64748b; max-width: 600px; margin: 0 auto 1.5rem auto;">
                                 <?php echo e(!empty($Section_5_content_value['Sec5_info']) ? $Section_5_content_value['Sec5_info'] : 'Get started for free, upgrade later in our application.'); ?>
 
                             </p>
                         </div>
                     </div>
-                    <div class="interval-tab-outer mb-4 d-flex justify-content-center">
-                        <div class="interval-tab-container card shadow-sm px-4 py-3 bg-white rounded-4" style="max-width: 420px;">
-                            <ul class="nav nav-tabs justify-content-center" id="intervalTabs" role="tablist">
+                    <div class="interval-tab-outer mb-3 d-flex justify-content-center">
+                        <div class="interval-tab-container card shadow-sm p-2 bg-white rounded-pill">
+                            <ul class="nav nav-pills justify-content-center" id="intervalTabs" role="tablist">
                                 <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link <?php if($idx === 0): ?> active <?php endif; ?>" id="tab-<?php echo e($interval); ?>" data-bs-toggle="tab" data-bs-target="#interval-<?php echo e($interval); ?>" type="button" role="tab" aria-controls="interval-<?php echo e($interval); ?>" aria-selected="<?php echo e($idx === 0 ? 'true' : 'false'); ?>">
+                                        <button class="nav-link rounded-pill <?php if($idx === 0): ?> active <?php endif; ?>" id="tab-<?php echo e($interval); ?>" data-bs-toggle="tab" data-bs-target="#interval-<?php echo e($interval); ?>" type="button" role="tab" aria-controls="interval-<?php echo e($interval); ?>" aria-selected="<?php echo e($idx === 0 ? 'true' : 'false'); ?>">
                                             <?php echo e(__($interval)); ?>
 
                                         </button>
@@ -989,7 +1008,7 @@
                                 <div class="row justify-content-center">
                                     <?php $__currentLoopData = $subscriptions->where('interval', $interval); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="col-md-6 col-lg-4">
-                                            <div class="card price-card text-center">
+                                            <div class="card price-card text-center h-100">
                                                 <div class="card-body">
                                                     <h2 class=""><?php echo e($subscription->title); ?></h2>
                                                     <div class="price-price mt-4">
@@ -998,13 +1017,15 @@
 
                                                         <span>/<?php echo e($subscription->interval); ?></span>
                                                     </div>
-                                                    <ul class="list-unstyled text-center mb-4" style="margin: 0 auto;">
-                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('User Limit')); ?>: <?php echo e($subscription->user_limit); ?></li>
-                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Property Limit')); ?>: <?php echo e($subscription->property_limit); ?></li>
-                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Tenant Limit')); ?>: <?php echo e($subscription->tenant_limit); ?></li>
-                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Unit Range')); ?>: <?php echo e($subscription->min_units); ?> - <?php echo e($subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units); ?></li>
-                                                    </ul>
-                                                    <div class="mt-4">
+                                                    <div class="features-list">
+                                                        <ul>
+                                                            <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('User Limit')); ?>: <?php echo e($subscription->user_limit); ?></li>
+                                                            <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Property Limit')); ?>: <?php echo e($subscription->property_limit); ?></li>
+                                                            <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Tenant Limit')); ?>: <?php echo e($subscription->tenant_limit); ?></li>
+                                                            <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Unit Range')); ?>: <?php echo e($subscription->min_units); ?> - <?php echo e($subscription->max_units == 0 ? 'Unlimited' : $subscription->max_units); ?></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="action-button-wrapper">
                                                         <a href="<?php echo e(route('register')); ?>" class="btn btn-primary w-100"><?php echo e(__('Get Started')); ?></a>
                                                     </div>
                                                 </div>
@@ -1013,21 +1034,23 @@
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <!-- Enterprise Card for this interval -->
                                     <div class="col-md-6 col-lg-4">
-                                        <div class="card price-card text-center">
+                                        <div class="card price-card text-center h-100">
                                             <div class="card-body">
                                                 <h2 class=""><?php echo e(__('Enterprise')); ?></h2>
                                                 <div class="price-price mt-4">
                                                     <span><?php echo e(__('Contact us for pricing')); ?></span>
                                                 </div>
-                                                <ul class="list-unstyled text-center mb-4" style="margin: 0 auto;">
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom User Limit')); ?></li>
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Property Limit')); ?></li>
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Tenant Limit')); ?></li>
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Unit Range')); ?></li>
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Priority Support')); ?></li>
-                                                    <li><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Features')); ?></li>
-                                                </ul>
-                                                <div class="mt-4">
+                                                <div class="features-list">
+                                                    <ul>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom User Limit')); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Property Limit')); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Tenant Limit')); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Unit Range')); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Priority Support')); ?></li>
+                                                        <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i><?php echo e(__('Custom Features')); ?></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="action-button-wrapper">
                                                     <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enterpriseContactModal">
                                                         <?php echo e(__('Contact Us')); ?>
 
