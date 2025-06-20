@@ -1133,7 +1133,7 @@
     <footer class="footer-oneline">
         <div class="footer-brand">
             <img src="<?php echo e(asset(Storage::url('upload/logo/landing_logo.png'))); ?>" alt="Nest Logo" />
-            Yene Bet
+            Nest
         </div>
         <div class="footer-social">
             <a href="#" class="footer-social-link"><i class="ti ti-brand-facebook"></i></a>
@@ -1142,7 +1142,7 @@
             <a href="#" class="footer-social-link"><i class="ti ti-brand-instagram"></i></a>
         </div>
         <div class="footer-copyright">
-            &copy; <?php echo e(date('Y')); ?> Yene Bet. All rights reserved.
+            &copy; <?php echo e(date('Y')); ?> <?php echo e(!empty($settings['copyright']) ? $settings['copyright'] : env('APP_NAME')); ?>. All rights reserved.
         </div>
     </footer>
     <!-- [ footer ] End -->

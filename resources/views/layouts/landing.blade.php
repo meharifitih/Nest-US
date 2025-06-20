@@ -1126,7 +1126,7 @@
     <footer class="footer-oneline">
         <div class="footer-brand">
             <img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="Nest Logo" />
-            Yene Bet
+            Nest
         </div>
         <div class="footer-social">
             <a href="#" class="footer-social-link"><i class="ti ti-brand-facebook"></i></a>
@@ -1135,7 +1135,7 @@
             <a href="#" class="footer-social-link"><i class="ti ti-brand-instagram"></i></a>
         </div>
         <div class="footer-copyright">
-            &copy; {{ date('Y') }} Yene Bet. All rights reserved.
+            &copy; {{ date('Y') }} {{ !empty($settings['copyright']) ? $settings['copyright'] : env('APP_NAME') }}. All rights reserved.
         </div>
     </footer>
     <!-- [ footer ] End -->
