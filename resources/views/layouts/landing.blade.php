@@ -810,31 +810,55 @@
         .application-slider {
             padding-top: 2rem; /* Reduced top padding */
         }
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .navbar .container {
+                justify-content: center;
+                text-align: center;
+            }
+            .navbar-brand {
+                margin-right: 0;
+            }
+            .navbar .nav-link, .navbar .btn {
+                display: none; /* Hide all nav items on mobile */
+            }
+            .hero-text-col h1 {
+                font-size: 2.8rem;
+            }
+            .hero-text-col p {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-section-clean, .modern-offers-section, .application-slider {
+                padding-top: 3rem;
+                padding-bottom: 3rem;
+            }
+            .hero-text-col h1 {
+                font-size: 2.2rem;
+            }
+            .modern-offers-section h2, .application-slider h2 {
+                font-size: 2rem;
+            }
+            .price-card, .feature-card {
+                margin-bottom: 1.5rem;
+            }
+            .footer-oneline {
+                padding: 1.5rem 1rem;
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .interval-tab-container .nav-pills .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            .hero-text-col {
+                padding: 1rem;
+            }
+        }
     </style>
-    <style>
-    .price-card {
-        max-width: 360px; /* Reduce card size */
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .price-card .card-body {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    .price-card ul {
-        text-align: center; /* Center list items text */
-    }
-    .price-card .features-list {
-        flex-grow: 1;
-    }
-    .price-card .action-button-wrapper {
-        margin-top: auto; /* Pushes button to the bottom */
-    }
-    .price-card ul li{
-        justify-content: center; /* Center the li content (icon and text) */
-    }
-</style>
 </head>
 
 <body class="landing-page" data-pc-preset="{{ !empty($settings['color_type']) && $settings['color_type'] == 'custom' ? 'custom' : $settings['accent_color'] }}" data-pc-sidebar-theme="light"
@@ -842,14 +866,14 @@
     data-pc-theme="{{ $settings['theme_mode'] }}">
 
 <!-- New Nav/Header from screenshot -->
-<nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: 80px; display: flex; align-items: center;">
-  <div class="container" style="max-width: 1320px; padding-left: 40px; padding-right: 40px;">
-    <a class="navbar-brand" href="#" style="padding: 0;"><img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="logo" class="img-fluid" style="height:120px; margin-top: -20px; margin-bottom: -20px;" /></a>
-    <div class="d-flex align-items-center gap-4">
-      <a class="nav-link" href="#features">Features</a>
-      <a class="nav-link" href="#pricing">Pricing</a>
-      <a class="nav-link" href="{{ route('login') }}">Login</a>
-      <a class="btn btn-primary" href="{{ route('register') }}" style="background:#16263a;border:none;">Get Started</a>
+<nav class="navbar navbar-expand-lg fixed-top" style="background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); height: auto; min-height:80px; align-items: center; padding: 0.5rem 0;">
+  <div class="container d-flex align-items-center justify-content-center justify-content-lg-between" style="max-width: 1320px;">
+    <a class="navbar-brand" href="#" style="padding: 0;"><img src="{{ asset(Storage::url('upload/logo/landing_logo.png')) }}" alt="logo" class="img-fluid" style="height:100px; margin: -10px 0;" /></a>
+    <div class="d-none d-lg-flex align-items-center" style="gap: 1rem;">
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#pricing">Pricing</a>
+        <a class="nav-link" href="{{ route('login') }}">Login</a>
+        <a class="btn btn-primary" href="{{ route('register') }}" style="background:#16263a;border:none;">Get Started</a>
     </div>
   </div>
 </nav>
@@ -861,7 +885,7 @@
       <div class="col-lg-6 hero-text-col" style="padding-top: 40px;">
         <h1 class="display-4 fw-bold mb-4">Welcome to <span style="color:#1a7f5a;">Nest</span></h1>
         <p class="lead" style="font-size: 1.25rem; line-height: 1.8; color: #4a5568; max-width: 600px; margin-bottom: 2rem;">Nest is the all-in-one property management software designed to simplify your workflow and boost your profits. Easily manage tenants, track maintenance requests, view profit & loss reports, and much more — all in one powerful platform.</p>
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
           <a href="{{ route('login') }}" class="btn btn-primary" style="background:#16263a;border:none;min-width:120px;">Log in</a>
           <a href="{{ route('register') }}" class="btn btn-outline-secondary" style="min-width:120px;">Get Started</a>
         </div>
