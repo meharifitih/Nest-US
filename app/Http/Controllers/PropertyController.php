@@ -168,6 +168,7 @@ class PropertyController extends Controller
                     'house_number' => 'required',
                     'woreda' => 'required',
                     'sub_city' => 'required',
+                    'city' => 'required',
                 ]
 
             );
@@ -189,6 +190,7 @@ class PropertyController extends Controller
             $property->house_number = $request->house_number;
             $property->woreda = $request->woreda;
             $property->sub_city = $request->sub_city;
+            $property->city = $request->city;
             $property->type = $request->type;
             $property->save();
 

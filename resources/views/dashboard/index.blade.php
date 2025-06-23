@@ -16,7 +16,7 @@
     var options = {
         chart: {
             type: 'area',
-            height: 450,
+            height: 320,
             toolbar: {
                 show: false
             }
@@ -93,8 +93,8 @@
 @endphp
 @section('content')
     <div class="d-flex justify-content-center">
-        <div class="row mb-4 mt-4 g-3 justify-content-center" style="max-width: 1100px;">
-            <div class="col-lg-2 col-md-4">
+        <div class="row mb-2 mt-2 g-4" style="max-width: 950px;">
+            <div class="col-lg col-md-4">
                 <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
                         <div class="avtar bg-light-secondary mb-2">
@@ -105,7 +105,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-lg col-md-4">
                 <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
                         <div class="avtar bg-light-warning mb-2">
@@ -116,7 +116,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-lg col-md-4">
                 <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
                         <div class="avtar bg-light-primary mb-2">
@@ -127,7 +127,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-lg col-md-4">
                 <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
                         <div class="avtar bg-light-warning mb-2">
@@ -138,7 +138,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4">
+            <div class="col-lg col-md-4">
                 <div class="card h-100 text-center shadow-sm" style="border-radius: 18px; min-height: 120px;">
                     <div class="card-body d-flex flex-column justify-content-center align-items-center py-2">
                         <div class="avtar bg-light-danger mb-2">
