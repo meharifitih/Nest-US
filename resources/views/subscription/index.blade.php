@@ -53,7 +53,7 @@
                             @foreach ($activeIntervals as $idx => $interval)
                                 <div class="tab-pane fade @if($loop->first) show active @endif" id="interval-{{ $interval }}" role="tabpanel" aria-labelledby="tab-{{ $interval }}">
                                     <div class="row text-center justify-content-center">
-                                        @foreach ($subscriptions->where('interval', $interval) as $subscription)
+                                        @foreach ($subscriptions->where('interval', $interval)->sortBy('package_amount') as $subscription)
                                             <div class="col-md-6 col-lg-4 mb-4">
                                                 <div class="card price-card border shadow-sm h-100">
                                                     <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 position-relative">

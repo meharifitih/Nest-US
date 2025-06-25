@@ -55,7 +55,7 @@
                             <?php $__currentLoopData = $activeIntervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="interval-<?php echo e($interval); ?>" role="tabpanel" aria-labelledby="tab-<?php echo e($interval); ?>">
                                     <div class="row text-center justify-content-center">
-                                        <?php $__currentLoopData = $subscriptions->where('interval', $interval); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php $__currentLoopData = $subscriptions->where('interval', $interval)->sortBy('package_amount'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="col-md-6 col-lg-4 mb-4">
                                                 <div class="card price-card border shadow-sm h-100">
                                                     <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 position-relative">

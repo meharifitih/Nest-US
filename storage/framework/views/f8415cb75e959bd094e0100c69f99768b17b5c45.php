@@ -1030,7 +1030,7 @@
                         <?php $__currentLoopData = $intervals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $interval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="tab-pane fade <?php if($idx === 0): ?> show active <?php endif; ?>" id="interval-<?php echo e($interval); ?>" role="tabpanel" aria-labelledby="tab-<?php echo e($interval); ?>">
                                 <div class="row justify-content-center">
-                                    <?php $__currentLoopData = $subscriptions->where('interval', $interval); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php $__currentLoopData = $subscriptions->where('interval', $interval)->sortBy('package_amount'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="col-md-6 col-lg-4">
                                             <div class="card price-card text-center h-100">
                                                 <div class="card-body">
