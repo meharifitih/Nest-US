@@ -55,6 +55,22 @@
             {{ __('Reason:') }} {{ auth()->user()->rejection_reason }}
         @endif
     </div>
+    @if(!$hasPendingPayment)
+        {{-- Show subscription selection for rejected users if no pending payment --}}
+        @php($subscriptions = \App\Models\Subscription::all())
+        @include('subscription.index')
+    @else
+        <div class="card mb-4 mx-auto" style="max-width: 400px;">
+            <div class="card-header text-center"><strong>Your Latest Payment</strong></div>
+            <div class="card-body">
+                <p><strong>Amount:</strong> {{ $latestTransaction->amount }}</p>
+                <p><strong>Payment Type:</strong> {{ $latestTransaction->payment_type }}</p>
+                <p><strong>Status:</strong> {{ ucfirst($latestTransaction->payment_status) }}</p>
+                <p><strong>Subscription:</strong> {{ $latestTransaction->subscription ? $latestTransaction->subscription->title : '-' }}</p>
+            </div>
+        </div>
+        <div class="alert alert-info">You have a pending payment. You cannot make another payment until this one is reviewed.</div>
+    @endif
 @endif
 
 <div class="row">

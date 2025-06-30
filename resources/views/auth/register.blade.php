@@ -98,6 +98,9 @@
                 <input type="password" class="form-control" id="password" name="password"
                     placeholder="{{ __('Password') }}" required />
                 <label for="password">{{ __('Password') }}</label>
+                <small class="form-text text-muted">
+                    Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character (@$!%*?&).
+                </small>
                 @error('password')
                     <span class="invalid-password text-danger" role="alert">
                         <strong>{{ $message }}</strong>

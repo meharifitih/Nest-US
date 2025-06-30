@@ -31,7 +31,7 @@ class ExpenseController extends Controller
             }
 
             $expenses = $query->get();
-            $types = Type::where('parent_id', parentId())->where('type', 'expense')->get();
+            $types = Type::where('parent_id', parentId())->where('type', 'expense')->pluck('title', 'id');
             $properties = Property::where('parent_id', parentId())->get();
             $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
 

@@ -59,13 +59,14 @@ class HoaController extends Controller
 
     public function create(Request $request)
     {
-        $properties = Property::all();
+        $properties = Property::where('parent_id', parentId())->get();
         $hoa_types = \App\Models\Type::where('type', 'hoa')->pluck('title', 'id');
+        $tenants = \App\Models\Tenant::with('user')->where('parent_id', parentId())->get();
         $units = [];
         if ($request->property_id) {
             $units = \App\Models\PropertyUnit::where('property_id', $request->property_id)->pluck('name', 'id');
         }
-        return view('hoa.create', compact('properties', 'hoa_types', 'units'));
+        return view('hoa.create', compact('properties', 'hoa_types', 'units', 'tenants'));
     }
 
     public function store(Request $request)

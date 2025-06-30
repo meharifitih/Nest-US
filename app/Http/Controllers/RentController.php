@@ -39,7 +39,7 @@ class RentController extends Controller
             // Get all properties and units for owner
             $properties = \App\Models\Property::where('parent_id', parentId())->get();
             $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
-            $tenants = \App\Models\Tenant::with('user')->get();
+            $tenants = \App\Models\Tenant::with('user')->where('parent_id', parentId())->get();
         }
 
         if ($request->status) {

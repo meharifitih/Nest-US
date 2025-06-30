@@ -135,6 +135,34 @@
                                                 </div>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if(Auth::user()->type != 'super admin'): ?>
+                                            <!-- Enterprise Card -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="card price-card border shadow-sm h-100">
+                                                    <div class="card-body d-flex flex-column align-items-center justify-content-center p-4 position-relative">
+                                                        <h2 class="mb-2 mt-2">Enterprise</h2>
+                                                        <div class="price-price mb-4">
+                                                            <span>Contact us for pricing</span>
+                                                        </div>
+                                                        <div class="d-flex flex-column align-items-center justify-content-center w-100">
+                                                            <ul class="list-unstyled text-start mb-4" style="max-width: 320px;">
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Custom User Limit</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Custom Property Limit</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Custom Tenant Limit</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Custom Unit Range</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Priority Support</li>
+                                                                <li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>Custom Features</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="mt-auto w-100">
+                                                            <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#enterpriseContactModal">
+                                                                Contact Us
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -164,6 +192,60 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo e(__('Cancel')); ?></button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?php echo e(__('Delete')); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise Contact Modal -->
+    <div class="modal fade" id="enterpriseContactModal" tabindex="-1" aria-labelledby="enterpriseContactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enterpriseContactModalLabel">Enterprise Package Inquiry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="enterpriseContactForm">
+                        <?php echo csrf_field(); ?>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="<?php echo e(Auth::user()->name ?? ''); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo e(Auth::user()->email ?? ''); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone (Optional)</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter phone number (optional)">
+                        </div>
+                        <div class="mb-3">
+                            <label for="property_limit" class="form-label">Desired Property Limit</label>
+                            <input type="text" class="form-control" id="property_limit" name="property_limit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unit_limit" class="form-label">Desired Unit Limit</label>
+                            <input type="text" class="form-control" id="unit_limit" name="unit_limit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="interval" class="form-label">Preferred Interval</label>
+                            <select class="form-control" id="interval" name="interval" required>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Quarterly">Quarterly</option>
+                                <option value="Yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Additional Message (Optional)</label>
+                            <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+                        </div>
+                        <div id="enterpriseContactMsg" class="mb-2"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitEnterpriseContact">Submit</button>
                 </div>
             </div>
         </div>
@@ -199,6 +281,33 @@
             packageToDelete = null;
         });
     });
+
+    document.getElementById('submitEnterpriseContact').onclick = function() {
+        var form = document.getElementById('enterpriseContactForm');
+        var formData = new FormData(form);
+        var msgDiv = document.getElementById('enterpriseContactMsg');
+        msgDiv.innerHTML = '';
+        fetch('/enterprise/contact', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                msgDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                form.reset();
+            } else if (data.errors) {
+                let errors = Object.values(data.errors).map(e => e[0]).join('<br>');
+                msgDiv.innerHTML = '<div class="alert alert-danger">' + errors + '</div>';
+            }
+        })
+        .catch(() => {
+            msgDiv.innerHTML = '<div class="alert alert-danger">Error sending request. Please try again later.</div>';
+        });
+    };
 </script>
 <?php $__env->stopPush(); ?>
 

@@ -40,12 +40,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $loginUser = Auth::user();
         
-        if($loginUser->is_active == 0 && $loginUser->approval_status === 'rejected')
-        {
-            auth()->logout();
-            return redirect()->route('login')->with('error', __('Your account is temporarily inactive. Please contact your administrator to reactivate your account.'));
-        }
-        
         if(empty($loginUser->email_verified_at)) {
             auth()->logout();
             return redirect()->route('login')->with('error', __('Verification required: Please check your email to verify your account before continuing.'));

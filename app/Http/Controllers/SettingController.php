@@ -120,8 +120,16 @@ class SettingController extends Controller
                 $request->all(),
                 [
                     'current_password' => 'required',
-                    'new_password' => 'required|min:6',
+                    'new_password' => [
+                        'required',
+                        'min:8',
+                        'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/'
+                    ],
                     'confirm_password' => 'required|same:new_password',
+                ],
+                [
+                    'new_password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+                    'new_password.min' => 'Password must be at least 8 characters long.',
                 ]
             );
             if ($validator->fails()) {

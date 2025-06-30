@@ -78,7 +78,7 @@ class InvoiceController extends Controller
             } else {
                 $properties = \App\Models\Property::where('parent_id', parentId())->get();
                 $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
-                $tenants = \App\Models\Tenant::with('user')->get();
+                $tenants = \App\Models\Tenant::with('user')->where('parent_id', parentId())->get();
             }
             
             return view('invoice.index', compact('invoices', 'types', 'statusOptions', 'tenants', 'properties', 'units'));

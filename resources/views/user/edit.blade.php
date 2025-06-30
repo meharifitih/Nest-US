@@ -46,10 +46,6 @@
                         {{Form::text('email',null,array('class'=>'form-control','placeholder'=>__('Enter User Email'),'required'=>'required'))}}
                     </div>
                     <div class="col-md-6">
-                        {{Form::label('fayda_id',__('Fayda ID'),array('class'=>'form-label')) }}
-                        {{Form::text('fayda_id',$user->fayda_id,array('class'=>'form-control','placeholder'=>__('Enter Fayda ID')))}}
-                    </div>
-                    <div class="col-md-6">
                         {{Form::label('phone_number',__('User Phone Number'),array('class'=>'form-label')) }}
                         <div class="input-group">
                             <span class="input-group-text">+251</span>

@@ -68,6 +68,10 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // Merge first_name and last_name into name if present (for non-super-admin forms)
+        if ($request->filled('first_name') && $request->filled('last_name')) {
+            $request->merge(['name' => $request->first_name . ' ' . $request->last_name]);
+        }
         if (\Auth::user()->can('create user')) {
             if (\Auth::user()->type == 'super admin') {
                 $validator = \Validator::make(
@@ -254,10 +258,10 @@ class UserController extends Controller
 
                 $module = 'user_create';
                 $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-                $notification->password=$request->password;
                 $setting = settings();
                 $errorMessage = '';
                 if (!empty($notification) && $notification->enabled_email == 1) {
+                    $notification->password = $request->password;
                     $notification_responce = MessageReplace($notification, $user->id);
                     $data['subject'] = $notification_responce['subject'];
                     $data['message'] = $notification_responce['message'];
