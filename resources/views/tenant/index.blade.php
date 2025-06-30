@@ -22,11 +22,6 @@
                                         class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Tenant') }}</a>
                             </div>
                         @endcan
-                        <div class="col-auto d-flex gap-2">
-                            <a href="{{ route('tenant-excel-upload.form') }}" class="btn btn-secondary">
-                                <i class="ti ti-upload align-text-bottom"></i> {{ __('Tenant Excel Upload') }}
-                            </a>
-                        </div>
                     </div>
                 </div>
 

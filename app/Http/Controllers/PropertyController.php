@@ -752,4 +752,86 @@ class PropertyController extends Controller
             return redirect()->back()->with('error', __('Error importing unit information: ') . $e->getMessage());
         }
     }
+
+    public function downloadUnifiedExcelTemplate()
+    {
+        if (\Auth::user()->can('edit property')) {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            
+            // Create Units sheet
+            $unitsSheet = $spreadsheet->getActiveSheet();
+            $unitsSheet->setTitle('Units');
+            
+            $unitData = [
+                [
+                    'name' => 'Unit 101',
+                    'bedroom' => 2,
+                    'kitchen' => 1,
+                    'baths' => 1,
+                    'rent' => 5000,
+                    'rent_type' => 'monthly',
+                    'deposit_type' => 'fixed',
+                    'deposit_amount' => 1000,
+                    'late_fee_type' => 'fixed',
+                    'late_fee_amount' => 100,
+                    'incident_receipt_amount' => 0,
+                    'notes' => 'Sample unit',
+                ]
+            ];
+            
+            $unitHeaders = array_keys($unitData[0]);
+            foreach ($unitHeaders as $i => $header) {
+                $unitsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+            }
+            foreach ($unitData as $rowIndex => $row) {
+                foreach ($unitHeaders as $colIndex => $header) {
+                    $unitsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+                }
+            }
+
+            // Create Tenants sheet
+            $tenantsSheet = $spreadsheet->createSheet();
+            $tenantsSheet->setTitle('Tenants');
+            
+            $tenantData = [
+                [
+                    'first_name' => 'John',
+                    'last_name' => 'Doe',
+                    'email' => 'john@email.com',
+                    'phone_number' => '251912345678',
+                    'family_member' => 3,
+                    'sub_city' => 'Bole',
+                    'woreda' => '01',
+                    'house_number' => '123',
+                    'location' => 'Main Road',
+                    'city' => 'Addis Ababa',
+                    'unit_name' => 'Unit 101',
+                    'lease_start_date' => '2024-01-01',
+                    'lease_end_date' => '2025-01-01',
+                    'notes' => 'Test tenant',
+                ]
+            ];
+            
+            $tenantHeaders = array_keys($tenantData[0]);
+            foreach ($tenantHeaders as $i => $header) {
+                $tenantsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+            }
+            foreach ($tenantData as $rowIndex => $row) {
+                foreach ($tenantHeaders as $colIndex => $header) {
+                    $tenantsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+                }
+            }
+
+            // Set active sheet back to Units
+            $spreadsheet->setActiveSheetIndex(0);
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            return response()->streamDownload(function () use ($writer) {
+                $writer->save('php://output');
+            }, 'unified_template.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
+        }
+    }
 }

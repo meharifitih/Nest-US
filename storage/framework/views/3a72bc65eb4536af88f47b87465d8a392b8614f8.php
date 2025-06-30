@@ -22,12 +22,6 @@
                                         class="ti ti-circle-plus align-text-bottom"></i> <?php echo e(__('Create Tenant')); ?></a>
                             </div>
                         <?php endif; ?>
-                        <div class="col-auto d-flex gap-2">
-                            <a href="<?php echo e(route('tenant-excel-upload.form')); ?>" class="btn btn-secondary">
-                                <i class="ti ti-upload align-text-bottom"></i> <?php echo e(__('Tenant Excel Upload')); ?>
-
-                            </a>
-                        </div>
                     </div>
                 </div>
 

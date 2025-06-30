@@ -35,6 +35,7 @@ use App\Http\Controllers\WhatsAppTestController;
 use App\Http\Controllers\TenantExcelUploadController;
 use App\Http\Controllers\TenantProfileController;
 use App\Http\Controllers\EnterpriseContactController;
+use App\Http\Controllers\UnifiedExcelUploadController;
 
 
 /*
@@ -464,10 +465,6 @@ Route::get('rent/create', [App\Http\Controllers\RentController::class, 'create']
 Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name('rent.store');
 Route::delete('rent/{invoice}', [App\Http\Controllers\RentController::class, 'destroy'])->name('rent.destroy');
 
-// Tenant Excel Upload Routes
-Route::get('tenant-excel-upload', [App\Http\Controllers\TenantExcelUploadController::class, 'uploadForm'])->name('tenant-excel-upload.form');
-Route::post('tenant-excel-upload', [App\Http\Controllers\TenantExcelUploadController::class, 'upload'])->name('tenant-excel-upload.upload');
-
 // Payment Account Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('payment-accounts', 'PaymentAccountController@index')->name('payment.accounts.index');
@@ -486,11 +483,6 @@ Route::group([
 
 Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store'])->name('enterprise.contact');
 
-// Unit Excel Upload Route
-Route::post('property/{property}/upload-unit-excel', [App\Http\Controllers\PropertyController::class, 'uploadUnitExcel'])->name('property.upload.unit.excel');
-
-Route::get('unit-excel-template', [App\Http\Controllers\PropertyController::class, 'downloadUnitExcelTemplate'])->name('unit-excel-template');
-Route::get('tenant-excel-template', [App\Http\Controllers\PropertyController::class, 'downloadTenantExcelTemplate'])->name('tenant-excel-template');
-
-Route::get('unit-excel-upload', [App\Http\Controllers\PropertyController::class, 'unitExcelUploadForm'])->name('unit-excel-upload.form');
-Route::post('unit-excel-upload', [App\Http\Controllers\PropertyController::class, 'unitExcelUpload'])->name('unit-excel-upload.upload');
+Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
+Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
+Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
