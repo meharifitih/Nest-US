@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('parent_id')->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->unique(['name', 'property_id']);
         });
     }
 

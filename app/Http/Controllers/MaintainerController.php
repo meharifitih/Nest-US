@@ -64,6 +64,13 @@ class MaintainerController extends Controller
             }
 
             $userRole = Role::where('parent_id', parentId())->where('name', 'maintainer')->first();
+            if (!$userRole) {
+                $userRole = new Role();
+                $userRole->name = 'maintainer';
+                $userRole->guard_name = 'web';
+                $userRole->parent_id = parentId();
+                $userRole->save();
+            }
             $user = new User();
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
@@ -100,7 +107,9 @@ class MaintainerController extends Controller
 
             $module = 'maintainer_create';
             $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-            $notification->password=$request->password;
+            if ($notification) {
+                $notification->password = $request->password;
+            }
             $setting=settings();
             $errorMessage = '';
             if (!empty($notification) && $notification->enabled_email == 1) {

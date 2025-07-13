@@ -307,7 +307,7 @@ class PropertyController extends Controller
             $validator = \Validator::make(
                 $request->all(),
                 [
-                    'name' => 'required',
+                    'name' => 'required|unique:property_units,name,NULL,id,property_id,' . $property_id,
                     'bedroom' => 'required',
                     'baths' => 'required',
                     'rent' => 'required',
@@ -363,7 +363,7 @@ class PropertyController extends Controller
             $validator = \Validator::make(
                 $request->all(),
                 [
-                    'name' => 'required',
+                    'name' => 'required|unique:property_units,name,NULL,id,property_id,' . $request->property_id,
                     'property_id' => 'required',
                     'bedroom' => 'required',
                     'baths' => 'required',
@@ -422,8 +422,8 @@ class PropertyController extends Controller
                     'baths' => 'required',
                     'rent' => 'required',
                     'rent_type' => 'required',
-                    'start_date' => 'required',
-                    'end_date' => 'required',
+                    'start_date' => 'nullable',
+                    'end_date' => 'nullable',
                 ]
             );
             if ($validator->fails()) {

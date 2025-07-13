@@ -52,10 +52,18 @@
             }
             $unitSelect.removeAttr('name');
         });
+
+        // Prevent double submit
+        $('#invoice_form').on('submit', function(e) {
+            var $submitBtn = $(this).find('button[type=submit], input[type=submit]');
+            $submitBtn.prop('disabled', true);
+            setTimeout(function() { $submitBtn.prop('disabled', false); }, 5000); // fallback re-enable after 5s
+        });
     </script>
     <script>
         var selector = "body";
-        if ($(selector + " .repeater").length) {
+        if ($(selector + " .repeater").length && !window.repeaterInitialized) {
+            window.repeaterInitialized = true;
             var $dragAndDrop = $("body .repeater tbody").sortable({
                 handle: '.sort-handler'
             });

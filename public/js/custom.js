@@ -177,35 +177,34 @@ function datatable() {
         });
     }
 
-    if ($(".advance-datatable").length > 0) {
-        $(".advance-datatable").DataTable({
-            scrollX: true,
-            stateSave: false,
-            dom: "Bfrtip",
-            buttons: [
-                {
-                    extend: "excelHtml5",
-                    exportOptions: {
-                        columns: ":visible",
-                    },
-                },
-                {
-                    extend: "pdfHtml5",
-                    exportOptions: {
-                        columns: ":visible",
-                    },
-                },
-                {
-                    extend: "copyHtml5",
-                    exportOptions: {
-                        columns: ":visible",
-                    },
-                },
-
-                "colvis",
-            ],
-        });
-    }
+    // if ($(".advance-datatable").length > 0) {
+    //     $(".advance-datatable").DataTable({
+    //         scrollX: true,
+    //         stateSave: false,
+    //         dom: "Bfrtip",
+    //         buttons: [
+    //             {
+    //                 extend: "excelHtml5",
+    //                 exportOptions: {
+    //                     columns: ":visible",
+    //                 },
+    //             },
+    //             {
+    //                 extend: "pdfHtml5",
+    //                 exportOptions: {
+    //                     columns: ":visible",
+    //                 },
+    //             },
+    //             {
+    //                 extend: "copyHtml5",
+    //                 exportOptions: {
+    //                     columns: ":visible",
+    //                 },
+    //             },
+    //             "colvis",
+    //         ],
+    //     });
+    // }
 }
 
 $(document).on("submit", "form[action*='expense'][method='delete'], form[action*='expense'][method='DELETE']", function(e) {

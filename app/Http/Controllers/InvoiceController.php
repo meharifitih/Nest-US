@@ -132,6 +132,7 @@ class InvoiceController extends Controller
                     'types' => 'required|array|min:1',
                     'types.*.invoice_type' => 'required',
                     'types.*.amount' => 'required',
+                    'invoice_id' => 'required|unique:invoices,invoice_id',
                 ]
             );
 

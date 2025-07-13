@@ -122,6 +122,7 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
+                                    <th>{{ __('HOA Number') }}</th>
                                     <th>{{ __('Property') }}</th>
                                     <th>{{ __('Unit') }}</th>
                                     <th>{{ __('Tenant') }}</th>
@@ -135,7 +136,34 @@
                             </thead>
                             <tbody>
                                 @forelse($hoas as $hoa)
-                                    @include('hoa.partials.hoa_row', ['hoa' => $hoa])
+                                    <tr class="clickable-hoa-row" data-href="{{ route('hoa.show', $hoa) }}">
+                                        <td>{{ $hoa->hoa_number ?? '-' }}</td>
+                                        <td>{{ $hoa->property->name ?? '-' }}</td>
+                                        <td>{{ $hoa->unit->name ?? '-' }}</td>
+                                        <td>{{ $hoa->unit && $hoa->unit->tenants && $hoa->unit->tenants->user ? $hoa->unit->tenants->user->name : '-' }}</td>
+                                        <td>{{ $hoa->hoaType->title ?? '-' }}</td>
+                                        <td><span class="fw-medium">{{ priceFormat($hoa->amount) }}</span></td>
+                                        <td>{{ ucfirst($hoa->frequency) }}</td>
+                                        <td>{{ $hoa->due_date ? dateFormat($hoa->due_date) : '-' }}</td>
+                                        <td>
+                                            @if ($hoa->status == 'pending')
+                                                <span class="badge bg-warning-subtle text-warning">{{ __('Pending') }}</span>
+                                            @elseif ($hoa->status == 'open')
+                                                <span class="badge bg-info-subtle text-info">{{ __('Open') }}</span>
+                                            @elseif ($hoa->status == 'paid')
+                                                <span class="badge bg-success-subtle text-success">{{ __('Paid') }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('hoa.show', $hoa) }}" class="btn btn-sm btn-info" title="View"><i class="ti ti-eye"></i></a>
+                                            <a href="{{ route('hoa.edit', $hoa) }}" class="btn btn-sm btn-secondary" title="Edit"><i class="ti ti-edit"></i></a>
+                                            <form action="{{ route('hoa.destroy', $hoa) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')"><i class="ti ti-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="9" class="text-center text-muted py-3">{{ __('No data available') }}</td>

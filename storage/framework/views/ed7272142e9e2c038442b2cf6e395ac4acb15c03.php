@@ -230,12 +230,6 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('script-page'); ?>
-<script>
-    $(document).on('click', '.clickable-customer-row', function(e) {
-        if (!$(e.target).closest('a, button, input, .cart-action').length) {
-            window.location = $(this).data('href');
-        }
-    });
 </script>
 <?php $__env->stopPush(); ?>
 

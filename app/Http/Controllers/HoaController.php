@@ -82,11 +82,15 @@ class HoaController extends Controller
             'description' => 'nullable|string'
         ]);
 
+        $latestHoa = \App\Models\Hoa::orderByDesc('hoa_number')->first();
+        $nextHoaNumber = $latestHoa ? $latestHoa->hoa_number + 1 : 1;
+
         foreach ($validated['unit_ids'] as $unitId) {
             $data = $validated;
             $data['unit_id'] = $unitId;
             $data['created_by'] = Auth::id();
             $data['status'] = 'open';
+            $data['hoa_number'] = $nextHoaNumber++;
 
             // Set tenant_id from unit
             $unit = \App\Models\PropertyUnit::find($unitId);
@@ -185,5 +189,46 @@ class HoaController extends Controller
         $hoa->paid_date = now();
         $hoa->save();
         return redirect()->route('hoa.index')->with('success', 'Payment submitted for approval.');
+    }
+
+    public function edit(Hoa $hoa)
+    {
+        if (\Auth::user()->can('edit hoa')) {
+            $properties = Property::where('parent_id', parentId())->get();
+            $hoa_types = \App\Models\Type::where('type', 'hoa')->pluck('title', 'id');
+            $tenants = \App\Models\Tenant::with('user')->where('parent_id', parentId())->get();
+            $units = PropertyUnit::where('property_id', $hoa->property_id)->pluck('name', 'id');
+            return view('hoa.edit', compact('hoa', 'properties', 'hoa_types', 'units', 'tenants'));
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
+    }
+
+    public function update(Request $request, Hoa $hoa)
+    {
+        if (\Auth::user()->can('edit hoa')) {
+            $validated = $request->validate([
+                'property_id' => 'required|exists:properties,id',
+                'unit_id' => 'required|exists:property_units,id',
+                'hoa_type_id' => 'required|exists:types,id',
+                'amount' => 'required|numeric|min:0',
+                'frequency' => 'required|in:monthly,quarterly,semi_annual,annual',
+                'due_date' => 'required|date',
+                'description' => 'nullable|string'
+            ]);
+
+            $hoa->property_id = $validated['property_id'];
+            $hoa->unit_id = $validated['unit_id'];
+            $hoa->hoa_type_id = $validated['hoa_type_id'];
+            $hoa->amount = $validated['amount'];
+            $hoa->frequency = $validated['frequency'];
+            $hoa->due_date = $validated['due_date'];
+            $hoa->description = $validated['description'] ?? null;
+            $hoa->save();
+
+            return redirect()->route('hoa.index')->with('success', 'HOA updated successfully');
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied!'));
+        }
     }
 } 

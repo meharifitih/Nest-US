@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Hoa extends Model
 {
     protected $fillable = [
+        'hoa_number',
         'property_id',
         'unit_id',
         'hoa_type_id',
