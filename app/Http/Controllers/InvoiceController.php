@@ -126,7 +126,7 @@ class InvoiceController extends Controller
                 [
                     'property_id' => 'required',
                     'unit_ids' => 'required|array|min:1',
-                    'unit_ids.*' => 'required|integer',
+                    'unit_ids.*' => 'required', // allow 'all' as a string
                     'invoice_month' => 'required',
                     'end_date' => 'required',
                     'types' => 'required|array|min:1',

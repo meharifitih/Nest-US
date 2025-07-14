@@ -22,7 +22,7 @@
             data: { property_id: property_id },
             type: 'GET',
             success: function(data) {
-                var options = '';
+                var options = '<option value="all">For all building</option>';
                 $.each(data, function(key, value) {
                     options += `<option value="${key}">${value.name}</option>`;
                 });
@@ -88,6 +88,7 @@
                                 <label for="unit_id" class="form-label">{{ __('Unit') }}</label>
                                 <div class="unit_div">
                                     <select class="form-control unit-multiselect" id="main_unit_select" name="unit_ids[]" multiple>
+                                        <option value="all">For all building</option>
                                     </select>
                                 </div>
                                 @error('unit_ids')

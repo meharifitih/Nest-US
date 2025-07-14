@@ -59,16 +59,27 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         if (\Auth::user()->can('create expense')) {
+            $unitIds = $request->unit_ids ?? [];
+            if (in_array('all', $unitIds)) {
+                $unitIds = \App\Models\PropertyUnit::where('property_id', $request->property_id)->pluck('id')->toArray();
+                if (empty($unitIds)) {
+                    $unitIds = [null];
+                }
+                $request->merge(['unit_ids' => $unitIds]);
+            } else {
+                $unitIds = array_filter($unitIds, function($v) { return $v !== 'all'; });
+                $request->merge(['unit_ids' => $unitIds]);
+            }
             $validator = \Validator::make(
                 $request->all(), [
-                'title' => 'required',
-                'property_id' => 'required',
-                'unit_ids' => 'required|array|min:1',
-                'unit_ids.*' => 'required|integer',
-                'expense_type' => 'required',
-                'amount' => 'required',
-                'date' => 'required',
-            ]
+                    'title' => 'required',
+                    'property_id' => 'required',
+                    'unit_ids' => 'required|array|min:1',
+                    'unit_ids.*' => 'nullable|integer', // allow null for property-wide
+                    'expense_type' => 'required',
+                    'amount' => 'required',
+                    'date' => 'required',
+                ]
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
@@ -88,12 +99,13 @@ class ExpenseController extends Controller
                 $request->file('receipt')->storeAs('upload/receipt', $receiptFileName, 'public');
             }
 
-            foreach ($request->unit_ids as $unitId) {
+            $nextExpenseId = $this->expenseNumber();
+            foreach ($request->unit_ids as $idx => $unitId) {
                 $expense = new Expense();
                 $expense->title = $request->title;
-                $expense->expense_id = $request->expense_id;
+                $expense->expense_id = $nextExpenseId + $idx;
                 $expense->property_id = $request->property_id;
-                $expense->unit_id = $unitId;
+                $expense->unit_id = $unitId; // will be null for property-wide
                 $expense->expense_type = $request->expense_type;
                 $expense->amount = $request->amount;
                 $expense->date = $request->date;

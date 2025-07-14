@@ -71,10 +71,22 @@ class HoaController extends Controller
 
     public function store(Request $request)
     {
+        $unitIds = $request->unit_ids ?? [];
+        if (in_array('all', $unitIds)) {
+            $unitIds = \App\Models\PropertyUnit::where('property_id', $request->property_id)->pluck('id')->toArray();
+            if (empty($unitIds)) {
+                $unitIds = [null];
+            }
+            $request->merge(['unit_ids' => $unitIds]);
+        } else {
+            $unitIds = array_filter($unitIds, function($v) { return $v !== 'all'; });
+            $request->merge(['unit_ids' => $unitIds]);
+        }
+
         $validated = $request->validate([
             'property_id' => 'required|exists:properties,id',
             'unit_ids' => 'required|array|min:1',
-            'unit_ids.*' => 'required|exists:property_units,id',
+            'unit_ids.*' => 'nullable|integer', // allow null for property-wide
             'hoa_type_id' => 'required|exists:types,id',
             'amount' => 'required|numeric|min:0',
             'frequency' => 'required|in:monthly,quarterly,semi_annual,annual',
@@ -87,15 +99,19 @@ class HoaController extends Controller
 
         foreach ($validated['unit_ids'] as $unitId) {
             $data = $validated;
-            $data['unit_id'] = $unitId;
+            $data['unit_id'] = $unitId; // will be null for property-wide
             $data['created_by'] = Auth::id();
             $data['status'] = 'open';
             $data['hoa_number'] = $nextHoaNumber++;
 
             // Set tenant_id from unit
-            $unit = \App\Models\PropertyUnit::find($unitId);
-            $tenant = $unit && $unit->tenants ? $unit->tenants : null;
-            $data['tenant_id'] = $tenant ? $tenant->id : null;
+            if ($unitId) {
+                $unit = \App\Models\PropertyUnit::find($unitId);
+                $tenant = $unit && $unit->tenants ? $unit->tenants : null;
+                $data['tenant_id'] = $tenant ? $tenant->id : null;
+            } else {
+                $data['tenant_id'] = null; // property-wide HOA
+            }
 
             Hoa::create($data);
         }
