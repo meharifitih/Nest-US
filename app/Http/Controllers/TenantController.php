@@ -18,11 +18,59 @@ class TenantController extends Controller
 {
     use PhoneNumberFormatter;
 
-    public function index()
+    public function index(Request $request)
     {
         if (\Auth::user()->can('manage tenant')) {
-            $tenants = Tenant::where('parent_id', parentId())->get();
-            return view('tenant.index', compact('tenants'));
+            $query = Tenant::where('parent_id', parentId())
+                ->with(['user', 'properties', 'units']);
+
+            // Filter by property
+            if ($request->property_id) {
+                $query->where('property', $request->property_id);
+            }
+
+            // Filter by unit
+            if ($request->unit_id) {
+                $query->where('unit', $request->unit_id);
+            }
+
+            // Filter by lease status
+            if ($request->lease_status) {
+                $today = now()->format('Y-m-d');
+                if ($request->lease_status === 'active') {
+                    $query->where('lease_end_date', '>=', $today);
+                } elseif ($request->lease_status === 'expired') {
+                    $query->where('lease_end_date', '<', $today);
+                }
+            }
+
+            // Search by name
+            if ($request->name) {
+                $query->whereHas('user', function($q) use ($request) {
+                    $q->where('first_name', 'like', "%{$request->name}%")
+                      ->orWhere('last_name', 'like', "%{$request->name}%");
+                });
+            }
+            // Search by email
+            if ($request->email) {
+                $query->whereHas('user', function($q) use ($request) {
+                    $q->where('email', 'like', "%{$request->email}%");
+                });
+            }
+            // Search by phone
+            if ($request->phone) {
+                $query->whereHas('user', function($q) use ($request) {
+                    $q->where('phone_number', 'like', "%{$request->phone}%");
+                });
+            }
+
+            $tenants = $query->get();
+
+            // Get properties and units for filter dropdowns
+            $properties = \App\Models\Property::where('parent_id', parentId())->get();
+            $units = \App\Models\PropertyUnit::where('parent_id', parentId())->get();
+
+            return view('tenant.index', compact('tenants', 'properties', 'units'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -60,6 +108,19 @@ class TenantController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'msg' => $messages->first(),
+                    'old_input' => $request->all()
+                ]);
+            }
+
+            // Check if unit is already occupied by an active tenant
+            $existingTenant = Tenant::where('unit', $request->unit)
+                ->where('lease_end_date', '>=', now()->format('Y-m-d'))
+                ->first();
+
+            if ($existingTenant) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'This unit is already occupied by an active tenant. Please select a different unit.',
                     'old_input' => $request->all()
                 ]);
             }
@@ -195,6 +256,19 @@ class TenantController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'msg' => $messages->first(),
+                ]);
+            }
+
+            // Check if unit is already occupied by another active tenant (excluding current tenant)
+            $existingTenant = Tenant::where('unit', $request->unit)
+                ->where('id', '!=', $tenant->id)
+                ->where('lease_end_date', '>=', now()->format('Y-m-d'))
+                ->first();
+
+            if ($existingTenant) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'This unit is already occupied by an active tenant. Please select a different unit.',
                 ]);
             }
 

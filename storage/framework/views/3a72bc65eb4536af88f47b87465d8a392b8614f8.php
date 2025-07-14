@@ -17,12 +17,86 @@
                             <h5><?php echo e(__('Tenant List')); ?></h5>
                         </div>
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('create tenant')): ?>
-                            <div class="col-auto">
+                            <div class="col-auto d-flex gap-2">
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#tenantFilterModal">
+                                    <i class="ti ti-filter"></i> <?php echo e(__('Filter')); ?>
+
+                                </button>
                                 <a class="btn btn-secondary" href="<?php echo e(route('tenant.create')); ?>" data-size="md"> <i
                                         class="ti ti-circle-plus align-text-bottom"></i> <?php echo e(__('Create Tenant')); ?></a>
                             </div>
                         <?php endif; ?>
                     </div>
+                </div>
+
+                <!-- Filter Modal -->
+                <div class="modal fade" id="tenantFilterModal" tabindex="-1" aria-labelledby="tenantFilterModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="tenantFilterModalLabel"><?php echo e(__('Filter Tenants')); ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form method="GET" action="<?php echo e(route('tenant.index')); ?>">
+                        <div class="modal-body row g-3 align-items-end">
+                          <div class="col-md-4">
+                            <label for="name" class="form-label"><?php echo e(__('Name')); ?></label>
+                            <input type="text" class="form-control" id="name" name="name" value="<?php echo e(request('name')); ?>" placeholder="<?php echo e(__('Name...')); ?>">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="email" class="form-label"><?php echo e(__('Email')); ?></label>
+                            <input type="text" class="form-control" id="email" name="email" value="<?php echo e(request('email')); ?>" placeholder="<?php echo e(__('Email...')); ?>">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="phone" class="form-label"><?php echo e(__('Phone')); ?></label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="<?php echo e(request('phone')); ?>" placeholder="<?php echo e(__('Phone...')); ?>">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="property_id" class="form-label"><?php echo e(__('Property')); ?></label>
+                            <select class="form-select" id="property_id" name="property_id">
+                              <option value=""><?php echo e(__('All Properties')); ?></option>
+                              <?php $__currentLoopData = $properties; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $property): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($property->id); ?>" <?php echo e(request('property_id') == $property->id ? 'selected' : ''); ?>>
+                                  <?php echo e($property->name); ?>
+
+                                </option>
+                              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="unit_id" class="form-label"><?php echo e(__('Unit')); ?></label>
+                            <select class="form-select" id="unit_id" name="unit_id">
+                              <option value=""><?php echo e(__('All Units')); ?></option>
+                              <?php $__currentLoopData = $units; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $unit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($unit->id); ?>" <?php echo e(request('unit_id') == $unit->id ? 'selected' : ''); ?>>
+                                  <?php echo e($unit->name); ?>
+
+                                </option>
+                              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="lease_status" class="form-label"><?php echo e(__('Lease Status')); ?></label>
+                            <select class="form-select" id="lease_status" name="lease_status">
+                              <option value=""><?php echo e(__('All')); ?></option>
+                              <option value="active" <?php echo e(request('lease_status') == 'active' ? 'selected' : ''); ?>><?php echo e(__('Active')); ?></option>
+                              <option value="expired" <?php echo e(request('lease_status') == 'expired' ? 'selected' : ''); ?>><?php echo e(__('Expired')); ?></option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-search"></i> <?php echo e(__('Apply Filter')); ?>
+
+                          </button>
+                          <a href="<?php echo e(route('tenant.index')); ?>" class="btn btn-secondary">
+                            <i class="ti ti-refresh"></i> <?php echo e(__('Clear')); ?>
+
+                          </a>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="card-body">

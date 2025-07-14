@@ -321,6 +321,15 @@ class PropertyController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
+            // Additional check to ensure no duplicate unit names for the same property
+            $existingUnit = PropertyUnit::where('property_id', $property_id)
+                ->where('name', $request->name)
+                ->first();
+
+            if ($existingUnit) {
+                return redirect()->back()->with('error', 'A unit with this name already exists for this property.');
+            }
+
             // Check subscription unit limit
             $user = \Auth::user();
             $subscription = Subscription::find($user->subscription);
@@ -374,6 +383,15 @@ class PropertyController extends Controller
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
                 return redirect()->back()->with('error', $messages->first())->withInput();
+            }
+
+            // Additional check to ensure no duplicate unit names for the same property
+            $existingUnit = PropertyUnit::where('property_id', $request->property_id)
+                ->where('name', $request->name)
+                ->first();
+
+            if ($existingUnit) {
+                return redirect()->back()->with('error', 'A unit with this name already exists for this property.')->withInput();
             }
 
             $user = \Auth::user();
@@ -519,7 +537,7 @@ class PropertyController extends Controller
                 foreach ($failures as $failure) {
                     $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
                 }
-                
+
                 if (isset($excelUpload)) {
                     $excelUpload->status = 'failed';
                     $excelUpload->error_log = implode("\n", $errors);
@@ -757,11 +775,11 @@ class PropertyController extends Controller
     {
         if (\Auth::user()->can('edit property')) {
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            
+
             // Create Units sheet
             $unitsSheet = $spreadsheet->getActiveSheet();
             $unitsSheet->setTitle('Units');
-            
+
             $unitData = [
                 [
                     'name' => 'Unit 101',
@@ -778,7 +796,7 @@ class PropertyController extends Controller
                     'notes' => 'Sample unit',
                 ]
             ];
-            
+
             $unitHeaders = array_keys($unitData[0]);
             foreach ($unitHeaders as $i => $header) {
                 $unitsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
@@ -792,7 +810,7 @@ class PropertyController extends Controller
             // Create Tenants sheet
             $tenantsSheet = $spreadsheet->createSheet();
             $tenantsSheet->setTitle('Tenants');
-            
+
             $tenantData = [
                 [
                     'first_name' => 'John',
@@ -811,7 +829,7 @@ class PropertyController extends Controller
                     'notes' => 'Test tenant',
                 ]
             ];
-            
+
             $tenantHeaders = array_keys($tenantData[0]);
             foreach ($tenantHeaders as $i => $header) {
                 $tenantsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);

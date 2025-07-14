@@ -17,12 +17,81 @@
                             <h5>{{ __('Tenant List') }}</h5>
                         </div>
                         @can('create tenant')
-                            <div class="col-auto">
+                            <div class="col-auto d-flex gap-2">
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#tenantFilterModal">
+                                    <i class="ti ti-filter"></i> {{ __('Filter') }}
+                                </button>
                                 <a class="btn btn-secondary" href="{{ route('tenant.create') }}" data-size="md"> <i
                                         class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Tenant') }}</a>
                             </div>
                         @endcan
                     </div>
+                </div>
+
+                <!-- Filter Modal -->
+                <div class="modal fade" id="tenantFilterModal" tabindex="-1" aria-labelledby="tenantFilterModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="tenantFilterModalLabel">{{ __('Filter Tenants') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form method="GET" action="{{ route('tenant.index') }}">
+                        <div class="modal-body row g-3 align-items-end">
+                          <div class="col-md-4">
+                            <label for="name" class="form-label">{{ __('Name') }}</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ request('name') }}" placeholder="{{ __('Name...') }}">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="email" class="form-label">{{ __('Email') }}</label>
+                            <input type="text" class="form-control" id="email" name="email" value="{{ request('email') }}" placeholder="{{ __('Email...') }}">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="phone" class="form-label">{{ __('Phone') }}</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ request('phone') }}" placeholder="{{ __('Phone...') }}">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="property_id" class="form-label">{{ __('Property') }}</label>
+                            <select class="form-select" id="property_id" name="property_id">
+                              <option value="">{{ __('All Properties') }}</option>
+                              @foreach($properties as $property)
+                                <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                  {{ $property->name }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="unit_id" class="form-label">{{ __('Unit') }}</label>
+                            <select class="form-select" id="unit_id" name="unit_id">
+                              <option value="">{{ __('All Units') }}</option>
+                              @foreach($units as $unit)
+                                <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                  {{ $unit->name }}
+                                </option>
+                              @endforeach
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="lease_status" class="form-label">{{ __('Lease Status') }}</label>
+                            <select class="form-select" id="lease_status" name="lease_status">
+                              <option value="">{{ __('All') }}</option>
+                              <option value="active" {{ request('lease_status') == 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                              <option value="expired" {{ request('lease_status') == 'expired' ? 'selected' : '' }}>{{ __('Expired') }}</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-search"></i> {{ __('Apply Filter') }}
+                          </button>
+                          <a href="{{ route('tenant.index') }}" class="btn btn-secondary">
+                            <i class="ti ti-refresh"></i> {{ __('Clear') }}
+                          </a>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="card-body">
