@@ -159,7 +159,7 @@ class GenerateRentInvoices extends Command
         ]);
 
         $invoice = new Invoice();
-        $invoice->invoice_id = $this->generateInvoiceNumber();
+        $invoice->invoice_id = $this->generateUniqueInvoiceNumber();
         $invoice->property_id = $unit->property_id;
         $invoice->unit_id = $unit->id;
         $invoice->invoice_month = $startDate->format('Y-m-d');
@@ -205,8 +205,25 @@ class GenerateRentInvoices extends Command
 
     private function generateInvoiceNumber()
     {
-        $lastInvoice = Invoice::orderBy('id', 'desc')->first();
+        $lastInvoice = Invoice::orderBy('invoice_id', 'desc')->first();
         $number = $lastInvoice ? $lastInvoice->invoice_id + 1 : 1;
-        return str_pad($number, 6, '0', STR_PAD_LEFT);
+        return $number;
+    }
+    
+    private function generateUniqueInvoiceNumber()
+    {
+        $attempts = 0;
+        $maxAttempts = 100;
+        
+        do {
+            $invoiceNumber = $this->generateInvoiceNumber();
+            $attempts++;
+            
+            if ($attempts > $maxAttempts) {
+                throw new \Exception('Unable to generate unique invoice number after ' . $maxAttempts . ' attempts');
+            }
+        } while (Invoice::where('invoice_id', $invoiceNumber)->exists());
+        
+        return $invoiceNumber;
     }
 } 

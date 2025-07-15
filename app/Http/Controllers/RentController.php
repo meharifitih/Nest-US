@@ -107,8 +107,16 @@ class RentController extends Controller
         if ($amount <= 0) {
             return redirect()->back()->with('error', 'Unit rent must be greater than zero.');
         }
+        // Ensure invoice number is unique
+        $invoiceNumber = $request->invoice_id ? intval($request->invoice_id) : $this->generateUniqueInvoiceNumber();
+        
+        // If user provided a custom number, ensure it's unique
+        if ($request->invoice_id && Invoice::where('invoice_id', $invoiceNumber)->exists()) {
+            $invoiceNumber = $this->generateUniqueInvoiceNumber();
+        }
+        
         $invoice = new Invoice();
-        $invoice->invoice_id = $request->invoice_id;
+        $invoice->invoice_id = $invoiceNumber;
         $invoice->property_id = $request->property_id;
         $invoice->unit_id = $request->unit_id;
         $invoice->invoice_month = $request->invoice_month . '-01';
@@ -152,11 +160,28 @@ class RentController extends Controller
 
     private function invoiceNumber()
     {
-        $latest = Invoice::where('parent_id', parentId())->latest()->first();
+        $latest = Invoice::orderBy('invoice_id', 'desc')->first();
         if ($latest == null) {
             return 1;
         } else {
             return $latest->invoice_id + 1;
         }
+    }
+    
+    private function generateUniqueInvoiceNumber()
+    {
+        $attempts = 0;
+        $maxAttempts = 100;
+        
+        do {
+            $invoiceNumber = $this->invoiceNumber();
+            $attempts++;
+            
+            if ($attempts > $maxAttempts) {
+                throw new \Exception('Unable to generate unique invoice number after ' . $maxAttempts . ' attempts');
+            }
+        } while (Invoice::where('invoice_id', $invoiceNumber)->exists());
+        
+        return $invoiceNumber;
     }
 }

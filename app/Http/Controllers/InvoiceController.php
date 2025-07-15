@@ -132,7 +132,6 @@ class InvoiceController extends Controller
                     'types' => 'required|array|min:1',
                     'types.*.invoice_type' => 'required',
                     'types.*.amount' => 'required',
-                    'invoice_id' => 'required|unique:invoices,invoice_id',
                 ]
             );
 
@@ -141,10 +140,17 @@ class InvoiceController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
-            $invoiceNumber = $this->invoiceNumber();
+            // Start with the submitted invoice number or generate a new one
+            $baseInvoiceNumber = $request->invoice_id ? intval($request->invoice_id) : $this->generateUniqueInvoiceNumber();
+            
+            // If user provided a custom number, ensure it's unique
+            if ($request->invoice_id && \App\Models\Invoice::where('invoice_id', $baseInvoiceNumber)->exists()) {
+                $baseInvoiceNumber = $this->generateUniqueInvoiceNumber();
+            }
+            
             foreach ($unitIds as $idx => $unitId) {
                 $invoice = new \App\Models\Invoice();
-                $invoice->invoice_id = $invoiceNumber + $idx;
+                $invoice->invoice_id = $baseInvoiceNumber + $idx;
                 $invoice->property_id = $request->property_id;
                 $invoice->unit_id = $unitId;
                 $invoice->invoice_month = $request->invoice_month . '-01';
@@ -261,12 +267,29 @@ class InvoiceController extends Controller
 
     public function invoiceNumber()
     {
-        $latest = Invoice::where('parent_id', parentId())->latest()->first();
+        $latest = Invoice::orderBy('invoice_id', 'desc')->first();
         if ($latest == null) {
             return 1;
         } else {
             return $latest->invoice_id + 1;
         }
+    }
+    
+    private function generateUniqueInvoiceNumber()
+    {
+        $attempts = 0;
+        $maxAttempts = 100;
+        
+        do {
+            $invoiceNumber = $this->invoiceNumber();
+            $attempts++;
+            
+            if ($attempts > $maxAttempts) {
+                throw new \Exception('Unable to generate unique invoice number after ' . $maxAttempts . ' attempts');
+            }
+        } while (\App\Models\Invoice::where('invoice_id', $invoiceNumber)->exists());
+        
+        return $invoiceNumber;
     }
 
     public function invoiceTypeDestroy(Request $request)

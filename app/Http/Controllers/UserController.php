@@ -206,7 +206,9 @@ class UserController extends Controller
                     $authUser = \App\Models\User::find($ids);
                     $totalUser = $authUser->totalUser();
                     $subscription = Subscription::find($authUser->subscription);
-                    if ($totalUser >= $subscription->user_limit && $subscription->user_limit != 0) {
+                    
+                    // Check if subscription exists and has user_limit
+                    if ($subscription && $subscription->user_limit != 0 && $totalUser >= $subscription->user_limit) {
                         return redirect()->back()->with('error', __('Your user limit is over, please upgrade your subscription.'));
                     }
                 }
@@ -391,7 +393,7 @@ class UserController extends Controller
         $authUser = \App\Models\User::find($ids);
         $subscription = \App\Models\Subscription::find($authUser->subscription);
 
-        if (\Auth::user()->can('manage logged history') && $subscription->enabled_logged_history == 1) {
+        if (\Auth::user()->can('manage logged history') && $subscription && $subscription->enabled_logged_history == 1) {
             $histories = LoggedHistory::where('parent_id', parentId())->get();
             return view('logged_history.index', compact('histories'));
         } else {
