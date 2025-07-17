@@ -27,9 +27,9 @@
                                     <i class="ti ti-circle-plus align-text-bottom"></i> {{ __('Create Unit') }}
                                 </a>
                             @endif
-                            <a href="{{ route('unified-excel-upload.index') }}" class="btn btn-outline-success">
+                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#unifiedExcelUploadModal">
                                 <i class="ti ti-upload align-text-bottom"></i> Upload Units & Tenants Excel
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                                         <div class="mb-3">
                                             <label for="unified_excel_file" class="form-label">{{ __('Excel File') }}</label>
                                             <input type="file" class="form-control" id="unified_excel_file" name="excel_file" accept=".xlsx,.xls,.csv" required>
-                                            <small class="form-text text-muted">{{ __('Supported formats: XLSX, XLS, CSV. Maximum file size: 2MB') }}</small>
+                                            <small class="form-text text-muted">{{ __('Supported formats: XLSX, XLS, CSV. Maximum file size: 2MB. Units and tenants should be in the same sheet.') }}</small>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -152,18 +152,72 @@
                             const form = document.getElementById('unifiedExcelUploadForm');
                             if (form) {
                                 form.onsubmit = function(e) {
-                                    // Let the browser handle the form submit (POST)
+                                    e.preventDefault();
+                                    
+                                    // Get form data
+                                    const formData = new FormData(form);
+                                    const submitBtn = form.querySelector('button[type="submit"]');
+                                    const originalText = submitBtn.innerHTML;
+                                    
+                                    // Disable submit button and show loading
+                                    submitBtn.disabled = true;
+                                    submitBtn.innerHTML = '<i class="ti ti-loader ti-spin me-2"></i>{{ __("Uploading...") }}';
+                                    
+                                    // Submit form via AJAX
+                                    console.log('Submitting form to:', '{{ route("unified-excel-upload.upload") }}');
+                                    console.log('Form data:', formData);
+                                    
+                                    fetch('{{ route("unified-excel-upload.upload") }}', {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                                        }
+                                    })
+                                    .then(response => {
+                                        console.log('Response status:', response.status);
+                                        console.log('Response headers:', response.headers);
+                                        
+                                        if (response.redirected) {
+                                            // Handle redirect (success case)
+                                            console.log('Redirecting to:', response.url);
+                                            window.location.href = response.url;
+                                        } else {
+                                            return response.text();
+                                        }
+                                    })
+                                    .then(data => {
+                                        console.log('Response data:', data);
+                                        if (data) {
+                                            // Check if response contains success/error message
+                                            if (data.includes('success')) {
+                                                console.log('Success detected in response');
+                                                toastrs('success', '{{ __("Units and Tenants imported successfully!") }}', 'success');
+                                                setTimeout(() => {
+                                                    window.location.reload();
+                                                }, 2000);
+                                            } else if (data.includes('error')) {
+                                                console.log('Error detected in response');
+                                                toastrs('error', '{{ __("Error importing data. Please check your file format.") }}', 'error');
+                                            } else {
+                                                console.log('No success/error detected, reloading page');
+                                                window.location.reload();
+                                            }
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Upload error:', error);
+                                        toastrs('error', '{{ __("Upload failed. Please try again.") }}', 'error');
+                                    })
+                                    .finally(() => {
+                                        // Re-enable submit button
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerHTML = originalText;
+                                    });
                                 };
                             }
-                            // Show modal on button click
-                            const uploadBtn = document.querySelector('a[href="{{ route('unified-excel-upload.index') }}"]');
-                            if (uploadBtn) {
-                                uploadBtn.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    const modal = new bootstrap.Modal(document.getElementById('unifiedExcelUploadModal'));
-                                    modal.show();
-                                });
-                            }
+                            
+
                         });
                     </script>
                     <div class="dt-responsive table-responsive">

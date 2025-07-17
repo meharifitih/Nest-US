@@ -13,9 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('property_units', function (Blueprint $table) {
-            $table->unique(['name', 'property_id'], 'property_units_name_property_id_unique');
-        });
+        // Use raw SQL to add the constraint only if it doesn't exist (Postgres safe)
+        \DB::statement("DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint WHERE conname = 'property_units_name_property_id_unique'
+            ) THEN
+                ALTER TABLE property_units ADD CONSTRAINT property_units_name_property_id_unique UNIQUE (name, property_id);
+            END IF;
+        END
+        $$;");
     }
 
     /**

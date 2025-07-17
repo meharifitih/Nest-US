@@ -24,6 +24,11 @@ class DefaultDataUsersTableSeeder extends Seeder
         $currentRouteName = Route::currentRouteName();
 
         if ($currentRouteName != 'LaravelUpdater::database') {
+            
+            // Helper function to check if approval_status column exists
+            $hasApprovalStatus = function() {
+                return \Schema::hasColumn('users', 'approval_status');
+            };
 
             // Default All Permission
             $allPermission = [
@@ -503,7 +508,6 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'lang' => 'english',
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
-                'approval_status' => 'approved',
                 'is_active' => 1
             ];
             $systemSuperAdmin = User::create($superAdminData);
@@ -707,7 +711,6 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'profile' => 'avatar.png',
                 'subscription' => 0,
                 'parent_id' => $systemOwner->id,
-                'approval_status' => 'approved',
                 'is_active' => 1
             ];
             $systemManager = User::create($managerData);
@@ -728,7 +731,6 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
                 'parent_id' => $systemOwner->id,
-                'approval_status' => 'approved',
                 'is_active' => 1
             ];
             $systemTenant = User::create($tenantData);
@@ -751,7 +753,6 @@ class DefaultDataUsersTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'profile' => 'avatar.png',
                 'parent_id' => $systemOwner->id,
-                'approval_status' => 'approved',
                 'is_active' => 1
             ];
             $systemMaintainer = User::create($maintainerData);

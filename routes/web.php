@@ -434,10 +434,10 @@ Route::middleware(['auth'])->group(function () {
 
 // Payment Verification Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('payment-verification', 'PaymentVerificationController@index')->name('payment.verification.index');
-    Route::post('payment-verification/upload', 'PaymentVerificationController@uploadScreenshot')->name('payment.verification.upload');
-    Route::get('payment-verification/approve/{id}', 'PaymentVerificationController@approve')->name('payment.verification.approve');
-    Route::post('payment-verification/reject/{id}', 'PaymentVerificationController@reject')->name('payment.verification.reject');
+    Route::get('payment-verification', [App\Http\Controllers\PaymentVerificationController::class, 'index'])->name('payment.verification.index');
+    Route::post('payment-verification/upload', [App\Http\Controllers\PaymentVerificationController::class, 'uploadScreenshot'])->name('payment.verification.upload');
+    Route::get('payment-verification/approve/{id}', [App\Http\Controllers\PaymentVerificationController::class, 'approve'])->name('payment.verification.approve');
+    Route::post('payment-verification/reject/{id}', [App\Http\Controllers\PaymentVerificationController::class, 'reject'])->name('payment.verification.reject');
 });
 
 // Admin routes for managing payments
@@ -467,9 +467,9 @@ Route::delete('rent/{invoice}', [App\Http\Controllers\RentController::class, 'de
 
 // Payment Account Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('payment-accounts', 'PaymentAccountController@index')->name('payment.accounts.index');
-    Route::post('payment-accounts', 'PaymentAccountController@store')->name('payment.accounts.store');
-    Route::delete('payment-accounts/{id}', 'PaymentAccountController@destroy')->name('payment.accounts.destroy');
+    Route::get('payment-accounts', [App\Http\Controllers\PaymentAccountController::class, 'index'])->name('payment.accounts.index');
+    Route::post('payment-accounts', [App\Http\Controllers\PaymentAccountController::class, 'store'])->name('payment.accounts.store');
+    Route::delete('payment-accounts/{id}', [App\Http\Controllers\PaymentAccountController::class, 'destroy'])->name('payment.accounts.destroy');
 });
 
 Route::group([
@@ -483,6 +483,9 @@ Route::group([
 
 Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store'])->name('enterprise.contact');
 
-Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
-Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
-Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
+// Unified Excel Upload Routes
+Route::middleware(['auth', 'XSS'])->group(function () {
+    Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
+    Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
+    Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
+});

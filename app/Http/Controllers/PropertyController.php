@@ -776,13 +776,15 @@ class PropertyController extends Controller
         if (\Auth::user()->can('edit property')) {
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-            // Create Units sheet
-            $unitsSheet = $spreadsheet->getActiveSheet();
-            $unitsSheet->setTitle('Units');
+            // Create single sheet with combined unit and tenant data
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Units & Tenants');
 
-            $unitData = [
+            // Combined data structure with both unit and tenant fields
+            $combinedData = [
                 [
-                    'name' => 'Unit 101',
+                    // Unit fields
+                    'unit_name' => 'Unit 101',
                     'bedroom' => 2,
                     'kitchen' => 1,
                     'baths' => 1,
@@ -793,26 +795,8 @@ class PropertyController extends Controller
                     'late_fee_type' => 'fixed',
                     'late_fee_amount' => 100,
                     'incident_receipt_amount' => 0,
-                    'notes' => 'Sample unit',
-                ]
-            ];
-
-            $unitHeaders = array_keys($unitData[0]);
-            foreach ($unitHeaders as $i => $header) {
-                $unitsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
-            }
-            foreach ($unitData as $rowIndex => $row) {
-                foreach ($unitHeaders as $colIndex => $header) {
-                    $unitsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
-                }
-            }
-
-            // Create Tenants sheet
-            $tenantsSheet = $spreadsheet->createSheet();
-            $tenantsSheet->setTitle('Tenants');
-
-            $tenantData = [
-                [
+                    'unit_notes' => 'Sample unit',
+                    // Tenant fields
                     'first_name' => 'John',
                     'last_name' => 'Doe',
                     'email' => 'john@email.com',
@@ -823,25 +807,21 @@ class PropertyController extends Controller
                     'house_number' => '123',
                     'location' => 'Main Road',
                     'city' => 'Addis Ababa',
-                    'unit_name' => 'Unit 101',
                     'lease_start_date' => '2024-01-01',
                     'lease_end_date' => '2025-01-01',
-                    'notes' => 'Test tenant',
+                    'tenant_notes' => 'Test tenant',
                 ]
             ];
 
-            $tenantHeaders = array_keys($tenantData[0]);
-            foreach ($tenantHeaders as $i => $header) {
-                $tenantsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+            $headers = array_keys($combinedData[0]);
+            foreach ($headers as $i => $header) {
+                $sheet->setCellValueByColumnAndRow($i + 1, 1, $header);
             }
-            foreach ($tenantData as $rowIndex => $row) {
-                foreach ($tenantHeaders as $colIndex => $header) {
-                    $tenantsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+            foreach ($combinedData as $rowIndex => $row) {
+                foreach ($headers as $colIndex => $header) {
+                    $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
                 }
             }
-
-            // Set active sheet back to Units
-            $spreadsheet->setActiveSheetIndex(0);
 
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             return response()->streamDownload(function () use ($writer) {

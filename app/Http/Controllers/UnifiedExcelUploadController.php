@@ -6,7 +6,7 @@ use App\Models\Property;
 use App\Models\UnifiedExcelUpload;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\UnifiedImport;
+use App\Imports\UnifiedSingleSheetImport;
 
 class UnifiedExcelUploadController extends Controller
 {
@@ -21,6 +21,15 @@ class UnifiedExcelUploadController extends Controller
 
     public function upload(Request $request)
     {
+        \Log::info('Upload request received', [
+            'property_id' => $request->property_id,
+            'file' => $request->file('excel_file') ? $request->file('excel_file')->getClientOriginalName() : 'no file',
+            'file_size' => $request->file('excel_file') ? $request->file('excel_file')->getSize() : 0,
+            'user_id' => \Auth::id(),
+            'parent_id' => parentId(),
+            'all_data' => $request->all()
+        ]);
+        
         $request->validate([
             'property_id' => 'required|exists:properties,id',
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048',
@@ -40,7 +49,7 @@ class UnifiedExcelUploadController extends Controller
             $excelUpload->save();
 
             // Import with batch size and chunking
-            Excel::import(new UnifiedImport($request->property_id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+            Excel::import(new UnifiedSingleSheetImport($request->property_id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
                 'batchSize' => 100,
                 'chunkSize' => 100,
             ]);
@@ -48,7 +57,7 @@ class UnifiedExcelUploadController extends Controller
             $excelUpload->status = 'completed';
             $excelUpload->save();
 
-            return redirect()->back()->with('success', __('Tenant and Unit information successfully imported.'));
+            return redirect()->back()->with('success', __('Units and Tenants information successfully imported from single sheet.'));
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
@@ -62,6 +71,7 @@ class UnifiedExcelUploadController extends Controller
                 $excelUpload->save();
             }
 
+            \Log::error('Excel validation error: ' . implode(', ', $errors));
             return redirect()->back()->with('error', __('Validation errors: ') . implode(', ', $errors));
         } catch (\Exception $e) {
             if (isset($excelUpload)) {
@@ -69,6 +79,7 @@ class UnifiedExcelUploadController extends Controller
                 $excelUpload->error_log = $e->getMessage();
                 $excelUpload->save();
             }
+            \Log::error('Excel import error: ' . $e->getMessage());
             return redirect()->back()->with('error', __('Error importing data: ') . $e->getMessage());
         }
     }
@@ -77,13 +88,15 @@ class UnifiedExcelUploadController extends Controller
     {
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         
-        // Create Units sheet
-        $unitsSheet = $spreadsheet->getActiveSheet();
-        $unitsSheet->setTitle('Units');
+        // Create single sheet with combined unit and tenant data
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Units & Tenants');
         
-        $unitData = [
+        // Combined data structure with both unit and tenant fields
+        $combinedData = [
             [
-                'name' => 'Unit 101',
+                // Unit fields
+                'unit_name' => 'Unit 101',
                 'bedroom' => 2,
                 'kitchen' => 1,
                 'baths' => 1,
@@ -94,40 +107,8 @@ class UnifiedExcelUploadController extends Controller
                 'late_fee_type' => 'fixed',
                 'late_fee_amount' => 100,
                 'incident_receipt_amount' => 0,
-                'notes' => 'Sample unit',
-            ],
-            [
-                'name' => 'Unit 102',
-                'bedroom' => 1,
-                'kitchen' => 1,
-                'baths' => 1,
-                'rent' => 3500,
-                'rent_type' => 'monthly',
-                'deposit_type' => 'fixed',
-                'deposit_amount' => 700,
-                'late_fee_type' => 'fixed',
-                'late_fee_amount' => 100,
-                'incident_receipt_amount' => 0,
-                'notes' => 'Studio apartment',
-            ]
-        ];
-        
-        $unitHeaders = array_keys($unitData[0]);
-        foreach ($unitHeaders as $i => $header) {
-            $unitsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
-        }
-        foreach ($unitData as $rowIndex => $row) {
-            foreach ($unitHeaders as $colIndex => $header) {
-                $unitsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
-            }
-        }
-
-        // Create Tenants sheet
-        $tenantsSheet = $spreadsheet->createSheet();
-        $tenantsSheet->setTitle('Tenants');
-        
-        $tenantData = [
-            [
+                'unit_notes' => 'Sample unit',
+                // Tenant fields
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john@email.com',
@@ -138,12 +119,25 @@ class UnifiedExcelUploadController extends Controller
                 'house_number' => '123',
                 'location' => 'Main Road',
                 'city' => 'Addis Ababa',
-                'unit_name' => 'Unit 101',
                 'lease_start_date' => '2024-01-01',
                 'lease_end_date' => '2025-01-01',
-                'notes' => 'Test tenant',
+                'tenant_notes' => 'Test tenant',
             ],
             [
+                // Unit fields
+                'unit_name' => 'Unit 102',
+                'bedroom' => 1,
+                'kitchen' => 1,
+                'baths' => 1,
+                'rent' => 3500,
+                'rent_type' => 'monthly',
+                'deposit_type' => 'fixed',
+                'deposit_amount' => 700,
+                'late_fee_type' => 'fixed',
+                'late_fee_amount' => 100,
+                'incident_receipt_amount' => 0,
+                'unit_notes' => 'Studio apartment',
+                // Tenant fields
                 'first_name' => 'Jane',
                 'last_name' => 'Smith',
                 'email' => 'jane@email.com',
@@ -154,25 +148,21 @@ class UnifiedExcelUploadController extends Controller
                 'house_number' => '456',
                 'location' => 'Side Street',
                 'city' => 'Addis Ababa',
-                'unit_name' => 'Unit 102',
                 'lease_start_date' => '2024-02-01',
                 'lease_end_date' => '2025-02-01',
-                'notes' => 'Another test tenant',
+                'tenant_notes' => 'Another test tenant',
             ]
         ];
         
-        $tenantHeaders = array_keys($tenantData[0]);
-        foreach ($tenantHeaders as $i => $header) {
-            $tenantsSheet->setCellValueByColumnAndRow($i + 1, 1, $header);
+        $headers = array_keys($combinedData[0]);
+        foreach ($headers as $i => $header) {
+            $sheet->setCellValueByColumnAndRow($i + 1, 1, $header);
         }
-        foreach ($tenantData as $rowIndex => $row) {
-            foreach ($tenantHeaders as $colIndex => $header) {
-                $tenantsSheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
+        foreach ($combinedData as $rowIndex => $row) {
+            foreach ($headers as $colIndex => $header) {
+                $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $row[$header]);
             }
         }
-
-        // Set active sheet back to Units
-        $spreadsheet->setActiveSheetIndex(0);
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         return response()->streamDownload(function () use ($writer) {
