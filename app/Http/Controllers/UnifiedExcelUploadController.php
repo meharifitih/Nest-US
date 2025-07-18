@@ -35,6 +35,11 @@ class UnifiedExcelUploadController extends Controller
             'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048',
         ]);
 
+        $excelUpload = null;
+        $importedCount = 0;
+        $errorCount = 0;
+        $errors = [];
+
         try {
             $file = $request->file('excel_file');
             $fileName = time() . '_' . $file->getClientOriginalName();
@@ -49,38 +54,97 @@ class UnifiedExcelUploadController extends Controller
             $excelUpload->save();
 
             // Import with batch size and chunking
-            Excel::import(new UnifiedSingleSheetImport($request->property_id), $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+            $import = new UnifiedSingleSheetImport($request->property_id);
+            Excel::import($import, $file, null, \Maatwebsite\Excel\Excel::XLSX, [
                 'batchSize' => 100,
                 'chunkSize' => 100,
             ]);
 
+            // Get import statistics
+            $importedCount = $import->getImportedCount();
+            $errorCount = $import->getErrorCount();
+            $errors = $import->getErrors();
+
             $excelUpload->status = 'completed';
+            $excelUpload->imported_count = $importedCount;
+            $excelUpload->error_count = $errorCount;
             $excelUpload->save();
 
-            return redirect()->back()->with('success', __('Units and Tenants information successfully imported from single sheet.'));
+            $message = "Successfully imported {$importedCount} records.";
+            if ($errorCount > 0) {
+                $message .= " {$errorCount} records had errors.";
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'imported_count' => $importedCount,
+                    'error_count' => $errorCount,
+                    'errors' => $errors
+                ]);
+            }
+
+            return redirect()->back()->with('success', $message);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
             foreach ($failures as $failure) {
-                $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+                $errors[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
             }
             
             if (isset($excelUpload)) {
                 $excelUpload->status = 'failed';
                 $excelUpload->error_log = implode("\n", $errors);
+                $excelUpload->error_count = count($errors);
                 $excelUpload->save();
             }
 
             \Log::error('Excel validation error: ' . implode(', ', $errors));
-            return redirect()->back()->with('error', __('Validation errors: ') . implode(', ', $errors));
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please check your Excel file format and data. Some rows contain invalid information.',
+                    'errors' => $errors,
+                    'error_count' => count($errors)
+                ], 422);
+            }
+
+            return redirect()->back()->with('error', __('Please check your Excel file format and data. Some rows contain invalid information.'));
+
         } catch (\Exception $e) {
             if (isset($excelUpload)) {
                 $excelUpload->status = 'failed';
                 $excelUpload->error_log = $e->getMessage();
+                $excelUpload->error_count = 1;
                 $excelUpload->save();
             }
+            
             \Log::error('Excel import error: ' . $e->getMessage());
-            return redirect()->back()->with('error', __('Error importing data: ') . $e->getMessage());
+            
+            // Provide user-friendly error messages
+            $userMessage = 'An error occurred while processing your file.';
+            
+            if (strpos($e->getMessage(), 'already exists') !== false) {
+                $userMessage = 'Some records already exist in the system. Please check for duplicates.';
+            } elseif (strpos($e->getMessage(), 'column') !== false && strpos($e->getMessage(), 'does not exist') !== false) {
+                $userMessage = 'System configuration error. Please contact support.';
+            } elseif (strpos($e->getMessage(), 'validation') !== false) {
+                $userMessage = 'Please check your data format and ensure all required fields are filled.';
+            }
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $userMessage,
+                    'errors' => [$e->getMessage()],
+                    'error_count' => 1
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', $userMessage);
         }
     }
 

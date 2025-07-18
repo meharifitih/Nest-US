@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\ProductionErrorHandling::class,
     ];
 
     /**
@@ -39,6 +40,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\CheckSubscription::class,
             \App\Http\Middleware\CheckUserApproval::class,
             \App\Http\Middleware\Verify2FA::class,
+            \App\Http\Middleware\ErrorHandlingMiddleware::class,
         ],
 
         'api' => [

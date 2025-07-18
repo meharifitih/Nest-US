@@ -485,7 +485,7 @@ Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store']
 
 // Unified Excel Upload Routes
 Route::middleware(['auth', 'XSS'])->group(function () {
-    Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
-    Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
-    Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
+Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
+Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
+Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
 });

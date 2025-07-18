@@ -24,7 +24,7 @@ class DefaultDataUsersTableSeeder extends Seeder
         $currentRouteName = Route::currentRouteName();
 
         if ($currentRouteName != 'LaravelUpdater::database') {
-            
+
             // Helper function to check if approval_status column exists
             $hasApprovalStatus = function() {
                 return \Schema::hasColumn('users', 'approval_status');

@@ -79,6 +79,20 @@
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Progress Indicator -->
+                        <div id="uploadProgress" class="row mt-3 d-none">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <div class="d-flex align-items-center">
+                                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                                            <span class="visually-hidden">{{ __('Loading...') }}</span>
+                                        </div>
+                                        <span id="uploadStatus">{{ __('Uploading file...') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
 
                     @if($uploads->count() > 0)
@@ -92,6 +106,8 @@
                                                 <th>{{ __('File Name') }}</th>
                                                 <th>{{ __('Property') }}</th>
                                                 <th>{{ __('Status') }}</th>
+                                                <th>{{ __('Imported') }}</th>
+                                                <th>{{ __('Errors') }}</th>
                                                 <th>{{ __('Upload Date') }}</th>
                                                 <th>{{ __('Error Log') }}</th>
                                             </tr>
@@ -108,6 +124,20 @@
                                                             <span class="badge bg-danger">{{ __('Failed') }}</span>
                                                         @else
                                                             <span class="badge bg-warning">{{ __('Pending') }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($upload->imported_count > 0)
+                                                            <span class="badge bg-success">{{ $upload->imported_count }}</span>
+                                                        @else
+                                                            <span class="text-muted">0</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($upload->error_count > 0)
+                                                            <span class="badge bg-danger">{{ $upload->error_count }}</span>
+                                                        @else
+                                                            <span class="text-muted">0</span>
                                                         @endif
                                                     </td>
                                                     <td>{{ $upload->created_at->format('Y-m-d H:i:s') }}</td>
@@ -162,8 +192,31 @@
                     const submitBtn = form.querySelector('button[type="submit"]');
                     const originalText = submitBtn.innerHTML;
                     
+                    // Validate form
+                    const propertySelect = form.querySelector('#property_id');
+                    const fileInput = form.querySelector('#excel_file');
+                    
+                    if (!propertySelect.value) {
+                        toastrs('error', '{{ __("Please select a property.") }}', 'error');
+                        return;
+                    }
+                    
+                    if (!fileInput.files[0]) {
+                        toastrs('error', '{{ __("Please select an Excel file.") }}', 'error');
+                        return;
+                    }
+                    
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="ti ti-loader ti-spin me-1"></i>{{ __("Uploading...") }}';
+                    
+                    // Show progress indicator
+                    const progressDiv = document.getElementById('uploadProgress');
+                    const statusSpan = document.getElementById('uploadStatus');
+                    progressDiv.classList.remove('d-none');
+                    statusSpan.textContent = '{{ __("Uploading file...") }}';
+                    
+                    // Show upload started notification
+                    toastrs('info', '{{ __("Upload started. Please wait while we process your file...") }}', 'info');
                     
                     console.log('Submitting form to:', '{{ route("unified-excel-upload.upload") }}');
                     
@@ -171,7 +224,8 @@
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json'
                         }
                     })
                     .then(response => {
@@ -180,19 +234,86 @@
                         if (response.redirected) {
                             window.location.href = response.url;
                         } else {
-                            return response.text();
+                            return response.json().catch(() => response.text());
                         }
                     })
                     .then(data => {
                         console.log('Response data:', data);
-                        if (data) {
+                        
+                        // Hide progress indicator
+                        const progressDiv = document.getElementById('uploadProgress');
+                        progressDiv.classList.add('d-none');
+                        
+                        if (typeof data === 'object' && data !== null) {
+                            // JSON response
+                            if (data.success) {
+                                let message = data.message || '{{ __("Upload successful!") }}';
+                                
+                                if (data.imported_count > 0) {
+                                    message += ` {{ __("Successfully imported") }} ${data.imported_count} {{ __("records") }}.`;
+                                }
+                                
+                                if (data.error_count > 0) {
+                                    message += ` {{ __("Failed to import") }} ${data.error_count} {{ __("records") }}.`;
+                                }
+                                
+                                // Show success notification
+                                toastrs('success', message, 'success');
+                                
+                                // Show detailed errors if any
+                                if (data.errors && data.errors.length > 0) {
+                                    setTimeout(() => {
+                                        toastrs('warning', '{{ __("Some records had errors. Check the upload history below for details.") }}', 'warning');
+                                    }, 1500);
+                                }
+                                
+                                // Reset form
+                                form.reset();
+                                
+                                // Reload page immediately after success
+                                setTimeout(() => {
+                                    console.log('Refreshing page after successful upload...');
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                // Error response
+                                let errorMessage = data.message || '{{ __("Upload failed. Please check your file and try again.") }}';
+                                
+                                if (data.errors && data.errors.length > 0) {
+                                    // Show first few errors in notification
+                                    const firstErrors = data.errors.slice(0, 2);
+                                    errorMessage += '\n\n' + firstErrors.join('\n');
+                                    if (data.errors.length > 2) {
+                                        errorMessage += '\n... and ' + (data.errors.length - 2) + ' more errors';
+                                    }
+                                }
+                                
+                                // Show error notification
+                                toastrs('error', errorMessage, 'error');
+                                
+                                // Re-enable submit button
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
+                            }
+                        } else {
+                            // Text response (fallback)
                             if (data.includes('success')) {
                                 toastrs('success', '{{ __("Units and Tenants imported successfully!") }}', 'success');
+                                
+                                // Reset form
+                                form.reset();
+                                
+                                // Reload page immediately after success
                                 setTimeout(() => {
+                                    console.log('Refreshing page after successful upload (fallback)...');
                                     window.location.reload();
-                                }, 2000);
+                                }, 1000);
                             } else if (data.includes('error')) {
                                 toastrs('error', '{{ __("Error importing data. Please check your file format.") }}', 'error');
+                                
+                                // Re-enable submit button
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
                             } else {
                                 window.location.reload();
                             }
@@ -200,9 +321,14 @@
                     })
                     .catch(error => {
                         console.error('Upload error:', error);
+                        
+                        // Hide progress indicator
+                        const progressDiv = document.getElementById('uploadProgress');
+                        progressDiv.classList.add('d-none');
+                        
                         toastrs('error', '{{ __("Upload failed. Please try again.") }}', 'error');
-                    })
-                    .finally(() => {
+                        
+                        // Re-enable submit button
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
                     });

@@ -29,12 +29,13 @@
                     $('.unit_div').html(unit);
 
                     $.each(data, function(key, value) {
+                        var text = (typeof value === 'object' && value !== null && value.name) ? value.name : value;
                         var unit_id = $('#edit_unit').val();
                         if (key == unit_id) {
-                            $('.unit').append('<option selected value="' + key + '">' + value +
+                            $('.unit').append('<option selected value="' + key + '">' + text +
                                 '</option>');
                         } else {
-                            $('.unit').append('<option   value="' + key + '">' + value +
+                            $('.unit').append('<option   value="' + key + '">' + text +
                                 '</option>');
                         }
 

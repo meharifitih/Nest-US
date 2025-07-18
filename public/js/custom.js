@@ -111,8 +111,14 @@ function toastrs(title, message, status) {
     "use strict";
     if (status == "success") {
         notifier.show("Success!", message, "success", successImg, 4000);
+    } else if (status == "error") {
+        notifier.show("Error!", message, "error", errorImg, 4000);
+    } else if (status == "warning") {
+        notifier.show("Warning!", message, "warning", errorImg, 4000);
+    } else if (status == "info") {
+        notifier.show("Info!", message, "info", successImg, 4000);
     } else {
-        notifier.show("Success!", message, "success", errorImg, 4000);
+        notifier.show(title, message, status, errorImg, 4000);
     }
 }
 

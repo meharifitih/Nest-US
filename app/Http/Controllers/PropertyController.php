@@ -481,10 +481,7 @@ class PropertyController extends Controller
         $units = PropertyUnit::where('property_id', $property_id)->get();
         $result = [];
         foreach ($units as $unit) {
-            $result[$unit->id] = [
-                'name' => $unit->name,
-                'rent' => $unit->rent
-            ];
+            $result[$unit->id] = $unit->name;
         }
         return response()->json($result);
     }

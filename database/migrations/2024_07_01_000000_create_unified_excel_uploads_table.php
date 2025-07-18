@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('original_name');
             $table->string('status')->default('pending');
             $table->text('error_log')->nullable();
+            $table->integer('imported_count')->default(0);
+            $table->integer('error_count')->default(0);
             $table->integer('parent_id')->default(0);
             $table->timestamps();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');

@@ -15,6 +15,8 @@ class UnifiedExcelUpload extends Model
         'original_name',
         'status',
         'error_log',
+        'imported_count',
+        'error_count',
         'parent_id'
     ];
 

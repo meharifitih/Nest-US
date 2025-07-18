@@ -143,39 +143,66 @@ class TenantController extends Controller
                 ]);
             }
 
-            $user = new User();
-            $user->first_name = $request->first_name;
-            $user->last_name = $request->last_name;
-            $user->email = $request->email;
-            $user->password = Hash::make($password);
-            $user->phone_number = $phone;
-            $user->type = 'tenant';
-            $user->email_verified_at = now();
-            $user->profile = 'avatar.png';
-            $user->lang = 'english';
-            $user->parent_id = parentId();
-            $user->save();
+            try {
+                $user = new User();
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->email = $request->email;
+                $user->password = Hash::make($password);
+                $user->phone_number = $phone;
+                $user->type = 'tenant';
+                $user->email_verified_at = now();
+                $user->profile = 'avatar.png';
+                $user->lang = 'english';
+                $user->parent_id = parentId();
+                $user->save();
 
-            $userRole = Role::where('name', 'tenant')->first();
-            $user->assignRole($userRole);
+                $userRole = Role::where('name', 'tenant')->first();
+                $user->assignRole($userRole);
 
-            // Send password notification
-            $user->notify(new PasswordChangeNotification($password));
+                // Send password notification
+                $user->notify(new PasswordChangeNotification($password));
 
-            $tenant = new Tenant();
-            $tenant->user_id = $user->id;
-            $tenant->family_member = $request->family_member;
-            $tenant->sub_city = $request->sub_city;
-            $tenant->woreda = $request->woreda;
-            $tenant->house_number = $request->house_number;
-            $tenant->location = $request->location;
-            $tenant->city = $request->city;
-            $tenant->property = $request->property;
-            $tenant->unit = $request->unit;
-            $tenant->lease_start_date = $request->lease_start_date;
-            $tenant->lease_end_date = $request->lease_end_date;
-            $tenant->parent_id = parentId();
-            $tenant->save();
+                $tenant = new Tenant();
+                $tenant->user_id = $user->id;
+                $tenant->family_member = $request->family_member;
+                $tenant->sub_city = $request->sub_city;
+                $tenant->woreda = $request->woreda;
+                $tenant->house_number = $request->house_number;
+                $tenant->location = $request->location;
+                $tenant->city = $request->city;
+                $tenant->property = $request->property;
+                $tenant->unit = $request->unit;
+                $tenant->lease_start_date = $request->lease_start_date;
+                $tenant->lease_end_date = $request->lease_end_date;
+                $tenant->parent_id = parentId();
+                $tenant->save();
+            } catch (\Exception $e) {
+                \Log::error('Error creating tenant: ' . $e->getMessage());
+                
+                // Check for specific database errors
+                if (strpos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
+                    if (strpos($e->getMessage(), 'users_email_unique') !== false) {
+                        return response()->json([
+                            'status' => 'error',
+                            'msg' => 'This email address is already registered. Please use a different email.',
+                            'old_input' => $request->all()
+                        ]);
+                    } elseif (strpos($e->getMessage(), 'users_phone_number_unique') !== false) {
+                        return response()->json([
+                            'status' => 'error',
+                            'msg' => 'This phone number is already registered. Please use a different phone number.',
+                            'old_input' => $request->all()
+                        ]);
+                    }
+                }
+                
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'Failed to create tenant. Please try again.',
+                    'old_input' => $request->all()
+                ]);
+            }
 
             if (!empty($request->tenant_images)) {
                 foreach ($request->tenant_images as $file) {

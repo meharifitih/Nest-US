@@ -76,7 +76,8 @@ $tenant=$user->tenants;
                 $('.unit_div').html(unit);
 
                 $.each(data, function(key, value) {
-                    $('.unit').append('<option value="' + key + '">' + value +'</option>');
+                    var text = (typeof value === 'object' && value !== null && value.name) ? value.name : value;
+                    $('.unit').append('<option value="' + key + '">' + text +'</option>');
                 });
                 $(".hidesearch").each(function() {
                     var basic_select = new Choices(this, {

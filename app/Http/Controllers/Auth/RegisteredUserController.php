@@ -91,7 +91,18 @@ class RegisteredUserController extends Controller
                 'approval_status' => in_array($request->type, ['tenant', 'maintainer']) ? 'approved' : 'pending',
             ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'User registration failed: ' . $e->getMessage());
+            \Log::error('User registration error: ' . $e->getMessage());
+            
+            // Check for specific database errors
+            if (strpos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
+                if (strpos($e->getMessage(), 'users_email_unique') !== false) {
+                    return redirect()->back()->with('error', 'This email address is already registered. Please use a different email or try logging in.');
+                } elseif (strpos($e->getMessage(), 'users_phone_number_unique') !== false) {
+                    return redirect()->back()->with('error', 'This phone number is already registered. Please use a different phone number.');
+                }
+            }
+            
+            return redirect()->back()->with('error', 'Registration failed. Please try again.');
         }
 
         // Assign role only if it exists
