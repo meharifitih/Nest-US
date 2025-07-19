@@ -476,12 +476,17 @@ class PropertyController extends Controller
         }
     }
 
-    public function getPropertyUnit($property_id)
+    public function getPropertyUnit($pid)
     {
-        $units = PropertyUnit::where('property_id', $property_id)->get();
+        $units = PropertyUnit::where('property_id', $pid)->get();
         $result = [];
         foreach ($units as $unit) {
-            $result[$unit->id] = $unit->name;
+            $result[$unit->id] = [
+                'name' => $unit->name,
+                'rent' => $unit->rent,
+                'bedroom' => $unit->bedroom,
+                'baths' => $unit->baths
+            ];
         }
         return response()->json($result);
     }

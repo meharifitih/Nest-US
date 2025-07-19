@@ -96,37 +96,60 @@ class MaintainerController extends Controller
             }
 
 
-            $maintainer = new Maintainer();
-            $maintainer->user_id = $user->id;
-            $maintainer->property_id = !empty($request->property_id) ? implode(',', $request->property_id) : '';
-            $maintainer->type_id = $request->type_id;
-            $maintainer->parent_id = parentId();
-
-            // dd($maintainer);
-            $maintainer->save();
-
-            $module = 'maintainer_create';
-            $notification = Notification::where('parent_id', parentId())->where('module', $module)->first();
-            if ($notification) {
-                $notification->password = $request->password;
+            // Send email from super admin side before creating maintainer
+            $emailSent = false;
+            try {
+                // Configure email settings for super admin (parent_id = 1)
+                emailSettings(1);
+                
+                // Create simple email data
+                $settings = settings();
+                $emailData = [
+                    'subject' => 'Welcome to ' . ($settings['company_name'] ?? 'Property Management System'),
+                    'message' => '
+                        <p><strong>Dear ' . $request->first_name . ' ' . $request->last_name . ',</strong></p>
+                        <p>Welcome to our Property Management System!</p>
+                        <p>Your account has been created successfully.</p>
+                        <p><strong>Login Details:</strong></p>
+                        <ul>
+                            <li><strong>Email:</strong> ' . $request->email . '</li>
+                            <li><strong>Password:</strong> ' . $request->password . '</li>
+                        </ul>
+                        <p><strong>App Link:</strong> <a href="' . env('APP_URL') . '">' . env('APP_URL') . '</a></p>
+                        <p>Thank you for joining us!</p>
+                    ',
+                    'module' => 'maintainer_create',
+                    'logo' => $settings['company_logo'] ?? 'logo.png',
+                    'parent_id' => 1
+                ];
+                
+                // Send email
+                $response = commonEmailSend($request->email, $emailData);
+                
+                if ($response['status'] == 'success') {
+                    $emailSent = true;
+                } else {
+                    // Email failed - delete the user and return error
+                    $user->delete();
+                    return redirect()->back()->with('error', 'Failed to send welcome email. Maintainer creation cancelled. Error: ' . $response['message']);
+                }
+            } catch (\Exception $e) {
+                // Email failed - delete the user and return error
+                $user->delete();
+                return redirect()->back()->with('error', 'Failed to send welcome email. Maintainer creation cancelled. Error: ' . $e->getMessage());
             }
-            $setting=settings();
-            $errorMessage = '';
-            if (!empty($notification) && $notification->enabled_email == 1) {
-                $notification_responce = MessageReplace($notification, $user->id);
-                $datas['subject'] = $notification_responce['subject'];
-                $datas['message'] = $notification_responce['message'];
-                $datas['module'] = $module;
-                $datas['logo']=  $setting['company_logo'];
-                $to = $user->email;
-                $response = commonEmailSend($to, $datas);
-                    if ($response['status'] == 'error') {
-                        $errorMessage=$response['message'];
-                    }
+            
+            // Only create maintainer if email was sent successfully
+            if ($emailSent) {
+                $maintainer = new Maintainer();
+                $maintainer->user_id = $user->id;
+                $maintainer->property_id = !empty($request->property_id) ? implode(',', $request->property_id) : '';
+                $maintainer->type_id = $request->type_id;
+                $maintainer->parent_id = parentId();
+                $maintainer->save();
+                
+                return redirect()->back()->with('success', __('Maintainer successfully created and welcome email sent.'));
             }
-
-
-            return redirect()->back()->with('success', __('Maintainer successfully created.'). '</br>' . $errorMessage);
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }

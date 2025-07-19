@@ -136,15 +136,10 @@ class RentController extends Controller
         $invoiceItem->amount = $amount;
         $invoiceItem->description = $request->types[0]['description'] ?? '';
         $invoiceItem->save();
-        // Send WhatsApp notification to tenant
-        $tenant = Tenant::where('unit', $invoice->unit_id)->first();
-        if ($tenant) {
-            $user = User::find($tenant->user_id);
-            if ($user && !empty($user->phone_number)) {
-                $property = Property::find($invoice->property_id);
-                $unit = PropertyUnit::find($invoice->unit_id);
-            }
-        }
+
+        // Send email notification to tenant
+        $this->sendRentInvoiceEmail($invoice);
+
         return redirect()->route('rent.index')->with('success', __('Rent invoice successfully created.'));
     }
 
@@ -183,5 +178,123 @@ class RentController extends Controller
         } while (Invoice::where('invoice_id', $invoiceNumber)->exists());
         
         return $invoiceNumber;
+    }
+
+    /**
+     * Send email notification to tenant for rent invoice
+     */
+    private function sendRentInvoiceEmail($invoice)
+    {
+        try {
+            // Get tenant information
+            $tenant = Tenant::where('unit', $invoice->unit_id)->first();
+            if (!$tenant) {
+                \Log::info('No tenant found for unit: ' . $invoice->unit_id);
+                return;
+            }
+
+            $user = User::find($tenant->user_id);
+            if (!$user || !$user->email) {
+                \Log::info('No user or email found for tenant: ' . $tenant->id);
+                return;
+            }
+
+            // Get property and unit information
+            $property = Property::find($invoice->property_id);
+            $unit = PropertyUnit::find($invoice->unit_id);
+            $settings = settings();
+
+            // Prepare email data
+            $emailData = [
+                'subject' => 'New Rent Invoice - ' . $settings['company_name'],
+                'message' => $this->getRentInvoiceEmailTemplate($user, $invoice, $property, $unit, $settings),
+                'module' => 'rent_invoice',
+                'logo' => $settings['company_logo'] ?? 'logo.png'
+            ];
+
+            // Send email using existing helper function
+            $response = commonEmailSend($user->email, $emailData);
+            
+            if ($response['status'] == 'error') {
+                \Log::error('Rent invoice email notification error', [
+                    'email' => $user->email,
+                    'error' => $response['message']
+                ]);
+            } else {
+                \Log::info('Rent invoice email sent successfully to: ' . $user->email);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Rent invoice email notification exception', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $invoice->id
+            ]);
+        }
+    }
+
+    /**
+     * Generate email template for rent invoice
+     */
+    private function getRentInvoiceEmailTemplate($user, $invoice, $property, $unit, $settings)
+    {
+        $invoiceNumber = invoicePrefix() . $invoice->invoice_id;
+        $amount = priceFormat($invoice->getInvoiceDueAmount());
+        $dueDate = date('M j, Y', strtotime($invoice->end_date));
+        $invoiceDate = date('M j, Y', strtotime($invoice->created_at));
+
+        return "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>
+                <h2 style='color: #333; margin: 0;'>New Rent Invoice</h2>
+            </div>
+            
+            <div style='padding: 20px;'>
+                <p>Dear <strong>{$user->name}</strong>,</p>
+                
+                <p>A new rent invoice has been generated for your property. Please find the details below:</p>
+                
+                <div style='background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 5px;'>
+                    <h3 style='margin-top: 0; color: #333;'>Invoice Details</h3>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Invoice Number:</td>
+                            <td style='padding: 8px 0;'>{$invoiceNumber}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Property:</td>
+                            <td style='padding: 8px 0;'>{$property->name}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Unit:</td>
+                            <td style='padding: 8px 0;'>{$unit->name}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Amount Due:</td>
+                            <td style='padding: 8px 0; color: #dc3545; font-weight: bold;'>{$amount}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Due Date:</td>
+                            <td style='padding: 8px 0;'>{$dueDate}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; font-weight: bold;'>Invoice Date:</td>
+                            <td style='padding: 8px 0;'>{$invoiceDate}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                " . ($invoice->notes ? "<p><strong>Notes:</strong> {$invoice->notes}</p>" : "") . "
+                
+                <p>Please ensure payment is made by the due date to avoid any late fees.</p>
+                
+                <p>If you have any questions regarding this invoice, please don't hesitate to contact us.</p>
+                
+                <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;'>
+                    <p style='margin: 5px 0;'><strong>{$settings['company_name']}</strong></p>
+                    <p style='margin: 5px 0; color: #666;'>{$settings['company_email']}</p>
+                    <p style='margin: 5px 0; color: #666;'>{$settings['company_phone']}</p>
+                    <p style='margin: 5px 0; color: #666;'>{$settings['company_address']}</p>
+                </div>
+            </div>
+        </div>";
     }
 }
