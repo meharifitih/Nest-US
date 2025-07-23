@@ -107,19 +107,24 @@
                                                     <td>{{ $tenant->family_member ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('Sub-city') }}</b></td>
+                                                    <td><b class="text-header">{{ __('Country') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ $tenant->sub_city ?? '-' }}</td>
+                                                    <td>{{ $tenant->country ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('Woreda') }}</b></td>
+                                                    <td><b class="text-header">{{ __('State/Province') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ $tenant->woreda ?? '-' }}</td>
+                                                    <td>{{ $tenant->state ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('House Number') }}</b></td>
+                                                    <td><b class="text-header">{{ __('City') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ $tenant->house_number ?? '-' }}</td>
+                                                    <td>{{ $tenant->city ?? '-' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b class="text-header">{{ __('Zip Code') }}</b></td>
+                                                    <td>:</td>
+                                                    <td>{{ $tenant->zip_code ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Location') }}</b></td>
@@ -127,9 +132,9 @@
                                                     <td>{{ $tenant->location ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b class="text-header">{{ __('City') }}</b></td>
+                                                    <td><b class="text-header">{{ __('Address') }}</b></td>
                                                     <td>:</td>
-                                                    <td>{{ $tenant->city ?? '-' }}</td>
+                                                    <td>{{ $tenant->address ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td><b class="text-header">{{ __('Property') }}</b></td>
@@ -176,11 +181,6 @@
                                                         </td>
                                                     </tr>
                                                 @endif
-                                                <tr>
-                                                    <td><b class="text-header">{{ __('Address') }}</b></td>
-                                                    <td>:</td>
-                                                    <td>{{ $tenant->address ?? '-' }}</td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

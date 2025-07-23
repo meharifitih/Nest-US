@@ -172,11 +172,12 @@ class UnifiedSingleSheetImport implements ToModel, WithHeadingRow
                 $tenant = new Tenant();
                 $tenant->user_id = $user->id;
                 $tenant->family_member = $row['family_member'] ?? 0;
-                $tenant->sub_city = $row['sub_city'] ?? '';
-                $tenant->woreda = $row['woreda'] ?? '';
-                $tenant->house_number = $row['house_number'] ?? '';
-                $tenant->location = $row['location'] ?? '';
+                $tenant->country = $row['country'] ?? '';
+                $tenant->state = $row['state'] ?? '';
                 $tenant->city = $row['city'] ?? '';
+                $tenant->zip_code = $row['zip_code'] ?? '';
+                $tenant->address = $row['address'] ?? '';
+                $tenant->location = $row['location'] ?? '';
                 $tenant->property = $this->propertyId ?? 0;
                 $tenant->unit = $unit ? $unit->id : 0;
                 $tenant->lease_start_date = $leaseStartDate;

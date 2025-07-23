@@ -22,7 +22,7 @@ class TenantProfileController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number' => 'required',
+            'phone_number' => ['nullable', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
         ]);
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;

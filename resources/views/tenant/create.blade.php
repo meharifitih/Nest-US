@@ -122,20 +122,22 @@
                     type: 'GET',
                     success: function(data) {
                         if (!data.error) {
-                            $('#sub_city').val(data.sub_city || '');
-                            $('#woreda').val(data.woreda || '');
-                            $('#house_number').val(data.house_number || '');
-                            $('#location').val(data.location || '');
+                            $('#country').val(data.country || '');
+                            $('#state').val(data.state || '');
                             $('#city').val(data.city || '');
+                            $('#zip_code').val(data.zip_code || '');
+                            $('#address').val(data.address || '');
+                            $('#location').val(data.location || '');
                         }
                     }
                 });
             } else {
-                $('#sub_city').val('');
-                $('#woreda').val('');
-                $('#house_number').val('');
-                $('#location').val('');
+                $('#country').val('');
+                $('#state').val('');
                 $('#city').val('');
+                $('#zip_code').val('');
+                $('#address').val('');
+                $('#location').val('');
             }
         });
 
@@ -172,22 +174,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = document.getElementById('phone_number');
             const phoneError = document.getElementById('phone_error');
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 0) {
-                    const firstDigit = value.charAt(0);
-                    if (firstDigit !== '9' && firstDigit !== '7') {
-                        phoneError.textContent = 'Phone number must start with 9 or 7';
-                        phoneError.style.display = 'block';
-                    } else {
-                        phoneError.style.display = 'none';
+            
+            if (phoneInput && phoneError) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    
+                    // Format as US phone number
+                    if (value.length > 0) {
+                        if (value.length <= 3) {
+                            value = value;
+                        } else if (value.length <= 6) {
+                            value = value.slice(0, 3) + '-' + value.slice(3);
+                        } else {
+                            value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10);
+                        }
                     }
-                }
-                if (value.length > 9) {
-                    value = value.slice(0, 9);
-                }
-                e.target.value = value;
-            });
+                    
+                    // Limit to 10 digits (excluding formatting)
+                    const digitsOnly = value.replace(/\D/g, '');
+                    if (digitsOnly.length > 10) {
+                        value = value.slice(0, 12); // Account for dashes
+                    }
+                    
+                    e.target.value = value;
+                    phoneError.style.display = 'none';
+                });
+            }
         });
     </script>
 @endpush
@@ -226,12 +238,12 @@
                                 <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="phone_number" class="form-label">{{ __('Phone Number') }} <span class="text-danger">*</span></label>
+                                <label for="phone_number" class="form-label">{{ __('Phone Number') }}</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">+251</span>
-                                    <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ old('phone_number') }}" placeholder="Enter phone number (e.g. 912345678)" required>
+                                    <span class="input-group-text">+1</span>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" placeholder="Enter phone number (e.g. 555-123-4567)">
                                 </div>
-                                <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                                <small class="text-muted">Enter US phone number (optional)</small>
                                 <span id="phone_error" class="text-danger" style="display: none;"></span>
                             </div>
                             <div class="form-group col-md-6">
@@ -291,24 +303,28 @@
                     <div class="card-body">
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
-                                <label for="sub_city" class="form-label">{{ __('Sub City') }}</label>
-                                <input type="text" class="form-control" id="sub_city" name="sub_city" value="{{ old('sub_city') }}">
+                                <label for="country" class="form-label">{{ __('Country') }}</label>
+                                <input type="text" class="form-control" id="country" name="country" value="{{ old('country') }}">
                             </div>
                             <div class="col-md-4">
-                                <label for="woreda" class="form-label">{{ __('Woreda') }}</label>
-                                <input type="text" class="form-control" id="woreda" name="woreda" value="{{ old('woreda') }}">
+                                <label for="state" class="form-label">{{ __('State/Province') }}</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ old('state') }}">
                             </div>
                             <div class="col-md-4">
-                                <label for="house_number" class="form-label">{{ __('House Number') }}</label>
-                                <input type="text" class="form-control" id="house_number" name="house_number" value="{{ old('house_number') }}">
+                                <label for="city" class="form-label">{{ __('City') }}</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="zip_code" class="form-label">{{ __('Zip Code') }}</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ old('zip_code') }}">
+                            </div>
+                            <div class="col-md-8">
                                 <label for="location" class="form-label">{{ __('Location') }}</label>
                                 <input type="text" class="form-control" id="location" name="location" value="{{ old('location') }}">
                             </div>
-                            <div class="col-md-6">
-                                <label for="city" class="form-label">{{ __('City') }}</label>
-                                <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">{{ __('Address') }}</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="{{ __('Enter full address') }}">{{ old('address') }}</textarea>
                             </div>
                         </div>
                     </div>

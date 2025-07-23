@@ -141,34 +141,18 @@
                                                     <hr class="my-3" />
                                                     <div class="mb-1 row">
                                                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                            {{ __('Woreda') }} :
+                                                            {{ __('Country') }} :
                                                         </label>
                                                         <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                            {{ $property->woreda }}
+                                                            {{ $property->country }}
                                                         </div>
                                                     </div>
                                                     <div class="mb-1 row">
                                                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                            {{ __('Sub-city') }} :
+                                                            {{ __('State/Province') }} :
                                                         </label>
                                                         <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                            {{ $property->sub_city }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-1 row">
-                                                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                            {{ __('House Number') }} :
-                                                        </label>
-                                                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                            {{ $property->house_number }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-1 row">
-                                                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
-                                                            {{ __('Location') }} :
-                                                        </label>
-                                                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
-                                                            {{ $property->location }}
+                                                            {{ $property->state }}
                                                         </div>
                                                     </div>
                                                     <div class="mb-1 row">
@@ -177,6 +161,30 @@
                                                         </label>
                                                         <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
                                                             {{ $property->city }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-1 row">
+                                                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                                            {{ __('Zip Code') }} :
+                                                        </label>
+                                                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
+                                                            {{ $property->zip_code }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-1 row">
+                                                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                                            {{ __('Address') }} :
+                                                        </label>
+                                                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
+                                                            {{ $property->address }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-1 row">
+                                                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                                            {{ __('Location') }} :
+                                                        </label>
+                                                        <div class="col-lg-6 col-md-12 col-sm-12 d-flex align-items-center">
+                                                            {{ $property->location }}
                                                         </div>
                                                     </div>
                                                     <hr class="my-3" />

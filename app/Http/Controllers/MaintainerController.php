@@ -53,7 +53,7 @@ class MaintainerController extends Controller
                     'last_name' => 'required',
                     'email' => 'required',
                     'password' => 'required',
-                    'phone_number' => 'required',
+                    'phone_number' => ['nullable', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
                     'property_id' => 'required',
                     'type_id' => 'required',
                 ]
@@ -186,7 +186,7 @@ class MaintainerController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required',
-                    'phone_number' => 'required',
+                    'phone_number' => ['nullable', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
                     'property_id' => 'required',
                     'type_id' => 'required',
                 ]

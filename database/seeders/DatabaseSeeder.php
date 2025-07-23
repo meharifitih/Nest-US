@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,
             DefaultDataUsersTableSeeder::class,
+            AddressFieldsMigrationSeeder::class, // Migrate existing data to new address fields
+            SampleDataSeeder::class, // Add sample data with new address fields
         ]);
     }
 }

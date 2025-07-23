@@ -48,10 +48,10 @@
                     <div class="col-md-6">
                         {{Form::label('phone_number',__('User Phone Number'),array('class'=>'form-label')) }}
                         <div class="input-group">
-                            <span class="input-group-text">+251</span>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ preg_replace('/^\\+251/', '', $user->phone_number) }}" placeholder="912345678" required />
+                            <span class="input-group-text">+1</span>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ preg_replace('/^\\+1/', '', $user->phone_number) }}" placeholder="Enter phone number (e.g. 555-123-4567)" />
                         </div>
-                        <small class="text-muted">Phone will be saved as +251XXXXXXXXX. Enter 9 digits starting with 9 or 7.</small>
+                        <small class="text-muted">Enter US phone number (optional)</small>
                         <span id="phone_error" class="text-danger" style="display: none;"></span>
                     </div>
                 </div>
@@ -63,28 +63,4 @@
         </div>
     </div>
 </div>
-<script>
-setTimeout(function() {
-    const phoneInput = document.getElementById('phone_number');
-    const phoneError = document.getElementById('phone_error');
-    if (phoneInput && phoneError) {
-        phoneInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 0) {
-                const firstDigit = value.charAt(0);
-                if (firstDigit !== '9' && firstDigit !== '7') {
-                    phoneError.textContent = 'Phone number must start with 9 or 7';
-                    phoneError.style.display = 'block';
-                } else {
-                    phoneError.style.display = 'none';
-                }
-            }
-            if (value.length > 9) {
-                value = value.slice(0, 9);
-            }
-            e.target.value = value;
-        });
-    }
-}, 300);
-</script>
 @endsection

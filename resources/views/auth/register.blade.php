@@ -13,29 +13,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = document.getElementById('phone_number');
             const phoneError = document.getElementById('phone_error');
-            
             phoneInput.addEventListener('input', function(e) {
                 let value = e.target.value;
-                // Remove any non-digit characters
-                value = value.replace(/\D/g, '');
-                
-                // Check if number starts with 9 (Ethio Telecom) or 7 (Safaricom)
-                if (value.length > 0) {
-                    const firstDigit = value.charAt(0);
-                    if (firstDigit !== '9' && firstDigit !== '7') {
-                        phoneError.textContent = 'Phone number must start with 9 (Ethio Telecom) or 7 (Safaricom)';
-                        phoneError.style.display = 'block';
-                    } else {
-                        phoneError.style.display = 'none';
-                    }
+                // Updated regex to match backend
+                const usPhoneRegex = /^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/;
+                if (value.length > 0 && !usPhoneRegex.test(value)) {
+                    phoneError.textContent = 'Enter a valid US phone number.';
+                    phoneError.style.display = 'block';
+                } else {
+                    phoneError.style.display = 'none';
                 }
-                
-                // Limit to 9 digits
-                if (value.length > 9) {
-                    value = value.slice(0, 9);
-                }
-                
-                e.target.value = value;
             });
         });
     </script>
@@ -82,11 +69,10 @@
             </div>
             <div class="form-floating mb-3">
                 <div class="input-group">
-                    <span class="input-group-text">+251</span>
                     <input type="text" class="form-control" id="phone_number" name="phone_number"
-                        placeholder="Phone Number (e.g., 912345678)" value="{{ old('phone_number') }}" required />
+                        placeholder="Phone Number (e.g., (555) 123-4567 or 555-123-4567)" value="{{ old('phone_number') }}" required />
                 </div>
-                <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                <small class="text-muted">Enter a valid US phone number.</small>
                 <span id="phone_error" class="text-danger" style="display: none;"></span>
                 @error('phone_number')
                     <span class="invalid-phone_number text-danger" role="alert">

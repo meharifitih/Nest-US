@@ -20,6 +20,10 @@ class TenantController extends Controller
 
     public function index(Request $request)
     {
+        if (!\Auth::check() || parentId() === null) {
+            return redirect()->route('login');
+        }
+        
         if (\Auth::user()->can('manage tenant')) {
             $query = Tenant::where('parent_id', parentId())
                 ->with(['user', 'properties', 'units']);
@@ -91,65 +95,50 @@ class TenantController extends Controller
     public function store(Request $request)
     {
         if (\Auth::user()->can('create tenant')) {
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'first_name' => 'required',
-                    'last_name' => 'required',
-                    'email' => 'required|email|unique:users',
-                    'phone_number' => 'required|regex:/^[97][0-9]{8}$/',
-                    'property' => 'required',
-                    'unit' => 'required',
-                ]
-            );
-
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => $messages->first(),
-                    'old_input' => $request->all()
-                ]);
-            }
-
-            // Check if unit is already occupied by an active tenant
-            $existingTenant = Tenant::where('unit', $request->unit)
-                ->where('lease_end_date', '>=', now()->format('Y-m-d'))
-                ->first();
-
-            if ($existingTenant) {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => 'This unit is already occupied by an active tenant. Please select a different unit.',
-                    'old_input' => $request->all()
-                ]);
-            }
-
-            // Generate a random password
-            $password = \Illuminate\Support\Str::random(8);
-
-            $phone = preg_replace('/\D/', '', $request->phone_number);
-            if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                $phone = '+251' . $phone;
-            } else if (substr($phone, 0, 3) === '251' && strlen($phone) === 12) {
-                $phone = '+' . $phone;
-            } else if (substr($phone, 0, 4) === '+251' && strlen($phone) === 13) {
-                $phone = $phone;
-            } else {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => 'Phone number must be 9 digits starting with 9 or 7',
-                    'old_input' => $request->all()
-                ]);
-            }
-
             try {
+                $validator = \Validator::make(
+                    $request->all(),
+                    [
+                        'first_name' => 'required',
+                        'last_name' => 'required',
+                        'email' => 'required|email|unique:users',
+                        'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/',
+                        'property' => 'required',
+                        'unit' => 'required',
+                    ]
+                );
+
+                if ($validator->fails()) {
+                    $messages = $validator->getMessageBag();
+                    return response()->json([
+                        'status' => 'error',
+                        'msg' => $messages->first(),
+                        'old_input' => $request->all()
+                    ]);
+                }
+
+                // Check if unit is already occupied by an active tenant
+                $existingTenant = Tenant::where('unit', $request->unit)
+                    ->where('lease_end_date', '>=', now()->format('Y-m-d'))
+                    ->first();
+
+                if ($existingTenant) {
+                    return response()->json([
+                        'status' => 'error',
+                        'msg' => 'This unit is already occupied by an active tenant. Please select a different unit.',
+                        'old_input' => $request->all()
+                    ]);
+                }
+
+                // Generate a random password
+                $password = \Illuminate\Support\Str::random(8);
+
                 $user = new User();
                 $user->first_name = $request->first_name;
                 $user->last_name = $request->last_name;
                 $user->email = $request->email;
                 $user->password = Hash::make($password);
-                $user->phone_number = $phone;
+                $user->phone_number = $request->phone_number;
                 $user->type = 'tenant';
                 $user->email_verified_at = now();
                 $user->profile = 'avatar.png';
@@ -166,11 +155,12 @@ class TenantController extends Controller
                 $tenant = new Tenant();
                 $tenant->user_id = $user->id;
                 $tenant->family_member = $request->family_member;
-                $tenant->sub_city = $request->sub_city;
-                $tenant->woreda = $request->woreda;
-                $tenant->house_number = $request->house_number;
-                $tenant->location = $request->location;
+                $tenant->country = $request->country;
+                $tenant->state = $request->state;
                 $tenant->city = $request->city;
+                $tenant->zip_code = $request->zip_code;
+                $tenant->address = $request->address;
+                $tenant->location = $request->location;
                 $tenant->property = $request->property;
                 $tenant->unit = $request->unit;
                 $tenant->lease_start_date = $request->lease_start_date;
@@ -265,13 +255,14 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users,email,' . $tenant->user_id,
-                    'phone_number' => 'required|regex:/^[97][0-9]{8}$/',
+                    'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/',
                     'family_member' => 'required',
-                    'sub_city' => 'required',
-                    'woreda' => 'required',
-                    'house_number' => 'required',
-                    'location' => 'required',
+                    'country' => 'required',
+                    'state' => 'required',
                     'city' => 'required',
+                    'zip_code' => 'required',
+                    'address' => 'required',
+                    'location' => 'required',
                     'property' => 'required',
                     'unit' => 'required',
                     'lease_start_date' => 'required',
@@ -303,20 +294,7 @@ class TenantController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $phone = preg_replace('/\D/', '', $request->phone_number);
-            if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                $phone = '+251' . $phone;
-            } else if (substr($phone, 0, 3) === '251' && strlen($phone) === 12) {
-                $phone = '+' . $phone;
-            } else if (substr($phone, 0, 4) === '+251' && strlen($phone) === 13) {
-                $phone = $phone;
-            } else {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => 'Phone number must be 9 digits starting with 9 or 7',
-                ]);
-            }
-            $user->phone_number = $phone;
+            $user->phone_number = $request->phone_number;
             $user->save();
 
             if ($request->profile != '') {
@@ -330,11 +308,12 @@ class TenantController extends Controller
             }
 
             $tenant->family_member = $request->family_member;
-            $tenant->sub_city = $request->sub_city;
-            $tenant->woreda = $request->woreda;
-            $tenant->house_number = $request->house_number;
-            $tenant->location = $request->location;
+            $tenant->country = $request->country;
+            $tenant->state = $request->state;
             $tenant->city = $request->city;
+            $tenant->zip_code = $request->zip_code;
+            $tenant->address = $request->address;
+            $tenant->location = $request->location;
             $tenant->property = $request->property;
             $tenant->unit = $request->unit;
             $tenant->lease_start_date = $request->lease_start_date;

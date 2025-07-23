@@ -969,22 +969,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     const phoneInput = document.getElementById('phone_number');
     const phoneError = document.getElementById('phone_error');
-    phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            const firstDigit = value.charAt(0);
-            if (firstDigit !== '9' && firstDigit !== '7') {
-                phoneError.textContent = 'Phone number must start with 9 or 7';
-                phoneError.style.display = 'block';
-            } else {
-                phoneError.style.display = 'none';
+    
+    if (phoneInput && phoneError) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Format as US phone number
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = value.slice(0, 3) + '-' + value.slice(3);
+                } else {
+                    value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10);
+                }
             }
-        }
-        if (value.length > 9) {
-            value = value.slice(0, 9);
-        }
-        e.target.value = value;
-    });
+            
+            // Limit to 10 digits (excluding formatting)
+            const digitsOnly = value.replace(/\D/g, '');
+            if (digitsOnly.length > 10) {
+                value = value.slice(0, 12); // Account for dashes
+            }
+            
+            e.target.value = value;
+            phoneError.style.display = 'none';
+        });
+    }
 });
 </script>
 @endpush

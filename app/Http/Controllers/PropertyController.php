@@ -51,10 +51,11 @@ class PropertyController extends Controller
                     'description' => 'required',
                     'type' => 'required',
                     'location' => 'required',
-                    'house_number' => 'required',
-                    'woreda' => 'required',
-                    'sub_city' => 'required',
+                    'country' => 'required',
+                    'state' => 'required',
                     'city' => 'required',
+                    'zip_code' => 'required',
+                    'address' => 'required',
                     'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                 ]
             );
@@ -83,10 +84,11 @@ class PropertyController extends Controller
             $property->name = $request->name;
             $property->location = $request->location;
             $property->description = $request->description;
-            $property->house_number = $request->house_number;
-            $property->woreda = $request->woreda;
-            $property->sub_city = $request->sub_city;
+            $property->country = $request->country;
+            $property->state = $request->state;
             $property->city = $request->city;
+            $property->zip_code = $request->zip_code;
+            $property->address = $request->address;
             $property->type = $request->type;
             $property->parent_id = parentId();
             $property->save();
@@ -165,10 +167,11 @@ class PropertyController extends Controller
                     'description' => 'required',
                     'type' => 'required',
                     'location' => 'required',
-                    'house_number' => 'required',
-                    'woreda' => 'required',
-                    'sub_city' => 'required',
+                    'country' => 'required',
+                    'state' => 'required',
                     'city' => 'required',
+                    'zip_code' => 'required',
+                    'address' => 'required',
                 ]
 
             );
@@ -187,10 +190,11 @@ class PropertyController extends Controller
             $property->name = $request->name;
             $property->location = $request->location;
             $property->description = $request->description;
-            $property->house_number = $request->house_number;
-            $property->woreda = $request->woreda;
-            $property->sub_city = $request->sub_city;
+            $property->country = $request->country;
+            $property->state = $request->state;
             $property->city = $request->city;
+            $property->zip_code = $request->zip_code;
+            $property->address = $request->address;
             $property->type = $request->type;
             $property->save();
 
@@ -636,12 +640,12 @@ class PropertyController extends Controller
                     'email' => 'john@email.com',
                     'phone_number' => '251912345678',
                     'family_member' => 3,
-                    'sub_city' => 'Bole',
-                    'woreda' => '01',
-                    'house_number' => '123',
-                    'location' => 'Main Road',
+                    'country' => 'Ethiopia',
+                    'state' => 'Addis Ababa',
                     'city' => 'Addis Ababa',
-                    'unit_name' => '',
+                    'zip_code' => '1000',
+                    'address' => '123 Main Street',
+                    'location' => 'Main Road',
                     'lease_start_date' => '2024-01-01',
                     'lease_end_date' => '2025-01-01',
                     'notes' => 'Test tenant',
@@ -681,11 +685,12 @@ class PropertyController extends Controller
             return response()->json(['error' => 'Property not found'], 404);
         }
         return response()->json([
-            'sub_city' => $property->sub_city,
-            'woreda' => $property->woreda,
-            'house_number' => $property->house_number,
-            'location' => $property->location,
+            'country' => $property->country,
+            'state' => $property->state,
             'city' => $property->city,
+            'zip_code' => $property->zip_code,
+            'address' => $property->address,
+            'location' => $property->location,
         ]);
     }
 
@@ -804,11 +809,12 @@ class PropertyController extends Controller
                     'email' => 'john@email.com',
                     'phone_number' => '251912345678',
                     'family_member' => 3,
-                    'sub_city' => 'Bole',
-                    'woreda' => '01',
-                    'house_number' => '123',
-                    'location' => 'Main Road',
+                    'country' => 'Ethiopia',
+                    'state' => 'Addis Ababa',
                     'city' => 'Addis Ababa',
+                    'zip_code' => '1000',
+                    'address' => '123 Main Street',
+                    'location' => 'Main Road',
                     'lease_start_date' => '2024-01-01',
                     'lease_end_date' => '2025-01-01',
                     'tenant_notes' => 'Test tenant',

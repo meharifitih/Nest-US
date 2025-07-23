@@ -62,11 +62,12 @@ class RegisteredUserController extends Controller
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/'
             ],
-            'phone_number' => ['required', 'string', 'regex:/^[79]\d{8}$/'],
+            'phone_number' => ['required', 'string', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
             'type' => ['required', 'string', 'in:tenant,maintainer,owner,super admin'],
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
             'password.min' => 'Password must be at least 8 characters long.',
+            'phone_number.regex' => 'Enter a valid US phone number.'
         ]);
 
         $parentId = parentId();
@@ -81,7 +82,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type' => $request->type,
-                'phone_number' => '+251' . $request->phone_number,
+                'phone_number' => $request->phone_number,
                 'profile' => 'avatar.png',
                 'lang' => 'english',
                 'subscription' => null,

@@ -81,7 +81,7 @@ class UserController extends Controller
                             'name' => 'required',
                             'email' => 'required|email|unique:users',
                             'password' => 'required|min:6',
-                            'phone_number' => 'required|regex:/^[79][0-9]{8}$/|unique:users,phone_number',
+                            'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/|unique:users,phone_number',
                             'fayda_id' => 'required|unique:users',
                         ]
                     );
@@ -91,18 +91,11 @@ class UserController extends Controller
                         return redirect()->back()->with('error', $messages->first());
                     }
 
-                    $phone = preg_replace('/\D/', '', $request->phone_number);
-                    if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                        $phone = '+251' . $phone;
-                    } else {
-                        return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
-                    }
-
                     $user = new User();
                     $user->first_name = $request->name;
                     $user->email = $request->email;
                     $user->password = \Hash::make($request->password);
-                    $user->phone_number = $phone;
+                    $user->phone_number = $request->phone_number;
                     $user->fayda_id = $request->fayda_id;
                     $user->type = 'owner';
                     $user->profile = 'avatar.png';
@@ -222,12 +215,7 @@ class UserController extends Controller
                     $user->first_name = $request->first_name;
                     $user->last_name = $request->last_name;
                     $user->email = $request->email;
-                    $phone = preg_replace('/\D/', '', $request->phone_number);
-                    if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                        $phone = '+251' . $phone;
-                    } else {
-                        return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
-                    }
+                    $user->phone_number = $request->phone_number;
                     $user->fayda_id = $request->fayda_id;
                     $user->password = \Hash::make($request->password);
                     $user->type = $userRole->name;
@@ -235,7 +223,6 @@ class UserController extends Controller
                     $user->profile = 'avatar.png';
                     $user->lang = 'english';
                     $user->parent_id = parentId();
-                    $user->phone_number = $phone;
                     
                     // Set approval status based on user type
                     if ($userRole->name === 'tenant' || $userRole->name === 'maintainer') {
@@ -328,7 +315,7 @@ class UserController extends Controller
                     [
                         'name' => 'required',
                         'email' => 'required|email|unique:users,email,' . $id,
-                        'phone_number' => 'required|regex:/^[79][0-9]{8}$/|unique:users,phone_number,' . $id,
+                        'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/|unique:users,phone_number,' . $id,
                         'fayda_id' => 'nullable|unique:users,fayda_id,' . $id,
                     ]
                 );
@@ -348,7 +335,7 @@ class UserController extends Controller
                         'last_name' => 'required',
                         'email' => 'required|email|unique:users,email,' . $id,
                         'role' => 'required',
-                        'phone_number' => 'required|regex:/^[79][0-9]{8}$/|unique:users,phone_number,' . $id,
+                        'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/|unique:users,phone_number,' . $id,
                         'fayda_id' => 'nullable|unique:users,fayda_id,' . $id,
                     ]
                 );
@@ -362,15 +349,9 @@ class UserController extends Controller
                 $user->first_name = $request->first_name;
                 $user->last_name = $request->last_name;
                 $user->email = $request->email;
-                $phone = preg_replace('/\D/', '', $request->phone_number);
-                if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-                    $phone = '+251' . $phone;
-                } else {
-                    return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
-                }
+                $user->phone_number = $request->phone_number;
                 $user->fayda_id = $request->fayda_id;
                 $user->type = $userRole->name;
-                $user->phone_number = $phone;
                 $user->save();
                 $user->roles()->sync($userRole);
                 return redirect()->route('users.index')->with('success', 'User successfully updated.');

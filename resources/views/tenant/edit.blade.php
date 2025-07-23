@@ -126,22 +126,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = document.getElementById('phone_number');
             const phoneError = document.getElementById('phone_error');
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 0) {
-                    const firstDigit = value.charAt(0);
-                    if (firstDigit !== '9' && firstDigit !== '7') {
-                        phoneError.textContent = 'Phone number must start with 9 or 7';
-                        phoneError.style.display = 'block';
-                    } else {
-                        phoneError.style.display = 'none';
+            
+            if (phoneInput && phoneError) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    
+                    // Format as US phone number
+                    if (value.length > 0) {
+                        if (value.length <= 3) {
+                            value = value;
+                        } else if (value.length <= 6) {
+                            value = value.slice(0, 3) + '-' + value.slice(3);
+                        } else {
+                            value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10);
+                        }
                     }
-                }
-                if (value.length > 9) {
-                    value = value.slice(0, 9);
-                }
-                e.target.value = value;
-            });
+                    
+                    // Limit to 10 digits (excluding formatting)
+                    const digitsOnly = value.replace(/\D/g, '');
+                    if (digitsOnly.length > 10) {
+                        value = value.slice(0, 12); // Account for dashes
+                    }
+                    
+                    e.target.value = value;
+                    phoneError.style.display = 'none';
+                });
+            }
         });
     </script>
 @endpush
@@ -182,10 +192,10 @@
                             <div class="form-group col-lg-6 col-md-6">
                                 {{ Form::label('phone_number', __('Phone Number'), ['class' => 'form-label']) }}
                                 <div class="input-group">
-                                    <span class="input-group-text">+251</span>
-                                    <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ isset($user->phone_number) ? ltrim($user->phone_number, '+251') : '' }}" placeholder="Enter phone number (e.g. 912345678)" required>
+                                    <span class="input-group-text">+1</span>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ isset($user->phone_number) ? ltrim($user->phone_number, '+1') : '' }}" placeholder="Enter phone number (e.g. 555-123-4567)">
                                 </div>
-                                <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                                <small class="text-muted">Enter US phone number (optional)</small>
                                 <span id="phone_error" class="text-danger" style="display: none;"></span>
                             </div>
                             <div class="form-group col-lg-6 col-md-6">
@@ -209,24 +219,28 @@
                     <div class="card-body">
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
-                                {{ Form::label('sub_city', __('Sub City'), ['class' => 'form-label']) }}
-                                {{ Form::text('sub_city', $tenant->sub_city, ['class' => 'form-control', 'placeholder' => __('Enter Sub City')]) }}
+                                {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
+                                {{ Form::text('country', $tenant->country, ['class' => 'form-control', 'placeholder' => __('Enter Country')]) }}
                             </div>
                             <div class="col-md-4">
-                                {{ Form::label('woreda', __('Woreda'), ['class' => 'form-label']) }}
-                                {{ Form::text('woreda', $tenant->woreda, ['class' => 'form-control', 'placeholder' => __('Enter Woreda')]) }}
+                                {{ Form::label('state', __('State/Province'), ['class' => 'form-label']) }}
+                                {{ Form::text('state', $tenant->state, ['class' => 'form-control', 'placeholder' => __('Enter State/Province')]) }}
                             </div>
                             <div class="col-md-4">
-                                {{ Form::label('house_number', __('House Number'), ['class' => 'form-label']) }}
-                                {{ Form::text('house_number', $tenant->house_number, ['class' => 'form-control', 'placeholder' => __('Enter House Number')]) }}
+                                {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
+                                {{ Form::text('city', $tenant->city, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                {{ Form::label('zip_code', __('Zip Code'), ['class' => 'form-label']) }}
+                                {{ Form::text('zip_code', $tenant->zip_code, ['class' => 'form-control', 'placeholder' => __('Enter Zip Code')]) }}
+                            </div>
+                            <div class="col-md-8">
                                 {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
                                 {{ Form::text('location', $tenant->location, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
                             </div>
-                            <div class="col-md-6">
-                                {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
-                                {{ Form::text('city', $tenant->city, ['class' => 'form-control', 'placeholder' => __('Enter City')]) }}
+                            <div class="col-md-12">
+                                {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}
+                                {{ Form::textarea('address', $tenant->address, ['class' => 'form-control', 'rows' => 3, 'placeholder' => __('Enter full address')]) }}
                             </div>
                         </div>
                     </div>

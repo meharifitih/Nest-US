@@ -34,6 +34,7 @@ class SettingController extends Controller
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'business_license' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+                'phone_number' => ['nullable', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
             ]
         );
         if ($validator->fails()) {
@@ -67,13 +68,7 @@ class SettingController extends Controller
         }
         $user->first_name = $request->name;
         $user->email = $request->email;
-        $phone = preg_replace('/\D/', '', $request->phone_number);
-        if (strlen($phone) === 9 && ($phone[0] === '9' || $phone[0] === '7')) {
-            $phone = '+251' . $phone;
-        } else {
-            return redirect()->back()->with('error', 'Phone number must be 9 digits starting with 9 or 7');
-        }
-        $user->phone_number = $phone;
+        $user->phone_number = $request->phone_number;
 
         if ($request->hasFile('business_license') && $loginUser->type == 'owner') {
             $filenameWithExt = $request->file('business_license')->getClientOriginalName();

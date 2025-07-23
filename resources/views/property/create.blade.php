@@ -229,26 +229,34 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-3">
                             <div class="form-group">
-                                {{ Form::label('house_number', __('House Number'), ['class' => 'form-label']) }}
-                                {{ Form::text('house_number', null, ['class' => 'form-control', 'placeholder' => __('Enter House Number'), 'required' => 'required']) }}
+                                {{ Form::label('country', __('Country'), ['class' => 'form-label']) }}
+                                {{ Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Enter Country'), 'required' => 'required']) }}
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                {{ Form::label('woreda', __('Woreda'), ['class' => 'form-label']) }}
-                                {{ Form::text('woreda', null, ['class' => 'form-control', 'placeholder' => __('Enter Woreda'), 'required' => 'required']) }}
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {{ Form::label('sub_city', __('Sub-city'), ['class' => 'form-label']) }}
-                                {{ Form::text('sub_city', null, ['class' => 'form-control', 'placeholder' => __('Enter Sub-city'), 'required' => 'required']) }}
+                                {{ Form::label('state', __('State/Province'), ['class' => 'form-label']) }}
+                                {{ Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('Enter State/Province'), 'required' => 'required']) }}
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 {{ Form::label('city', __('City'), ['class' => 'form-label']) }}
                                 {{ Form::text('city', null, ['class' => 'form-control', 'placeholder' => __('Enter City'), 'required' => 'required']) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ Form::label('zip_code', __('Zip Code'), ['class' => 'form-label']) }}
+                                {{ Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => __('Enter Zip Code'), 'required' => 'required']) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ Form::label('address', __('Address'), ['class' => 'form-label']) }}
+                                {{ Form::textarea('address', null, ['class' => 'form-control', 'rows' => 3, 'placeholder' => __('Enter Property Address'), 'required' => 'required']) }}
                             </div>
                         </div>
                     </div>
