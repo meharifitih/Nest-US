@@ -70,11 +70,45 @@ class SubscriptionController extends Controller
     public function show($id)
     {
         if (\Auth::user()->type == 'owner' || \Auth::user()->can('buy pricing packages')) {
-            $id = \Illuminate\Support\Facades\Crypt::decrypt($id);
-            $subscription = Subscription::findOrFail($id);
+            try {
+                \Log::info('Subscription show request', [
+                    'encrypted_id' => $id,
+                    'user_id' => \Auth::id(),
+                    'user_type' => \Auth::user()->type
+                ]);
+                
+                $decryptedId = \Illuminate\Support\Facades\Crypt::decrypt($id);
+                \Log::info('Decrypted ID', ['decrypted_id' => $decryptedId]);
+                
+                $subscription = Subscription::find($decryptedId);
+                
+                if (!$subscription) {
+                    \Log::error('Subscription not found', ['decrypted_id' => $decryptedId]);
+                    return redirect()->route('subscriptions.index')->with('error', __('Subscription not found.'));
+                }
+                
+                \Log::info('Subscription found', [
+                    'subscription_id' => $subscription->id,
+                    'subscription_title' => $subscription->title
+                ]);
+                
             $paymentAccounts = \App\Models\PaymentAccount::where('is_active', 1)->get();
             $settings = subscriptionPaymentSettings();
             return view('subscription.show', compact('subscription', 'settings', 'paymentAccounts'));
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                \Log::error('Failed to decrypt subscription ID', [
+                    'encrypted_id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                return redirect()->route('subscriptions.index')->with('error', __('Invalid subscription link.'));
+            } catch (\Exception $e) {
+                \Log::error('Error in subscription show', [
+                    'encrypted_id' => $id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return redirect()->route('subscriptions.index')->with('error', __('An error occurred while loading the subscription.'));
+            }
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -172,26 +206,85 @@ class SubscriptionController extends Controller
 
     public function stripePayment(Request $request, $ids)
     {
+        \Log::info('Stripe payment endpoint hit', [
+            'request_method' => $request->method(),
+            'request_url' => $request->url(),
+            'request_data' => $request->all(),
+            'user_id' => \Auth::id()
+        ]);
+        
         if (\Auth::user()->can('buy pricing packages')) {
             $settings = subscriptionPaymentSettings();
+            
+            // Debug settings
+            \Log::info('Payment settings loaded', [
+                'stripe_payment' => $settings['STRIPE_PAYMENT'] ?? 'not set',
+                'stripe_key' => !empty($settings['STRIPE_KEY']) ? 'set' : 'not set',
+                'stripe_secret' => !empty($settings['STRIPE_SECRET']) ? 'set' : 'not set',
+                'all_settings' => $settings
+            ]);
+            
             $authUser = \Auth::user();
             $id = \Illuminate\Support\Facades\Crypt::decrypt($ids);
             $subscription = Subscription::find($id);
             if ($subscription) {
                 try {
                     $amount = Coupon::couponApply($id, $request->coupon);
+                    
+                    // Ensure amount is always defined
+                    if (!isset($amount) || $amount === null) {
+                        $amount = $subscription->package_amount;
+                    }
+                    
+                    // Debug logging
+                    \Log::info('Stripe payment request', [
+                        'request_data' => $request->all(),
+                        'subscription_id' => $id,
+                        'stripe_token' => $request->stripeToken ? 'present' : 'missing',
+                        'stripe_token_value' => $request->stripeToken,
+                        'stripe_token_length' => $request->stripeToken ? strlen($request->stripeToken) : 0,
+                        'amount' => $amount,
+                        'currency' => strtolower($settings['CURRENCY']),
+                        'stripe_secret_length' => strlen($settings['STRIPE_SECRET']),
+                        'stripe_secret_key' => substr($settings['STRIPE_SECRET'], 0, 10) . '...',
+                        'request_method' => $request->method(),
+                        'request_url' => $request->url(),
+                        'all_request_headers' => $request->headers->all()
+                    ]);
                     $packageTransId = uniqid('', true);
                     if ($amount > 0) {
-                        Stripe\Stripe::setApiKey($settings['STRIPE_SECRET']);
-                        $data = Stripe\Charge::create(
-                            [
-                                "amount" => 100 * $amount,
-                                "currency" => $settings['CURRENCY'],
-                                "source" => $request->stripeToken,
-                                "description" => " Subscription - " . $subscription->name,
-                                "metadata" => ["package_transaction_id" => $packageTransId],
-                            ]
-                        );
+                        // Check if Stripe token is present
+                        if (empty($request->stripeToken)) {
+                            \Log::error('Stripe token is missing', [
+                                'request_data' => $request->all(),
+                                'subscription_id' => $id
+                            ]);
+                            return redirect()->route('subscriptions.index')->with('error', __('Stripe token is missing. Please try again.'));
+                        }
+                        
+                                                \Log::info('Creating Stripe charge', [
+                            'amount' => 100 * $amount,
+                            'currency' => strtolower($settings['CURRENCY']),
+                            'stripe_token' => $request->stripeToken,
+                            'description' => "Subscription - " . $subscription->title,
+                            'metadata' => ["package_transaction_id" => $packageTransId]
+                        ]);
+                        
+                        \Stripe\Stripe::setApiKey($settings['STRIPE_SECRET']);
+                        $data = \Stripe\Charge::create([
+                            "amount" => 100 * $amount,
+                            "currency" => strtolower($settings['CURRENCY']),
+                            "source" => $request->stripeToken,
+                            "description" => "Subscription - " . $subscription->title,
+                            "metadata" => ["package_transaction_id" => $packageTransId],
+                        ]);
+                        
+                        \Log::info('Stripe charge created successfully', [
+                            'charge_id' => $data->id,
+                            'status' => $data->status,
+                            'amount' => $data->amount,
+                            'currency' => $data->currency
+                        ]);
                     } else {
                         $data['amount_refunded'] = 0;
                         $data['failure_code'] = '';
@@ -208,7 +301,9 @@ class SubscriptionController extends Controller
                             $data['amount'] = $amount;
                             $data['subscription_transactions_id'] = $packageTransId;
                             $data['payment_type'] = 'Stripe';
-                            PackageTransaction::transactionData($data);
+                            $data['status'] = 'pending'; // Set status to pending for admin approval
+                            $data['payment_status'] = 'pending';
+                            $transaction = PackageTransaction::transactionData($data);
 
                             if ($subscription->couponCheck() > 0 && !empty($request->coupon)) {
                                 $couhis['coupon'] = $request->coupon;
@@ -216,12 +311,24 @@ class SubscriptionController extends Controller
                                 CouponHistory::couponData($couhis);
                             }
 
-                            $assignPlan = assignSubscription($subscription->id);
-                            if ($assignPlan['is_success']) {
-                                return redirect()->route('subscriptions.index')->with('success', __('Subscription activate successfully.'));
-                            } else {
-                                return redirect()->route('subscriptions.index')->with('error', __($assignPlan['error']));
+                            // Save Stripe receipt URL - Stripe doesn't always provide receipt URL in charge response
+                            // We'll create a receipt URL using the charge ID
+                            $receiptUrl = null;
+                            if (isset($data['id'])) {
+                                $receiptUrl = "https://dashboard.stripe.com/payments/" . $data['id'];
                             }
+                            $transaction->receipt = $receiptUrl;
+                            $transaction->save();
+
+                            \Log::info('Stripe payment successful - transaction created', [
+                                'transaction_id' => $transaction->id,
+                                'subscription_id' => $subscription->id,
+                                'amount' => $amount,
+                                'status' => 'pending',
+                                'receipt_url' => $data['receipt']['url'] ?? null
+                            ]);
+
+                            return redirect()->route('account.pending')->with('success', __('Payment received successfully! Your account is pending admin approval.'));
                         } else {
                             return redirect()->route('subscriptions.index')->with('error', __('Your payment failed.'));
                         }
@@ -229,10 +336,23 @@ class SubscriptionController extends Controller
                         return redirect()->route('subscriptions.index')->with('error', __('Transaction failed.'));
                     }
                 } catch (\Exception $e) {
-                    return redirect()->route('subscriptions.index')->with('error', __($e->getMessage()));
+                    \Log::error('Stripe payment error', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'request_data' => $request->all(),
+                        'subscription_id' => $id,
+                        'stripe_token_present' => $request->has('stripeToken'),
+                        'stripe_token_value' => $request->stripeToken,
+                        'amount' => $amount,
+                        'currency' => strtolower($settings['CURRENCY']),
+                        'stripe_secret_length' => strlen($settings['STRIPE_SECRET']),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]);
+                    return redirect()->route('subscriptions.index')->with('error', __('Payment processing failed. Please try again.'));
                 }
             } else {
-                return redirect()->route('subscriptions.index')->with('error', __('Subscription is not found.'));
+                return redirect()->route('subscriptions.index')->with('error', __('Subscription not found.'));
             }
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));

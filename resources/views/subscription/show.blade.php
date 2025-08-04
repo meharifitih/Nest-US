@@ -3,6 +3,204 @@
     {{ __('Subscription') }}
 @endsection
 
+@section('content')
+    @if(!$subscription)
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                            <h3 class="text-dark mb-3">{{ __('Subscription Not Found') }}</h3>
+                            <p class="text-muted mb-4">{{ __('The subscription you are looking for does not exist or has been removed.') }}</p>
+                            <a href="{{ route('subscriptions.index') }}" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-arrow-left me-2"></i>{{ __('Back to Subscriptions') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @else
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card shadow-lg border-0 rounded-3">
+                        <div class="card-header bg-gradient-primary text-white py-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-crown fa-2x me-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h3 class="mb-1">{{ $subscription->title }}</h3>
+                                    <p class="mb-0 opacity-75">{{ __('Premium Subscription Package') }}</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-light text-dark fs-6 px-3 py-2">
+                                        {{ ucfirst($subscription->interval) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <!-- Package Details -->
+                                <div class="col-lg-6 p-5">
+                                    <h4 class="text-dark mb-4">
+                                        <i class="fas fa-info-circle text-primary me-2"></i>
+                                        {{ __('Package Details') }}
+                                    </h4>
+                                    
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-6">
+                                            <div class="feature-card bg-light rounded-3 p-3 text-center">
+                                                <i class="fas fa-dollar-sign text-success fa-2x mb-2"></i>
+                                                <h6 class="mb-1">{{ __('Amount') }}</h6>
+                                                <span class="text-primary fw-bold fs-5">{{ isset($settings['CURRENCY']) ? $settings['CURRENCY'] : 'USD' }} {{ number_format($subscription->package_amount, 2) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="feature-card bg-light rounded-3 p-3 text-center">
+                                                <i class="fas fa-calendar-alt text-info fa-2x mb-2"></i>
+                                                <h6 class="mb-1">{{ __('Interval') }}</h6>
+                                                <span class="text-primary fw-bold">{{ ucfirst($subscription->interval) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="features-list">
+                                        <div class="feature-item d-flex align-items-center mb-3">
+                                            <i class="fas fa-users text-success me-3"></i>
+                                            <div>
+                                                <strong>{{ __('User Limit') }}</strong>
+                                                <span class="text-muted ms-2">{{ $subscription->user_limit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item d-flex align-items-center mb-3">
+                                            <i class="fas fa-building text-primary me-3"></i>
+                                            <div>
+                                                <strong>{{ __('Property Limit') }}</strong>
+                                                <span class="text-muted ms-2">{{ $subscription->property_limit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item d-flex align-items-center mb-3">
+                                            <i class="fas fa-user-friends text-warning me-3"></i>
+                                            <div>
+                                                <strong>{{ __('Tenant Limit') }}</strong>
+                                                <span class="text-muted ms-2">{{ $subscription->tenant_limit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item d-flex align-items-center mb-3">
+                                            <i class="fas fa-home text-info me-3"></i>
+                                            <div>
+                                                <strong>{{ __('Min Units') }}</strong>
+                                                <span class="text-muted ms-2">{{ $subscription->min_units }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="feature-item d-flex align-items-center">
+                                            <i class="fas fa-home text-info me-3"></i>
+                                            <div>
+                                                <strong>{{ __('Max Units') }}</strong>
+                                                <span class="text-muted ms-2">{{ $subscription->max_units }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Section -->
+                                <div class="col-lg-6 bg-light p-5">
+                                    <h4 class="text-dark mb-4">
+                                        <i class="fas fa-credit-card text-primary me-2"></i>
+                                        {{ __('Payment Methods') }}
+                                    </h4>
+                                    
+                                    <form id="stripe-form" method="POST" action="{{ route('subscription.stripe.payment', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}">
+                                        @csrf
+                                        <input type="hidden" name="subscription_id" value="{{ $subscription->id }}">
+                                        <input type="hidden" name="amount" id="amount" value="{{ $subscription->package_amount }}">
+                                        
+                                        <!-- Payment Method Selection -->
+                                        <div class="payment-methods mb-4">
+                                            @if(isset($settings['STRIPE_PAYMENT']) && $settings['STRIPE_PAYMENT'] == 'on')
+                                                <div class="payment-account-card mb-3">
+                                                    <input type="radio" name="selected_account" id="stripe" value="stripe" class="payment-radio d-none">
+                                                    <label for="stripe" class="payment-label d-block">
+                                                        <div class="payment-content">
+                                                            <div class="payment-icon">
+                                                                <i class="fab fa-stripe fa-2x text-primary"></i>
+                                                            </div>
+                                                            <div class="payment-info">
+                                                                <h6 class="mb-1">{{ __('Credit Card') }}</h6>
+                                                                <small class="text-muted">{{ __('Pay with Stripe') }}</small>
+                                                            </div>
+                                                            <div class="payment-check">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            @endif
+                                            
+                                            @if(isset($settings['BANK_TRANSFER_PAYMENT']) && $settings['BANK_TRANSFER_PAYMENT'] == 'on')
+                                                <div class="payment-account-card mb-3">
+                                                    <input type="radio" name="selected_account" id="other" value="other" class="payment-radio d-none">
+                                                    <label for="other" class="payment-label d-block">
+                                                        <div class="payment-content">
+                                                            <div class="payment-icon">
+                                                                <i class="fas fa-university fa-2x text-success"></i>
+                                                            </div>
+                                                            <div class="payment-info">
+                                                                <h6 class="mb-1">{{ __('Bank Transfer') }}</h6>
+                                                                <small class="text-muted">{{ __('Pay via Bank Transfer') }}</small>
+                                                            </div>
+                                                            <div class="payment-check">
+                                                                <i class="fas fa-check-circle"></i>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Stripe Payment Form -->
+                                        <div id="stripe-payment-form" style="display: none;">
+                                            <div class="payment-form-card">
+                                                <h6 class="mb-3 text-dark">
+                                                    <i class="fas fa-credit-card me-2"></i>
+                                                    {{ __('Credit Card Details') }}
+                                                </h6>
+                                                
+                                                <div class="form-group mb-3">
+                                                    <label for="card-holder-name" class="form-label fw-bold">{{ __('Cardholder Name') }}</label>
+                                                    <input type="text" id="card-holder-name" name="name" class="form-control form-control-lg" 
+                                                           placeholder="{{ __('Enter cardholder name') }}" required>
+                                                </div>
+                                                
+                                                <div class="form-group mb-4">
+                                                    <label for="card-element" class="form-label fw-bold">{{ __('Credit or debit card') }}</label>
+                                                    <div id="card-element" class="form-control form-control-lg">
+                                                        <!-- Stripe Elements will be inserted here -->
+                                                    </div>
+                                                    <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                                                </div>
+                                                
+                                                <button type="submit" id="stripe-pay-button" class="btn btn-primary btn-lg w-100">
+                                                    <i class="fas fa-credit-card me-2"></i>{{ __('Pay with Stripe') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endsection
+
 @push('script-page')
     <script src="https://js.stripe.com/v3/"></script>
     <script>
@@ -41,574 +239,148 @@
             })
         });
     </script>
-
     <script>
-        @if ($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']) && !empty($settings['STRIPE_SECRET']))
-            var stripe_key = Stripe('{{ $settings['STRIPE_KEY'] }}');
-            var stripe_elements = stripe_key.elements();
-            var strip_css = {
-                base: {
-                    fontSize: '14px',
-                    color: '#32325d',
-                },
-            };
-            var stripe_card = stripe_elements.create('card', {
-                style: strip_css
-            });
-            stripe_card.mount('#card-element');
-
-            var stripe_form = document.getElementById('stripe-payment-form');
-            stripe_form.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                stripe_key.createToken(stripe_card).then(function(result) {
-                    if (result.error) {
-                        $("#stripe_card_errors").html(result.error.message);
-                        $.NotificationApp.send("Error", result.error.message, "top-right",
-                            "rgba(0,0,0,0.2)", "error");
-                    } else {
-                        var token = result.token;
-                        var stripeForm = document.getElementById('stripe-payment-form');
-                        var stripeHiddenData = document.createElement('input');
-                        stripeHiddenData.setAttribute('type', 'hidden');
-                        stripeHiddenData.setAttribute('name', 'stripeToken');
-                        stripeHiddenData.setAttribute('value', token.id);
-                        stripeForm.appendChild(stripeHiddenData);
-                        stripeForm.submit();
-                    }
-                });
-            });
-        @endif
-    </script>
-
-    <script src="https://api.ravepay.co/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
-
-    <script>
-        @if (
-            $settings['flutterwave_payment'] == 'on' &&
-                !empty($settings['flutterwave_public_key']) &&
-                !empty($settings['flutterwave_secret_key']))
-
-            $(document).on("click", "#flutterwavePaymentBtn", function() {
-                var discoutedPrice = $('.discoutedPrice').text();
-                var currency_symbol = '{{ $settings['CURRENCY_SYMBOL'] }}';
-                var amount = discoutedPrice.replace(currency_symbol, "");
-                var flutterwaveCallbackURL = "{{ url('subscription/flutterwave/') }}";
-                var tx_ref = "RX1_" + Math.floor((Math.random() * 1000000000) + 1);
-                var customer_email = '{{ \Auth::user()->email }}';
-                var customer_name = '{{ \Auth::user()->name }}';
-                var flutterwave_public_key = '{{ $settings['flutterwave_public_key'] }}';
-                var nowTim = "{{ date('d-m-Y-h-i-a') }}";
-                var currency = '{{ $settings['CURRENCY'] }}';
-
-                if (amount) {
-                    var flutterwavePayment = getpaidSetup({
-                        txref: tx_ref,
-                        PBFPubKey: flutterwave_public_key,
-                        amount: amount,
-                        currency: currency,
-                        customer_name: customer_name,
-                        customer_email: customer_email,
-                        meta: [{
-                            consumer_id: "23",
-                            consumer_mac: "92a3-912ba-1192a"
-                        }],
-                        onclose: function() {},
-                        callback: function(result) {
-                            var txRef = result.tx.txRef;
-                            var redirectUrl = flutterwaveCallbackURL + '/' +
-                                '{{ \Illuminate\Support\Facades\Crypt::encrypt($subscription->id) }}' +
-                                '/' + txRef;
-                            if (result.tx.chargeResponseCode == "00" || result.tx.chargeResponseCode ==
-                                "0") {
-                                window.location.href = redirectUrl;
-                            } else {
-                                alert('Payment failed');
-                            }
-                            flutterwavePayment.close();
-                        }
-                    });
-                } else {
-                    alert('Please enter a valid amount');
-                }
-            });
-        @endif
-    </script>
-@endpush
-@section('breadcrumb')
-    <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item">
-            <a href="{{ route('dashboard') }}">
-                {{ __('Dashboard') }}
-            </a>
-        </li>
-        <li class="breadcrumb-item">
-            <a href="{{ route('subscriptions.index') }}">{{ __('Subscription') }}</a>
-        </li>
-        <li class="breadcrumb-item active">
-            <a href="#">{{ __('Details') }}</a>
-        </li>
-    </ul>
-@endsection
-
-@section('content')
-    <div class="row pricing-grid">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body pt-0">
-                    <div class="dt-responsive table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Title') }}</th>
-                                    <th>{{ __('Amount') }}</th>
-                                    <th>{{ __('Interval') }}</th>
-                                    <th>{{ __('User Limit') }}</th>
-                                    <th>{{ __('Property Limit') }}</th>
-                                    <th>{{ __('Tenant Limit') }}</th>
-                                    <th>{{ __('Coupon Applicable') }}</th>
-                                    <th>{{ __('User Logged History') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        {{ $subscription->title }}
-                                    </td>
-                                    <td>
-                                        <b class="discoutedPrice">
-                                            {{ subscriptionPaymentSettings()['CURRENCY_SYMBOL'] }}{{ $subscription->package_amount }}</b>
-                                    </td>
-                                    <td>{{ isset($subscription) ? $subscription->interval : '' }} </td>
-                                    <td>{{ $subscription->user_limit }} </td>
-                                    <td>{{ $subscription->property_limit }}</td>
-                                    <td>{{ $subscription->tenant_limit }}</td>
-                                    <td>
-                                        @if ($subscription->couponCheck() > 0)
-                                            <i class="text-success mr-4" data-feather="check-circle"></i>
-                                        @else
-                                            <i class="text-danger mr-4" data-feather="x-circle"></i>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($subscription->enabled_logged_history == 1)
-                                            <i class="text-success mr-4" data-feather="check-circle"></i>
-                                        @else
-                                            <i class="text-danger mr-4" data-feather="x-circle"></i>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row pricing-grid">
-            <div class="col-lg-12">
-                <div class="row">
-                    @if ($settings['bank_transfer_payment'] == 'on')
-                        {{-- BEGIN REMOVE Bank Transfer Payment card section --}}
-                        {{--
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>{{ __('Bank Transfer Payment') }}</h5>
-                                    @if ($subscription->couponCheck() > 0)
-                                        <div class="setting-card action-menu">
-                                            <div class="form-group">
-                                                <div class="form-check custom-chek">
-                                                    <input class="form-check-input have_coupon" type="checkbox"
-                                                        value="" id="have_bank_tran_coupon">
-                                                    <label class="form-check-label"
-                                                        for="have_bank_tran_coupon">{{ __('Have a Discount Coupon Code?') }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="card-body profile-user-box">
-                                    <form
-                                        action="{{ route('subscription.bank.transfer', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}"
-                                        method="post" class="require-validation" id="bank-payment"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Bank Name') }}</label>
-                                                    <p>{{ $settings['bank_name'] }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Bank Holder Name') }}</label>
-                                                    <p>{{ $settings['bank_holder_name'] }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Bank Account Number') }}</label>
-                                                    <p>{{ $settings['bank_account_number'] }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Bank IFSC Code') }}</label>
-                                                    <p>{{ $settings['bank_ifsc_code'] }}</p>
-                                                </div>
-                                            </div>
-                                            @if (!empty($settings['bank_other_details']))
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="card-name-on"
-                                                            class="form-label text-dark">{{ __('Bank Other Details') }}</label>
-                                                        <p>{{ $settings['bank_other_details'] }}</p>
-                                                    </div>
-                                                </div>
-                                            @endif
-
-                                            <div class="col-md-12 d-none coupon_div">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Coupon Code') }}</label>
-                                                    <input type="text" name="coupon"
-                                                        class="form-control required packageCouponCode"
-                                                        placeholder="{{ __('Enter Coupon Code') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Attachment') }}</label>
-                                                    <input type="file" name="payment_receipt" id="payment_receipt"
-                                                        class="form-control" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 ">
-                                                <input type="button" value="{{ __('Coupon Apply') }}"
-                                                    class="btn btn-primary packageCouponApplyBtn d-none coupon_div">
-                                                <input type="submit" value="{{ __('Pay') }}" class="btn btn-secondary">
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        --}}
-                        {{-- END REMOVE Bank Transfer Payment card section --}}
-                    @endif
-                    @if ($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']) && !empty($settings['STRIPE_SECRET']))
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>{{ __('Stripe Payment') }}</h5>
-                                    @if ($subscription->couponCheck() > 0)
-                                        <div class="setting-card action-menu">
-                                            <div class="form-group">
-                                                <div class="form-check custom-chek">
-                                                    <input class="form-check-input have_coupon" type="checkbox"
-                                                        value="" id="have_stripe_coupon">
-                                                    <label class="form-check-label"
-                                                        for="have_stripe_coupon">{{ __('Have a Discount Coupon Code?') }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="card-body profile-user-box">
-                                    <form
-                                        action="{{ route('subscription.stripe.payment', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}"
-                                        method="post" class="require-validation" id="stripe-payment-form">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="card-name-on"
-                                                        class="form-label text-dark">{{ __('Card Name') }}</label>
-                                                    <input type="text" name="name" id="card-name-on"
-                                                        class="form-control required"
-                                                        placeholder="{{ __('Card Holder Name') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="card-name-on"
-                                                    class="form-label text-dark">{{ __('Card Details') }}</label>
-                                                <div id="card-element">
-                                                </div>
-                                                <div id="stripe_card_errors" role="alert"></div>
-                                            </div>
-
-                                            @if ($subscription->couponCheck() > 0)
-                                                <div class="col-md-12 d-none coupon_div">
-                                                    <div class="form-group">
-                                                        <label for="card-name-on"
-                                                            class="form-label text-dark">{{ __('Coupon Code') }}</label>
-                                                        <input type="text" name="coupon"
-                                                            class="form-control required packageCouponCode"
-                                                            placeholder="{{ __('Enter Coupon Code') }}">
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <div class="col-sm-12 mt-15">
-                                                @if ($subscription->couponCheck() > 0)
-                                                    <input type="button" value="{{ __('Coupon Apply') }}"
-                                                        class="btn btn-primary packageCouponApplyBtn d-none coupon_div">
-                                                @endif
-                                                <input type="submit" value="{{ __('Pay') }}"
-                                                    class="btn btn-secondary">
-
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                    @if (
-                        $settings['flutterwave_payment'] == 'on' &&
-                            !empty($settings['flutterwave_public_key']) &&
-                            !empty($settings['flutterwave_secret_key']))
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>{{ __('Flutterwave Payment') }}</h5>
-                                    @if ($subscription->couponCheck() > 0)
-                                        <div class="setting-card action-menu">
-                                            <div class="form-group">
-                                                <div class="form-check custom-chek">
-                                                    <input class="form-check-input have_coupon" type="checkbox"
-                                                        value="" id="have_flutterwave_coupon">
-                                                    <label class="form-check-label"
-                                                        for="have_flutterwave_coupon">{{ __('Have a Discount Coupon Code?') }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="card-body profile-user-box">
-                                    <form action="#" class="require-validation" method="get">
-                                        @csrf
-                                        <div class="row">
-                                            @if ($subscription->couponCheck() > 0)
-                                                <div class="col-md-12 d-none coupon_div">
-                                                    <div class="form-group">
-                                                        <label for="card-name-on"
-                                                            class="form-label text-dark">{{ __('Coupon Code') }}</label>
-                                                        <input type="text" name="coupon"
-                                                            class="form-control required packageCouponCode"
-                                                            placeholder="{{ __('Enter Coupon Code') }}">
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <div class="col-sm-12">
-                                                @if ($subscription->couponCheck() > 0)
-                                                    <input type="button" value="{{ __('Coupon Apply') }}"
-                                                        class="btn btn-primary packageCouponApplyBtn d-none coupon_div">
-                                                @endif
-                                                <input type="button" value="{{ __('Pay') }}"
-                                                    id="flutterwavePaymentBtn" class="btn btn-secondary">
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                    @if (
-                        $settings['paypal_payment'] == 'on' &&
-                            !empty($settings['paypal_client_id']) &&
-                            !empty($settings['paypal_secret_key']))
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>{{ __('Paypal Payment') }}</h5>
-                                    @if ($subscription->couponCheck() > 0)
-                                        <div class="setting-card action-menu">
-                                            <div class="form-group">
-                                                <div class="form-check custom-chek">
-                                                    <input class="form-check-input have_coupon" type="checkbox"
-                                                        value="" id="have_paypal_coupon">
-                                                    <label class="form-check-label"
-                                                        for="have_paypal_coupon">{{ __('Have a Discount Coupon Code?') }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="card-body profile-user-box">
-                                    <form
-                                        action="{{ route('subscription.paypal', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}"
-                                        method="post" class="require-validation">
-                                        @csrf
-                                        <div class="row">
-                                            @if ($subscription->couponCheck() > 0)
-                                                <div class="col-md-12 mt-15 d-none coupon_div">
-                                                    <div class="form-group">
-                                                        <label for="card-name-on"
-                                                            class="form-label text-dark">{{ __('Coupon Code') }}</label>
-                                                        <input type="text" name="coupon"
-                                                            class="form-control required packageCouponCode"
-                                                            placeholder="{{ __('Enter Coupon Code') }}">
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <div class="col-sm-12 mt-15">
-                                                @if ($subscription->couponCheck() > 0)
-                                                    <input type="button" value="{{ __('Coupon Apply') }}"
-                                                        class="btn btn-primary packageCouponApplyBtn d-none coupon_div">
-                                                @endif
-                                                <input type="submit" value="{{ __('Pay') }}"
-                                                    class="btn btn-secondary">
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row mb-4 justify-content-center">
-        <div class="col-md-4">
-            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
-                <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    <div class="form-check d-flex align-items-center w-100">
-                        <input class="form-check-input me-2" type="radio" name="selected_account" id="telebirr" value="telebirr">
-                        <img src="https://play-lh.googleusercontent.com/Mtnybz6w7FMdzdQUbc7PWN3_0iLw3t9lUkwjmAa_usFCZ60zS0Xs8o00BW31JDCkAiQk" alt="Telebirr Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
-                        <label class="form-check-label w-100" for="telebirr">
-                            <strong style="font-size:1.3rem;">TELEBIRR</strong><br>
-                            <span style="font-size:1.1rem;">{{ $settings['telebirr_account_name'] ?? '' }}</span><br>
-                            <span style="font-size:1.1rem;">{{ $settings['telebirr_account_number'] ?? '' }}</span>
-                        </label>
-                    </div>
-                    <div id="telebirr-receipt" class="mt-3 w-100" style="display:none;">
-                        <label for="telebirr_receipt_number">Telebirr Receipt Number</label>
-                        <input type="text" name="telebirr_receipt_number" id="telebirr_receipt_number" class="form-control" placeholder="Enter Telebirr receipt number">
-                        <div class="mt-2 d-flex gap-2">
-                            <button type="button" class="btn btn-secondary" id="confirm-telebirr">Confirm Payment</button>
-                            <button type="button" class="btn btn-light" id="cancel-telebirr">Cancel</button>
-                            <a href="#" id="telebirr-receipt-link" class="btn btn-link d-none" target="_blank"><i class="fa fa-receipt"></i> View Receipt</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
-                <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    <div class="form-check d-flex align-items-center w-100">
-                        <input class="form-check-input me-2" type="radio" name="selected_account" id="cbe" value="cbe">
-                        <img src="https://www.cbeib.com.et/ARCIB-4/modelbank/unprotected/assets/cbe.png" alt="CBE Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
-                        <label class="form-check-label w-100" for="cbe">
-                            <strong style="font-size:1.3rem;">CBE</strong><br>
-                            <span style="font-size:1.1rem;">{{ $settings['cbe_account_name'] ?? '' }}</span><br>
-                            <span style="font-size:1.1rem;">{{ $settings['cbe_account_number'] ?? '' }}</span>
-                        </label>
-                    </div>
-                    <div id="cbe-receipt" class="mt-3 w-100" style="display:none;">
-                        <label for="cbe_receipt_number">CBE Receipt Number</label>
-                        <input type="text" name="cbe_receipt_number" id="cbe_receipt_number" class="form-control" placeholder="Enter CBE receipt number">
-                        <div class="mt-2 d-flex gap-2">
-                            <button type="button" class="btn btn-secondary" id="confirm-cbe">Confirm Payment</button>
-                            <button type="button" class="btn btn-light" id="cancel-cbe">Cancel</button>
-                            <a href="#" id="cbe-receipt-link" class="btn btn-link d-none" target="_blank"><i class="fa fa-receipt"></i> View Receipt</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card payment-account-card mb-4 p-4" style="min-height:200px; font-size:1.2rem;">
-                <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    <div class="form-check w-100">
-                        <input class="form-check-input" type="radio" name="selected_account" id="other" value="other">
-                        <label class="form-check-label w-100" for="other">
-                            <strong style="font-size:1.3rem;">Bank Transfer Payment</strong>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bank Transfer Modal -->
-    <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bankTransferModalLabel">Bank Transfer Payment</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            @include('subscription.partials.bank_transfer')
-          </div>
-        </div>
-      </div>
-    </div>
-@endsection
-
-@push('script-page')
-    <script>
+        // Simple Stripe Integration
+        let stripe, card;
+        
         $(document).ready(function() {
-            $('#submit_payment').click(function(e) {
-                e.preventDefault();
-                
-                var formData = new FormData();
-                formData.append('payment_screenshot', $('#payment_screenshot')[0].files[0]);
-                formData.append('subscription_id', '{{ $subscription->id }}');
-                formData.append('_token', '{{ csrf_token() }}');
-
-                $.ajax({
-                    url: '{{ route('payment.verification.upload') }}',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response.success) {
-                            toastrs('success', response.message, 'success');
-                            setTimeout(function() {
-                                window.location.href = '{{ route('subscriptions.index') }}';
-                            }, 2000);
-                        } else {
-                            toastrs('error', response.error, 'error');
-                        }
-                    },
-                    error: function(xhr) {
-                        toastrs('error', xhr.responseJSON.error, 'error');
-                    }
-                });
-            });
+            console.log('Document ready - initializing Stripe');
+            
+            // Initialize Stripe immediately
+            if (typeof Stripe !== 'undefined') {
+                console.log('Stripe.js loaded, initializing...');
+                const stripeKey = '{{ isset($settings['STRIPE_KEY']) ? $settings['STRIPE_KEY'] : '' }}';
+                if (stripeKey && stripeKey.startsWith('pk_')) {
+                    initializeStripe();
+                } else {
+                    console.error('Invalid Stripe key:', stripeKey);
+                }
+            } else {
+                console.error('Stripe.js not loaded');
+            }
         });
-    </script>
-    <script>
+        
+        function initializeStripe() {
+            const stripeKey = '{{ isset($settings['STRIPE_KEY']) ? $settings['STRIPE_KEY'] : '' }}';
+            console.log('Initializing Stripe with key:', stripeKey);
+            
+            if (!stripeKey || !stripeKey.startsWith('pk_')) {
+                console.error('Invalid Stripe key');
+                $('#card-errors').html('Invalid Stripe configuration. Please contact administrator.');
+                return;
+            }
+            
+            try {
+                stripe = Stripe(stripeKey);
+                var elements = stripe.elements();
+                
+                var style = {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                    }
+                };
+                
+                card = elements.create('card', {style: style});
+                card.mount('#card-element');
+                
+                console.log('Stripe initialized successfully');
+            } catch (error) {
+                console.error('Stripe initialization error:', error);
+                $('#card-errors').html('Failed to initialize payment system. Please refresh the page.');
+            }
+        }
+
+        // Payment method selection
         $(document).on('change', 'input[name="selected_account"]', function() {
             let selected = $('input[name="selected_account"]:checked').val();
+            console.log('Payment method changed to:', selected);
+            
+            // Hide all payment forms
             $('#telebirr-receipt').hide();
             $('#cbe-receipt').hide();
+            $('#stripe-payment-form').hide();
+            
+            // Remove selected class from all cards
+            $('.payment-account-card').removeClass('selected');
+            
+            // Add selected class to current card
+            $(this).closest('.payment-account-card').addClass('selected');
+            
             if (selected === 'telebirr') {
                 $('#telebirr-receipt').show();
             } else if (selected === 'cbe') {
                 $('#cbe-receipt').show();
+            } else if (selected === 'stripe') {
+                $('#stripe-payment-form').show();
+                console.log('Stripe form shown');
+                // Initialize Stripe Elements if not already done
+                if (typeof stripe === 'undefined') {
+                    console.log('Initializing Stripe...');
+                    initializeStripe();
+                } else {
+                    console.log('Stripe already initialized');
+                }
             } else if (selected === 'other') {
                 $('#bankTransferModal').modal('show');
             }
         });
-    </script>
-    <script>
+
+        // Simple form submission handler
+        $(document).on('submit', '#stripe-form', function(e) {
+            e.preventDefault();
+            console.log('Form submission intercepted');
+            console.log('Form data:', $(this).serialize());
+            console.log('Stripe object:', typeof stripe);
+            console.log('Card object:', typeof card);
+            
+            if (typeof stripe === 'undefined' || !stripe) {
+                console.error('Stripe is not initialized');
+                $('#card-errors').html('Payment system not initialized. Please refresh the page.');
+                return false;
+            }
+            
+            const submitButton = $('#stripe-pay-button');
+            submitButton.prop('disabled', true);
+            submitButton.html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+            
+            $('#card-errors').html('');
+            
+            console.log('Creating Stripe token...');
+            stripe.createToken(card).then(function(result) {
+                console.log('Stripe result:', result);
+                if (result.error) {
+                    console.error('Stripe token creation error:', result.error);
+                    $('#card-errors').text(result.error.message);
+                    submitButton.prop('disabled', false);
+                    submitButton.html('<i class="fas fa-credit-card me-2"></i>Pay with Stripe');
+                } else {
+                    console.log('Token created successfully:', result.token.id);
+                    
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'stripeToken');
+                    hiddenInput.setAttribute('value', result.token.id);
+                    document.getElementById('stripe-form').appendChild(hiddenInput);
+                    
+                    console.log('Submitting form with token:', result.token.id);
+                    document.getElementById('stripe-form').submit();
+                }
+            });
+            
+            return false;
+        });
+
+        // Coupon handling for Stripe
+        $(document).on('change', '#have_stripe_coupon', function() {
+            if ($(this).is(':checked')) {
+                $('#stripe-coupon-section').show();
+            } else {
+                $('#stripe-coupon-section').hide();
+            }
+        });
+
+        // Other payment handlers
         $(document).on('click', '#cancel-cbe', function() {
             $('#cbe-receipt').hide();
             $('input[name="selected_account"][value!="cbe"]').prop('checked', false);
@@ -621,19 +393,49 @@
         $(document).on('click', '#confirm-telebirr', function() { submitReceiptPayment('telebirr'); });
     </script>
     <style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .feature-card {
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .features-list .feature-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .features-list .feature-item:last-child {
+        border-bottom: none;
+    }
+    
     .payment-account-card {
         cursor:pointer;
         border:2px solid #eee;
-        transition:box-shadow .2s;
+        transition:all 0.3s ease;
         min-height:200px;
         font-size:1.2rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     }
     .payment-account-card:hover {
-        box-shadow:0 0 0 2px #007bff;
+        box-shadow:0 8px 25px rgba(0,123,255,0.15);
         border-color:#007bff;
+        transform: translateY(-2px);
+    }
+    .payment-account-card.selected {
+        border-color:#28a745;
+        box-shadow:0 8px 25px rgba(40,167,69,0.15);
+        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
     }
     .payment-account-card input:checked ~ label {
-        /* Remove blue border effect */
         box-shadow:none;
         border-color:inherit;
     }
@@ -641,51 +443,92 @@
         outline:none;
         box-shadow:none;
     }
+    .payment-account-card input:checked + label {
+        color: #28a745;
+    }
+    
+    .payment-label {
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    .payment-content {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+    }
+    
+    .payment-icon {
+        margin-right: 1rem;
+    }
+    
+    .payment-info {
+        flex-grow: 1;
+    }
+    
+    .payment-check {
+        opacity: 0;
+        color: #28a745;
+        transition: opacity 0.3s ease;
+    }
+    
+    .payment-account-card.selected .payment-check {
+        opacity: 1;
+    }
+    
+    .payment-radio:checked + .payment-label .payment-check {
+        opacity: 1;
+    }
+    
+    .payment-form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+    
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-lg:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    }
+    
+    .card {
+        overflow: hidden;
+    }
+    
+    .rounded-3 {
+        border-radius: 1rem !important;
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important;
+    }
     </style>
 @endpush
-
-<script>
-    function submitReceiptPayment(type) {
-        let receipt = type === 'cbe' ? $('#cbe_receipt_number').val() : $('#telebirr_receipt_number').val();
-        if (!receipt) {
-            alert('Enter ' + (type === 'cbe' ? 'CBE' : 'Telebirr') + ' receipt number');
-            return;
-        }
-        $.ajax({
-            url: '{{ route('subscription.bank.transfer', \Illuminate\Support\Facades\Crypt::encrypt($subscription->id)) }}',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                receipt_number: receipt,
-                receipt_type: type
-            },
-            success: function(response) {
-                toastrs('success', 'Payment submitted and is now pending review.', 'success');
-                if(response.redirect) {
-                    window.location.href = response.redirect;
-                    return;
-                }
-                if(type === 'cbe') {
-                    $('#cbe-receipt').hide();
-                    $('#cbe-receipt-link').attr('href', getReceiptUrl('cbe', receipt)).removeClass('d-none');
-                }
-                if(type === 'telebirr') {
-                    $('#telebirr-receipt').hide();
-                    $('#telebirr-receipt-link').attr('href', getReceiptUrl('telebirr', receipt)).removeClass('d-none');
-                }
-                $('input[name="selected_account"]').prop('checked', false);
-            },
-            error: function(xhr) {
-                toastrs('error', xhr.responseJSON?.error || 'Submission failed', 'error');
-            }
-        });
-    }
-    function getReceiptUrl(type, receipt) {
-        if(type === 'cbe') {
-            return 'https://mobile.cbe.com.et/ArcIBInternetBanking/TransactionReceiptPrint?id=' + encodeURIComponent(receipt);
-        } else if(type === 'telebirr') {
-            return 'https://portal.telebirr.com/receipt/' + encodeURIComponent(receipt);
-        }
-        return '#';
-    }
-</script>

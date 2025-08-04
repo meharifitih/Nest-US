@@ -13,13 +13,67 @@
         document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = document.getElementById('phone_number');
             const phoneError = document.getElementById('phone_error');
+            
+            // Initial validation for pre-filled values
+            if (phoneInput && phoneError) {
+                const initialValue = phoneInput.value;
+                if (initialValue) {
+                    const digitsOnly = initialValue.replace(/\D/g, '');
+                    if (digitsOnly.length === 10) {
+                        const areaCode = digitsOnly.substring(0, 3);
+                        if (areaCode.charAt(0) >= '2' && areaCode.charAt(0) <= '9') {
+                            phoneError.style.display = 'none';
+                        } else {
+                            phoneError.textContent = 'Enter a valid US phone number.';
+                            phoneError.style.display = 'block';
+                        }
+                    }
+                }
+            }
+            
             phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value;
-                // Updated regex to match backend
-                const usPhoneRegex = /^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/;
-                if (value.length > 0 && !usPhoneRegex.test(value)) {
-                    phoneError.textContent = 'Enter a valid US phone number.';
-                    phoneError.style.display = 'block';
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Format as US phone number
+                if (value.length > 0) {
+                    if (value.length <= 3) {
+                        value = value;
+                    } else if (value.length <= 6) {
+                        value = value.slice(0, 3) + '-' + value.slice(3);
+                    } else {
+                        value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10);
+                    }
+                }
+                
+                // Limit to 10 digits (excluding formatting)
+                const digitsOnly = value.replace(/\D/g, '');
+                if (digitsOnly.length > 10) {
+                    value = value.slice(0, 12); // Account for dashes
+                }
+                
+                e.target.value = value;
+                
+                // Validate US phone number format
+                if (digitsOnly.length > 0) {
+                    // Check if it's a valid 10-digit US phone number
+                    if (digitsOnly.length === 10) {
+                        const areaCode = digitsOnly.substring(0, 3);
+                        const nextDigit = digitsOnly.substring(3, 4);
+                        
+                        // US phone number rules: area code must start with 2-9
+                        if (areaCode.charAt(0) >= '2' && areaCode.charAt(0) <= '9') {
+                            phoneError.style.display = 'none';
+                        } else {
+                            phoneError.textContent = 'Enter a valid US phone number.';
+                            phoneError.style.display = 'block';
+                        }
+                    } else if (digitsOnly.length < 10) {
+                        // Still typing, don't show error yet
+                        phoneError.style.display = 'none';
+                    } else {
+                        phoneError.textContent = 'Enter a valid US phone number.';
+                        phoneError.style.display = 'block';
+                    }
                 } else {
                     phoneError.style.display = 'none';
                 }

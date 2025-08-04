@@ -4,6 +4,7 @@
     </div>
     <div class="card-body">
         <div class="row justify-content-center align-items-stretch g-3">
+            @if(isset($settings['telebirr_payment']) && $settings['telebirr_payment'] == 'on' && !empty($settings['telebirr_account_name']) && !empty($settings['telebirr_account_number']))
             <div class="col-md-4 d-flex">
                 {{-- Telebirr --}}
                 <div class="payment-account-card telebirr-card flex-fill align-items-start" style="width:100%;">
@@ -33,6 +34,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(isset($settings['cbe_payment']) && $settings['cbe_payment'] == 'on' && !empty($settings['cbe_account_name']) && !empty($settings['cbe_account_number']))
             <div class="col-md-4 d-flex">
                 {{-- CBE --}}
                 <div class="payment-account-card cbe-card flex-fill align-items-start" style="width:100%;">
@@ -62,6 +65,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if($settings['bank_transfer_payment'] == 'on' && !empty($settings['bank_name']) && !empty($settings['bank_account_number']))
             <div class="col-md-4 d-flex">
                 {{-- Bank Transfer --}}
                 <div class="payment-account-card bank-card flex-fill align-items-start" style="width:100%;">
@@ -75,6 +80,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
         <!-- Bank Transfer Modal -->
         <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">

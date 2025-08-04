@@ -90,9 +90,6 @@ if (!function_exists('settingsKeys')) {
             "bank_account_number" => "",
             "bank_ifsc_code" => "",
             "bank_other_details" => "",
-            "flutterwave_payment" => "off",
-            "flutterwave_public_key" => "",
-            "flutterwave_secret_key" => "",
             "timezone" => "",
             "footer_column_1" => "Quick Links",
             "footer_column_1_enabled" => "active",
@@ -159,9 +156,6 @@ if (!function_exists('subscriptionPaymentSettings')) {
             "bank_account_number" => "",
             "bank_ifsc_code" => "",
             "bank_other_details" => "",
-            "flutterwave_payment" => "off",
-            "flutterwave_public_key" => "",
-            "flutterwave_secret_key" => "",
         ];
 
         foreach ($settingData as $setting) {
@@ -192,9 +186,6 @@ if (!function_exists('invoicePaymentSettings')) {
             "bank_account_number" => "",
             "bank_ifsc_code" => "",
             "bank_other_details" => "",
-            "flutterwave_payment" => "off",
-            "flutterwave_public_key" => "",
-            "flutterwave_secret_key" => "",
         ];
 
         foreach ($settingData as $row) {

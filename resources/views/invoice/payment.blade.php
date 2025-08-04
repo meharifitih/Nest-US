@@ -1,6 +1,7 @@
 @php $settings = $settings ?? settings(); @endphp
 <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
     {{-- Telebirr --}}
+    @if(isset($settings['telebirr_payment']) && $settings['telebirr_payment'] == 'on' && !empty($settings['telebirr_account_name']) && !empty($settings['telebirr_account_number']))
     <div class="payment-account-card telebirr-card align-items-start" style="width:320px;">
         <div class="card-body p-3 w-100">
             <div class="form-check d-flex align-items-center w-100 mb-2">
@@ -23,7 +24,9 @@
             </div>
         </div>
     </div>
+    @endif
     {{-- CBE --}}
+    @if(isset($settings['cbe_payment']) && $settings['cbe_payment'] == 'on' && !empty($settings['cbe_account_name']) && !empty($settings['cbe_account_number']))
     <div class="payment-account-card cbe-card align-items-start" style="width:320px;">
         <div class="card-body p-3 w-100">
             <div class="form-check d-flex align-items-center w-100 mb-2">
@@ -46,7 +49,9 @@
             </div>
         </div>
     </div>
+    @endif
     {{-- Bank Transfer --}}
+    @if($settings['bank_transfer_payment'] == 'on' && !empty($settings['bank_name']) && !empty($settings['bank_account_number']))
     <div class="payment-account-card bank-card align-items-start" style="width:320px;">
         <div class="card-body p-3 w-100">
             <div class="form-check w-100">
@@ -57,6 +62,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 <!-- Bank Transfer Modal -->
 <div class="modal fade" id="bankTransferModal" tabindex="-1" aria-labelledby="bankTransferModalLabel" aria-hidden="true">

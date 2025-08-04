@@ -62,7 +62,7 @@ class RegisteredUserController extends Controller
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/'
             ],
-            'phone_number' => ['required', 'string', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
+            'phone_number' => ['required', 'string', 'regex:/^[2-9]\d{2}[-\s]?\d{3}[-\s]?\d{4}$|^[2-9]\d{2}\d{3}\d{4}$/'],
             'type' => ['required', 'string', 'in:tenant,maintainer,owner,super admin'],
         ], [
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
@@ -76,13 +76,24 @@ class RegisteredUserController extends Controller
         }
 
         try {
+            // Format phone number properly
+            $phoneNumber = null;
+            if (!empty($request->phone_number)) {
+                $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
+                if (strlen($phone) === 10) {
+                    $phoneNumber = '+1' . $phone;
+                } else {
+                    $phoneNumber = $request->phone_number;
+                }
+            }
+            
             $user = User::create([
                 'first_name' => $request->name,
                 'last_name' => '',
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type' => $request->type,
-                'phone_number' => $request->phone_number,
+                'phone_number' => $phoneNumber,
                 'profile' => 'avatar.png',
                 'lang' => 'english',
                 'subscription' => null,

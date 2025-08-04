@@ -2,8 +2,11 @@
     $admin_logo = getSettingsValByName('company_logo');
     $ids = parentId();
     $authUser = \App\Models\User::find($ids);
-    $subscription = \App\Models\Subscription::find($authUser->subscription);
-    $routeName = \Request::route()->getName();
+    $subscription = null;
+    if ($authUser && $authUser->subscription) {
+        $subscription = \App\Models\Subscription::find($authUser->subscription);
+    }
+    $routeName = \Request::route() ? \Request::route()->getName() : '';
     $pricing_feature_settings = getSettingsValByIdName(1, 'pricing_feature');
 @endphp
 <nav class="pc-sidebar">
@@ -25,7 +28,7 @@
                         <span class="pc-mtext">{{ __('Dashboard') }}</span>
                     </a>
                 </li>
-                @if (\Auth::user()->type == 'super admin')
+                @if (\Auth::user() && \Auth::user()->type == 'super admin')
                     @if (Gate::check('manage user'))
                         <li class="pc-item {{ in_array($routeName, ['users.index', 'users.show']) ? 'active' : '' }}">
                             <a href="{{ route('users.index') }}" class="pc-link">
@@ -72,7 +75,7 @@
                     @endif
                 @endif
 
-                @if (Auth::user()->type == 'owner')
+                @if (Auth::user() && Auth::user()->type == 'owner')
                     <li class="pc-item {{ in_array($routeName, ['owner.tutorial_videos']) ? 'active' : '' }}">
                         <a href="{{ route('owner.tutorial_videos') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-video"></i></span>
@@ -203,6 +206,9 @@
                                 @endif
                                 <li class="pc-item {{ in_array($routeName, ['rent.index']) ? 'active' : '' }}">
                                     <a class="pc-link" href="{{ route('rent.index') }}">{{ __('Rent') }}</a>
+                                </li>
+                                <li class="pc-item {{ in_array($routeName, ['tenant.payments.index', 'tenant.payments.create', 'tenant.payments.show']) ? 'active' : '' }}">
+                                    <a class="pc-link" href="{{ route('tenant.payments.index') }}">{{ __('Tenant Payments') }}</a>
                                 </li>
                                 @if (Auth::user()->hasRole('owner') || Auth::user()->hasRole('tenant'))
                                     <li class="pc-item {{ in_array($routeName, ['hoa.index', 'hoa.create', 'hoa.show']) ? 'active' : '' }}">

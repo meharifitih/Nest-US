@@ -34,7 +34,7 @@ class SettingController extends Controller
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'business_license' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-                'phone_number' => ['nullable', 'regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/'],
+                'phone_number' => ['nullable', 'regex:/^[2-9]\d{2}[-\s]?\d{3}[-\s]?\d{4}$|^[2-9]\d{2}\d{3}\d{4}$/'],
             ]
         );
         if ($validator->fails()) {
@@ -68,7 +68,18 @@ class SettingController extends Controller
         }
         $user->first_name = $request->name;
         $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
+        
+        // Format phone number properly
+        if (!empty($request->phone_number)) {
+            $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
+            if (strlen($phone) === 10) {
+                $user->phone_number = '+1' . $phone;
+            } else {
+                $user->phone_number = $request->phone_number;
+            }
+        } else {
+            $user->phone_number = null;
+        }
 
         if ($request->hasFile('business_license') && $loginUser->type == 'owner') {
             $filenameWithExt = $request->file('business_license')->getClientOriginalName();
@@ -499,19 +510,18 @@ class SettingController extends Controller
             'bank_transfer_payment' => $request->bank_transfer_payment ?? 'off',
             'STRIPE_PAYMENT' => $request->stripe_payment ?? 'off',
             'paypal_payment' => $request->paypal_payment ?? 'off',
-            'flutterwave_payment' => $request->flutterwave_payment ?? 'off',
         ];
-        foreach ($currencyArray as $key => $val) {
-            \DB::insert(
-                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                [
-                    $val,
-                    $key,
-                    'payment',
-                    parentId(),
-                ]
-            );
-        }
+                    foreach ($currencyArray as $key => $val) {
+                \DB::insert(
+                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                    [
+                        $val,
+                        $key,
+                        'payment',
+                        parentId(),
+                    ]
+                );
+            }
 
         //        For Bank Transfer Settings
         if (isset($request->bank_transfer_payment)) {
@@ -531,23 +541,25 @@ class SettingController extends Controller
 
             $bankArray = [
                 'bank_transfer_payment' => $request->bank_transfer_payment ?? 'off',
-                'bank_name' => $request->bank_name,
-                'bank_holder_name' => $request->bank_holder_name,
-                'bank_account_number' => $request->bank_account_number,
-                'bank_ifsc_code' => $request->bank_ifsc_code,
+                'bank_name' => $request->bank_name ?? '',
+                'bank_holder_name' => $request->bank_holder_name ?? '',
+                'bank_account_number' => $request->bank_account_number ?? '',
+                'bank_ifsc_code' => $request->bank_ifsc_code ?? '',
                 'bank_other_details' => !empty($request->bank_other_details) ? $request->bank_other_details : '',
             ];
 
             foreach ($bankArray as $key => $val) {
-                \DB::insert(
-                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                    [
-                        $val,
-                        $key,
-                        'payment',
-                        parentId(),
-                    ]
-                );
+                if (!empty($val)) {
+                    \DB::insert(
+                        'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                        [
+                            $val,
+                            $key,
+                            'payment',
+                            parentId(),
+                        ]
+                    );
+                }
             }
         }
 
@@ -567,20 +579,22 @@ class SettingController extends Controller
 
             $stripeArray = [
                 'STRIPE_PAYMENT' => $request->stripe_payment ?? 'off',
-                'STRIPE_KEY' => $request->stripe_key,
-                'STRIPE_SECRET' => $request->stripe_secret,
+                'STRIPE_KEY' => $request->stripe_key ?? '',
+                'STRIPE_SECRET' => $request->stripe_secret ?? '',
             ];
 
             foreach ($stripeArray as $key => $val) {
-                \DB::insert(
-                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                    [
-                        $val,
-                        $key,
-                        'payment',
-                        parentId(),
-                    ]
-                );
+                if (!empty($val)) {
+                    \DB::insert(
+                        'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                        [
+                            $val,
+                            $key,
+                            'payment',
+                            parentId(),
+                        ]
+                    );
+                }
             }
         }
 
@@ -602,76 +616,30 @@ class SettingController extends Controller
 
             $paypalArray = [
                 'paypal_payment' => $request->paypal_payment ?? 'off',
-                'paypal_mode' => $request->paypal_mode,
-                'paypal_client_id' => $request->paypal_client_id,
-                'paypal_secret_key' => $request->paypal_secret_key,
+                'paypal_mode' => $request->paypal_mode ?? '',
+                'paypal_client_id' => $request->paypal_client_id ?? '',
+                'paypal_secret_key' => $request->paypal_secret_key ?? '',
             ];
 
             foreach ($paypalArray as $key => $val) {
-                \DB::insert(
-                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                    [
-                        $val,
-                        $key,
-                        'payment',
-                        parentId(),
-                    ]
-                );
+                if (!empty($val)) {
+                    \DB::insert(
+                        'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
+                        [
+                            $val,
+                            $key,
+                            'payment',
+                            parentId(),
+                        ]
+                    );
+                }
             }
         }
 
 
-        // For Flutterwave Settings
-        if (isset($request->flutterwave_payment)) {
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'flutterwave_public_key' => 'required',
-                    'flutterwave_secret_key' => 'required',
-                ]
-            );
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return redirect()->back()->with('error', $messages->first());
-            }
 
-            $flutterwaveArray = [
-                'flutterwave_payment' => $request->flutterwave_payment ?? 'off',
-                'flutterwave_public_key' => $request->flutterwave_public_key,
-                'flutterwave_secret_key' => $request->flutterwave_secret_key,
-            ];
 
-            foreach ($flutterwaveArray as $key => $val) {
-                \DB::insert(
-                    'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                    [
-                        $val,
-                        $key,
-                        'payment',
-                        parentId(),
-                    ]
-                );
-            }
-        }
 
-        // Save CBE and Telebirr account info
-        $cbeTelebirrArray = [
-            'cbe_account_name' => $request->cbe_account_name,
-            'cbe_account_number' => $request->cbe_account_number,
-            'telebirr_account_name' => $request->telebirr_account_name,
-            'telebirr_account_number' => $request->telebirr_account_number,
-        ];
-        foreach ($cbeTelebirrArray as $key => $val) {
-            \DB::insert(
-                'INSERT INTO settings (value, name, type, parent_id) VALUES (?, ?, ?, ?) ON CONFLICT (name, type, parent_id) DO UPDATE SET value = EXCLUDED.value',
-                [
-                    $val,
-                    $key,
-                    'payment',
-                    parentId(),
-                ]
-            );
-        }
 
         return redirect()->back()->with('success', __('Payment successfully saved.'))->with('tab', 'payment_settings');
     }

@@ -5,7 +5,7 @@ namespace App\Traits;
 trait PhoneNumberFormatter
 {
     /**
-     * Format phone number to ensure it has +251 prefix and follows the required format
+     * Format phone number to ensure it has +1 prefix and follows US format
      *
      * @param string $phoneNumber
      * @return string
@@ -14,20 +14,20 @@ trait PhoneNumberFormatter
     {
         // Remove any non-numeric except +
         $phone = preg_replace('/[^0-9+]/', '', $phoneNumber);
-        if (str_starts_with($phone, '+251')) {
+        if (str_starts_with($phone, '+1')) {
             return $phone;
         }
-        if (str_starts_with($phone, '251')) {
+        if (str_starts_with($phone, '1') && strlen($phone) === 11) {
             return '+'.$phone;
         }
-        if ((str_starts_with($phone, '9') || str_starts_with($phone, '7')) && strlen($phone) === 9) {
-            return '+251'.$phone;
+        if (strlen($phone) === 10) {
+            return '+1'.$phone;
         }
         return $phone;
     }
 
     /**
-     * Validate phone number format
+     * Validate US phone number format
      *
      * @param string $phoneNumber
      * @return bool
@@ -35,15 +35,19 @@ trait PhoneNumberFormatter
     protected function isValidPhoneNumber(string $phoneNumber): bool
     {
         $phone = preg_replace('/[^0-9+]/', '', $phoneNumber);
-        if (str_starts_with($phone, '+251')) {
-            $number = substr($phone, 4);
-        } elseif (str_starts_with($phone, '251')) {
-            $number = substr($phone, 3);
-        } elseif ((str_starts_with($phone, '9') || str_starts_with($phone, '7')) && strlen($phone) === 9) {
+        
+        // Check if it starts with +1
+        if (str_starts_with($phone, '+1')) {
+            $number = substr($phone, 2);
+        } elseif (str_starts_with($phone, '1') && strlen($phone) === 11) {
+            $number = substr($phone, 1);
+        } elseif (strlen($phone) === 10) {
             $number = $phone;
         } else {
             return false;
         }
-        return preg_match('/^[97][0-9]{8}$/', $number);
+        
+        // US phone number validation: area code must start with 2-9, and the next digit must be 2-9
+        return preg_match('/^[2-9]\d{2}[2-9]\d{2}\d{4}$/', $number);
     }
 } 

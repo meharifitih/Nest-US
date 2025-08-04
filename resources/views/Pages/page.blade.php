@@ -1,5 +1,5 @@
 @php
-    $routeName = \Request::route()->getName();
+    $routeName = \Request::route() ? \Request::route()->getName() : '';
     $routeParameters = request()->route()->parameters;
     $settings = settings();
     $user = \App\Models\User::find(1);

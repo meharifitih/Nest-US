@@ -227,10 +227,10 @@
                                                 <div class="form-group">
                                                     {{ Form::label('phone_number', __('Phone Number'), ['class' => 'form-label']) }}
                                                     <div class="input-group">
-                                                        <span class="input-group-text">+251</span>
-                                                        <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="9" pattern="[79][0-9]{8}" value="{{ preg_replace('/^\\+251/', '', $loginUser->phone_number ?? old('phone_number')) }}" placeholder="Enter phone number (e.g. 912345678)" required>
+                                                        <span class="input-group-text">+1</span>
+                                                        <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ preg_replace('/^\\+1/', '', $loginUser->phone_number ?? old('phone_number')) }}" placeholder="Enter phone number (e.g. 555-123-4567)" />
                                                     </div>
-                                                    <small class="text-muted">Enter number starting with 9 (Ethio Telecom) or 7 (Safaricom)</small>
+                                                    <small class="text-muted">Enter US phone number (optional)</small>
                                                     <span id="phone_error" class="text-danger" style="display: none;"></span>
                                                 </div>
                                             </div>
@@ -696,53 +696,7 @@
                                                 {{ Form::textarea('bank_other_details', $settings['bank_other_details'], ['class' => 'form-control', 'rows' => 1, 'placeholder' => __('Enter bank other details')]) }}
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('cbe_account_name', __('CBE Account Name'), ['class' => 'form-label']) }}
-                                                {{ Form::text('cbe_account_name', $settings['cbe_account_name'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter CBE account name')]) }}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('cbe_account_number', __('CBE Account Number'), ['class' => 'form-label']) }}
-                                                {{ Form::text('cbe_account_number', $settings['cbe_account_number'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter CBE account number')]) }}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('telebirr_account_name', __('Telebirr Account Name'), ['class' => 'form-label']) }}
-                                                {{ Form::text('telebirr_account_name', $settings['telebirr_account_name'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter Telebirr account name')]) }}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('telebirr_account_number', __('Telebirr Account Number'), ['class' => 'form-label']) }}
-                                                {{ Form::text('telebirr_account_number', $settings['telebirr_account_number'] ?? '', ['class' => 'form-control', 'placeholder' => __('Enter Telebirr account number')]) }}
-                                            </div>
-                                        </div>
 
-                                        <hr>
-                                        {{-- ------------------------Flutterwave settings------------------------------- --}}
-                                        <div class="row mt-2">
-                                            <div class="col-auto">
-                                                {{ Form::label('flutterwave_payment', __('Flutterwave Payment'), ['class' => 'form-label']) }}
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="form-check custom-chek">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            name="flutterwave_payment" id="flutterwave_payment"
-                                                            {{ $settings['flutterwave_payment'] == 'on' ? 'checked' : '' }}>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('flutterwave_public_key', __('Public Key'), ['class' => 'form-label']) }}
-                                                {{ Form::text('flutterwave_public_key', $settings['flutterwave_public_key'], ['class' => 'form-control', 'placeholder' => __('Enter flutterwave public key')]) }}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                {{ Form::label('flutterwave_secret_key', __('Secret Key'), ['class' => 'form-label']) }}
-                                                {{ Form::text('flutterwave_secret_key', $settings['flutterwave_secret_key'], ['class' => 'form-control', 'placeholder' => __('Enter flutterwave secret key')]) }}
-                                            </div>
-
-                                        </div>
 
                                         <div class="row mt-3">
                                             <div class="col-6"></div>
@@ -992,7 +946,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             e.target.value = value;
-            phoneError.style.display = 'none';
+            
+            // Validate US phone number format
+            const digitsOnly = value.replace(/\D/g, '');
+            if (digitsOnly.length > 0) {
+                // Check if it's a valid 10-digit US phone number
+                if (digitsOnly.length === 10) {
+                    const areaCode = digitsOnly.substring(0, 3);
+                    const nextDigit = digitsOnly.substring(3, 4);
+                    
+                                            // US phone number rules: area code must start with 2-9
+                        if (areaCode.charAt(0) >= '2' && areaCode.charAt(0) <= '9') {
+                            phoneError.style.display = 'none';
+                        } else {
+                            phoneError.textContent = 'Enter a valid US phone number.';
+                            phoneError.style.display = 'block';
+                        }
+                } else if (digitsOnly.length < 10) {
+                    // Still typing, don't show error yet
+                    phoneError.style.display = 'none';
+                } else {
+                    phoneError.textContent = 'Enter a valid US phone number.';
+                    phoneError.style.display = 'block';
+                }
+            } else {
+                phoneError.style.display = 'none';
+            }
         });
     }
 });

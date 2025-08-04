@@ -255,7 +255,7 @@ class TenantController extends Controller
                     'first_name' => 'required',
                     'last_name' => 'required',
                     'email' => 'required|email|unique:users,email,' . $tenant->user_id,
-                    'phone_number' => 'nullable|regex:/^(\+1|1)?[2-9]\d{2}[2-9]\d{2}\d{4}$|^(\+1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})[-.\s]?[2-9]\d{2}[-.\s]?\d{4}$/',
+                    'phone_number' => 'nullable|regex:/^[2-9]\d{2}[-\s]?\d{3}[-\s]?\d{4}$|^[2-9]\d{2}\d{3}\d{4}$/',
                     'family_member' => 'required',
                     'country' => 'required',
                     'state' => 'required',
@@ -294,7 +294,19 @@ class TenantController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->phone_number = $request->phone_number;
+            
+            // Format phone number properly
+            if (!empty($request->phone_number)) {
+                $phone = preg_replace('/[^0-9]/', '', $request->phone_number);
+                if (strlen($phone) === 10) {
+                    $user->phone_number = '+1' . $phone;
+                } else {
+                    $user->phone_number = $request->phone_number;
+                }
+            } else {
+                $user->phone_number = null;
+            }
+            
             $user->save();
 
             if ($request->profile != '') {

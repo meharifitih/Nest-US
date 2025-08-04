@@ -59,6 +59,20 @@ class AccountReviewController extends Controller
         return view('account.review', compact('user', 'latestTransaction', 'tutorialVideos'));
     }
 
+    public function showPendingPage()
+    {
+        $user = auth()->user();
+        $settings = settingsById(1);
+        
+        // Get the latest transaction for this user
+        $latestTransaction = PackageTransaction::with('subscription')
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        
+        return view('account.pending', compact('user', 'latestTransaction', 'settings'));
+    }
+
     public function approveUser($id)
     {
         if (Auth::user()->type !== 'super admin') {

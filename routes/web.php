@@ -311,6 +311,23 @@ Route::resource('tenant', TenantController::class)->middleware([
     'XSS',
 ]);
 
+//-------------------------------Tenant Payments-------------------------------------------
+Route::group([
+    'middleware' => ['auth', 'XSS'],
+    'prefix' => 'tenant/payments'
+], function () {
+    Route::get('/', [\App\Http\Controllers\TenantPaymentController::class, 'index'])->name('tenant.payments.index');
+    Route::get('/create', [\App\Http\Controllers\TenantPaymentController::class, 'create'])->name('tenant.payments.create');
+    Route::post('/', [\App\Http\Controllers\TenantPaymentController::class, 'store'])->name('tenant.payments.store');
+    Route::get('/{id}', [\App\Http\Controllers\TenantPaymentController::class, 'show'])->name('tenant.payments.show');
+    Route::get('/{id}/payment', [\App\Http\Controllers\TenantPaymentController::class, 'payment'])->name('tenant.payments.payment');
+    Route::post('/{id}/stripe', [\App\Http\Controllers\TenantPaymentController::class, 'stripePayment'])->name('tenant.payments.stripe');
+    Route::post('/{id}/paypal', [\App\Http\Controllers\TenantPaymentController::class, 'paypalPayment'])->name('tenant.payments.paypal');
+    Route::get('/{id}/paypal/{status}', [\App\Http\Controllers\TenantPaymentController::class, 'paypalStatus'])->name('tenant.payments.paypal.status');
+    Route::post('/{id}/bank-transfer', [\App\Http\Controllers\TenantPaymentController::class, 'bankTransferPayment'])->name('tenant.payments.bank-transfer');
+    Route::post('/{id}/cancel-recurring', [\App\Http\Controllers\TenantPaymentController::class, 'cancelRecurring'])->name('tenant.payments.cancel-recurring');
+});
+
 //-------------------------------Type-------------------------------------------
 Route::resource('type', TypeController::class)->middleware(
     [
@@ -423,6 +440,7 @@ Route::impersonate();
 // Account Review Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/account/review', [AccountReviewController::class, 'showReviewPage'])->name('account.review');
+    Route::get('/account/pending', [AccountReviewController::class, 'showPendingPage'])->name('account.pending');
 });
 
 // Admin Approval Routes
@@ -489,5 +507,7 @@ Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'
 Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
 Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');
 });
+
+
 
 
