@@ -45,15 +45,6 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('login')->with('error', __('Verification required: Please check your email to verify your account before continuing.'));
         }
         
-        if (
-            $loginUser->type === 'owner' &&
-            $loginUser->approval_status === 'approved' &&
-            empty($loginUser->business_license)
-        ) {
-            return redirect()->route('setting.index', ['tab' => 'user_profile_settings'])
-                ->with('error', __('Please upload your business license to complete your profile.'));
-        }
-        
         if($loginUser->type=='owner'){
 
             if($loginUser->subscription_expire_date!=null && date('Y-m-d') > $loginUser->subscription_expire_date){

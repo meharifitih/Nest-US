@@ -37,9 +37,6 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\CheckSubscription::class,
-            \App\Http\Middleware\CheckUserApproval::class,
-            \App\Http\Middleware\Verify2FA::class,
             \App\Http\Middleware\ErrorHandlingMiddleware::class,
         ],
 
@@ -69,6 +66,9 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'XSS' => \App\Http\Middleware\XSS::class,
-
+        'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
+        'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
+        'check.userapproval' => \App\Http\Middleware\CheckUserApproval::class,
+        'verify2fa' => \App\Http\Middleware\Verify2FA::class,
     ];
 }

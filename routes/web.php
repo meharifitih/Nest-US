@@ -75,6 +75,10 @@ Route::get('dashboard', [HomeController::class,'index'])->name('dashboard')->mid
 Route::resource('users', UserController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -100,6 +104,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ], function (){
@@ -120,6 +128,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ], function (){
@@ -132,6 +144,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ], function (){
@@ -164,6 +180,7 @@ Route::group(
 Route::resource('permission', PermissionController::class)->middleware(
     [
         'auth',
+        'session.timeout',
         'XSS',
     ]
 );
@@ -171,6 +188,7 @@ Route::resource('permission', PermissionController::class)->middleware(
 Route::resource('role', RoleController::class)->middleware(
     [
         'auth',
+        'session.timeout',
         'XSS',
     ]
 );
@@ -179,6 +197,7 @@ Route::resource('role', RoleController::class)->middleware(
 Route::resource('note', NoticeBoardController::class)->middleware(
     [
         'auth',
+        'session.timeout',
         'XSS',
     ]
 );
@@ -187,6 +206,10 @@ Route::resource('note', NoticeBoardController::class)->middleware(
 Route::resource('contact', ContactController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -197,6 +220,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ], function () {
@@ -212,6 +239,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ], function (){
@@ -227,6 +258,10 @@ Route::group(
 Route::resource('notification', NotificationController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
 
     ]
@@ -242,6 +277,10 @@ Route::resource('notification', NotificationController::class)->middleware(
 Route::resource('FAQ', FAQController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -250,6 +289,10 @@ Route::resource('FAQ', FAQController::class)->middleware(
 Route::resource('homepage', HomePageController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -257,6 +300,10 @@ Route::resource('homepage', HomePageController::class)->middleware(
 Route::resource('pages', PageController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -265,6 +312,10 @@ Route::resource('pages', PageController::class)->middleware(
 Route::resource('authPage', AuthPageController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -282,6 +333,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ],
@@ -301,19 +356,23 @@ Route::group(
 );
 
 //-------------------------------Tenant-------------------------------------------
-Route::middleware(['auth', 'XSS'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa', 'XSS'])->group(function () {
     Route::get('tenant/password', [\App\Http\Controllers\TenantProfileController::class, 'editPassword'])->name('tenant.password.edit');
     Route::post('tenant/password', [\App\Http\Controllers\TenantProfileController::class, 'updatePassword'])->name('tenant.password.update');
 });
 
 Route::resource('tenant', TenantController::class)->middleware([
     'auth',
+    'session.timeout',
+    'check.subscription',
+    'check.userapproval',
+    'verify2fa',
     'XSS',
 ]);
 
 //-------------------------------Tenant Payments-------------------------------------------
 Route::group([
-    'middleware' => ['auth', 'XSS'],
+    'middleware' => ['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa', 'XSS'],
     'prefix' => 'tenant/payments'
 ], function () {
     Route::get('/', [\App\Http\Controllers\TenantPaymentController::class, 'index'])->name('tenant.payments.index');
@@ -332,6 +391,10 @@ Route::group([
 Route::resource('type', TypeController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -342,6 +405,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ],
@@ -362,6 +429,10 @@ Route::group(
 Route::resource('expense', ExpenseController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -372,6 +443,10 @@ Route::get('expense', [App\Http\Controllers\ExpenseController::class, 'index'])-
 Route::resource('maintainer', MaintainerController::class)->middleware(
     [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ]
 );
@@ -383,6 +458,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ],
@@ -401,6 +480,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ],
@@ -419,6 +502,10 @@ Route::group(
     [
         'middleware' => [
             'auth',
+            'session.timeout',
+            'check.subscription',
+            'check.userapproval',
+            'verify2fa',
             'XSS',
         ],
     ],
@@ -438,20 +525,20 @@ Route::get('page/{slug}', [PageController::class, 'page'])->name('page');
 Route::impersonate();
 
 // Account Review Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa'])->group(function () {
     Route::get('/account/review', [AccountReviewController::class, 'showReviewPage'])->name('account.review');
     Route::get('/account/pending', [AccountReviewController::class, 'showPendingPage'])->name('account.pending');
 });
 
 // Admin Approval Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa'])->group(function () {
     Route::post('/users/{id}/approve', [AccountReviewController::class, 'approveUser'])->name('users.approve');
     Route::post('/users/{id}/reject', [AccountReviewController::class, 'rejectUser'])->name('users.reject');
     Route::post('/users/{id}/reapprove', [AdminController::class, 'reapproveUser'])->name('users.reapprove');
 });
 
 // Payment Verification Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa'])->group(function () {
     Route::get('payment-verification', [App\Http\Controllers\PaymentVerificationController::class, 'index'])->name('payment.verification.index');
     Route::post('payment-verification/upload', [App\Http\Controllers\PaymentVerificationController::class, 'uploadScreenshot'])->name('payment.verification.upload');
     Route::get('payment-verification/approve/{id}', [App\Http\Controllers\PaymentVerificationController::class, 'approve'])->name('payment.verification.approve');
@@ -464,7 +551,7 @@ Route::post('/admin/payments/approve/{id}', [AdminController::class, 'approvePay
 Route::post('/admin/payments/reject/{id}', [AdminController::class, 'rejectPayment'])->name('admin.payments.reject');
 
 // HOA Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa'])->group(function () {
     Route::get('/hoa', [HoaController::class, 'index'])->name('hoa.index');
     Route::get('/hoa/create', [HoaController::class, 'create'])->name('hoa.create');
     Route::post('/hoa', [HoaController::class, 'store'])->name('hoa.store');
@@ -484,7 +571,7 @@ Route::post('rent', [App\Http\Controllers\RentController::class, 'store'])->name
 Route::delete('rent/{invoice}', [App\Http\Controllers\RentController::class, 'destroy'])->name('rent.destroy');
 
 // Payment Account Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa'])->group(function () {
     Route::get('payment-accounts', [App\Http\Controllers\PaymentAccountController::class, 'index'])->name('payment.accounts.index');
     Route::post('payment-accounts', [App\Http\Controllers\PaymentAccountController::class, 'store'])->name('payment.accounts.store');
     Route::delete('payment-accounts/{id}', [App\Http\Controllers\PaymentAccountController::class, 'destroy'])->name('payment.accounts.destroy');
@@ -493,6 +580,10 @@ Route::middleware(['auth'])->group(function () {
 Route::group([
     'middleware' => [
         'auth',
+        'session.timeout',
+        'check.subscription',
+        'check.userapproval',
+        'verify2fa',
         'XSS',
     ],
 ], function () {
@@ -502,7 +593,7 @@ Route::group([
 Route::post('/enterprise/contact', [EnterpriseContactController::class, 'store'])->name('enterprise.contact');
 
 // Unified Excel Upload Routes
-Route::middleware(['auth', 'XSS'])->group(function () {
+Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.userapproval', 'verify2fa', 'XSS'])->group(function () {
 Route::get('unified-excel-upload', [UnifiedExcelUploadController::class, 'index'])->name('unified-excel-upload.index');
 Route::post('unified-excel-upload', [UnifiedExcelUploadController::class, 'upload'])->name('unified-excel-upload.upload');
 Route::get('unified-excel-upload/template', [UnifiedExcelUploadController::class, 'downloadTemplate'])->name('unified-excel-upload.template');

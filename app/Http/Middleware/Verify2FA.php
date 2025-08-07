@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class Verify2FA
 {
     /**
@@ -31,16 +32,35 @@ class Verify2FA
             return $next($request);
         }
 
-        // at this point user must provide a valid OTP
-        // but we must avoid an infinite loop
-        if (request()->is('login/otp')) {
+        // Define routes that should be accessible without 2FA
+        $allowedRoutes = [
+            'logout',
+            'otp.show',
+            'otp.check',
+            '2fa.disable',
+            'dashboard',
+            'home',
+            'account.review'
+        ];
+
+        $currentRoute = $request->route() ? $request->route()->getName() : null;
+        $currentPath = $request->path();
+
+        // Check if current route is allowed without 2FA
+        if (in_array($currentRoute, $allowedRoutes) || 
+            $currentPath === 'login/otp' ||
+            $request->is('login/otp*') ||
+            $request->is('otp*') ||
+            $request->is('2fa*')) {
             return $next($request);
         }
 
+        // Prevent redirect loop by checking if we're already on OTP page
+        if ($request->is('login/otp*') || $currentRoute === 'otp.show') {
+            return $next($request);
+        }
+
+        // at this point user must provide a valid OTP
         return redirect()->route('otp.show');
-
-
-
-
     }
 }
