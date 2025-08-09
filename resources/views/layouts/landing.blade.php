@@ -1297,40 +1297,50 @@
     </div>
 
     <script>
-    if (typeof $ === 'undefined') { alert('jQuery not loaded!'); }
+    (function () {
+        function initHandlers() {
+            jQuery(function ($) {
+                $('#submitEnterpriseContact').on('click', function () {
+                    var form = $('#enterpriseContactForm');
+                    var formData = form.serialize();
 
-    $(document).ready(function() {
-        $('#submitEnterpriseContact').click(function() {
-            var form = $('#enterpriseContactForm');
-            var formData = form.serialize();
-            
-            $.ajax({
-                url: '{{ route("enterprise.contact") }}',
-                type: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    alert(response.message);
-                    $('#enterpriseContactModal').modal('hide');
-                    form[0].reset();
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        var errorMessage = '';
-                        for (var key in errors) {
-                            errorMessage += errors[key][0] + '\n';
+                    $.ajax({
+                        url: '{{ route("enterprise.contact") }}',
+                        type: 'POST',
+                        data: formData,
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        success: function (response) {
+                            alert(response.message);
+                            $('#enterpriseContactModal').modal('hide');
+                            form[0].reset();
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 422) {
+                                var errors = xhr.responseJSON.errors;
+                                var errorMessage = '';
+                                for (var key in errors) {
+                                    errorMessage += errors[key][0] + '\n';
+                                }
+                                alert(errorMessage);
+                            } else {
+                                alert('An error occurred. Please try again.');
+                            }
                         }
-                        alert(errorMessage);
-                    } else {
-                        alert('An error occurred. Please try again.');
-                    }
-                }
+                    });
+                });
             });
-        });
-    });
+        }
+
+        if (!window.jQuery) {
+            var s = document.createElement('script');
+            s.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+            s.crossOrigin = 'anonymous';
+            s.onload = initHandlers;
+            document.head.appendChild(s);
+        } else {
+            initHandlers();
+        }
+    })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
