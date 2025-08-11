@@ -516,34 +516,63 @@ class InvoiceController extends Controller
 
     public function ajaxReceipt(Request $request)
     {
-        $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
-            'receipt_number' => 'required|string',
-            'receipt_type' => 'required|in:cbe,telebirr',
-        ]);
+        try {
+            $request->validate([
+                'invoice_id' => 'required|exists:invoices,id',
+                'receipt_number' => 'required|string',
+                'receipt_type' => 'required|in:cbe,telebirr',
+            ]);
 
-        $invoice = \App\Models\Invoice::find($request->invoice_id);
-        $dueAmount = $invoice->getInvoiceDueAmount();
-        if ($dueAmount <= 0) {
-            return response()->json(['success' => false, 'error' => 'Payment not allowed.'], 400);
+            $invoice = \App\Models\Invoice::find($request->invoice_id);
+            
+            if (!$invoice) {
+                return response()->json(['success' => false, 'error' => 'Invoice not found.'], 404);
+            }
+            
+            $dueAmount = $invoice->getInvoiceDueAmount();
+            if ($dueAmount <= 0) {
+                return response()->json(['success' => false, 'error' => 'Payment not allowed.'], 400);
+            }
+            
+            // Check if receipt number already exists
+            $existingPayment = \App\Models\InvoicePayment::where('receipt', 'like', '%' . $request->receipt_number . '%')
+                ->where('payment_type', strtoupper($request->receipt_type))
+                ->first();
+                
+            if ($existingPayment) {
+                return response()->json(['success' => false, 'error' => 'This receipt number has already been used.'], 400);
+            }
+            
+            $payment = new \App\Models\InvoicePayment();
+            $payment->invoice_id = $invoice->id;
+            $payment->transaction_id = uniqid('', true);
+            $payment->payment_type = strtoupper($request->receipt_type);
+            $payment->amount = $dueAmount;
+            $payment->payment_date = now();
+            $payment->receipt = $request->receipt_type === 'cbe'
+                ? 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number)
+                : 'https://transactioninfo.ethiotelecom.et/receipt/' . urlencode($request->receipt_number);
+            $payment->notes = '';
+            $payment->parent_id = parentId();
+            $payment->save();
+
+            // Set invoice status to pending and save
+            $invoice->status = 'pending';
+            $invoice->save();
+
+            return response()->json(['success' => true, 'redirect' => route('invoice.index')]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false, 
+                'error' => 'Validation failed: ' . $e->getMessage()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Invoice payment error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'error' => 'An error occurred while processing the payment. Please try again.'
+            ], 500);
         }
-        $payment = new \App\Models\InvoicePayment();
-        $payment->invoice_id = $invoice->id;
-        $payment->transaction_id = uniqid('', true);
-        $payment->payment_type = strtoupper($request->receipt_type);
-        $payment->amount = $dueAmount;
-        $payment->payment_date = now();
-        $payment->receipt = $request->receipt_type === 'cbe'
-            ? 'https://apps.cbe.com.et:100/?id=' . urlencode($request->receipt_number)
-            : 'https://transactioninfo.ethiotelecom.et/receipt/' . urlencode($request->receipt_number);
-        $payment->notes = '';
-        $payment->parent_id = parentId();
-        $payment->save();
-
-        // Set invoice status to pending and save
-        $invoice->status = 'pending';
-        $invoice->save();
-
-        return response()->json(['success' => true, 'redirect' => route('invoice.index')]);
     }
 }

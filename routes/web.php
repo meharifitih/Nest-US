@@ -561,8 +561,11 @@ Route::middleware(['auth', 'session.timeout', 'check.subscription', 'check.usera
     Route::delete('/hoa/{hoa}', [HoaController::class, 'destroy'])->name('hoa.destroy');
     Route::post('/hoa/{hoa}/mark-as-paid', [HoaController::class, 'markAsPaid'])->name('hoa.mark-as-paid');
     Route::get('/hoa/unit/{unit_id}/tenant', [HoaController::class, 'getTenantForUnit'])->name('hoa.unit.tenant');
-    Route::post('/hoa/{hoa}/banktransfer/payment', [App\Http\Controllers\HoaController::class, 'banktransferPayment'])->name('hoa.banktransfer.payment');
-    Route::post('/hoa/{hoa}/receipt/payment', [App\Http\Controllers\HoaController::class, 'receiptPayment'])->name('hoa.receipt.payment');
+            Route::post('/hoa/{hoa}/banktransfer/payment', [App\Http\Controllers\HoaController::class, 'banktransferPayment'])->name('hoa.banktransfer.payment');
+        Route::post('/hoa/{hoa}/receipt/payment', [App\Http\Controllers\HoaController::class, 'receiptPayment'])->name('hoa.receipt.payment');
+        Route::post('/hoa/{hoa}/stripe/payment', [App\Http\Controllers\HoaController::class, 'stripePayment'])->name('hoa.stripe.payment');
+        Route::post('/hoa/{hoa}/paypal/payment', [App\Http\Controllers\HoaController::class, 'paypalPayment'])->name('hoa.paypal.payment');
+        Route::get('/hoa/{hoa}/paypal/{status}', [App\Http\Controllers\HoaController::class, 'paypalStatus'])->name('hoa.paypal.status');
 });
 
 Route::get('rent', [App\Http\Controllers\RentController::class, 'index'])->name('rent.index');

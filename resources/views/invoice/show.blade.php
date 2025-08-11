@@ -4,7 +4,9 @@
 @endsection
 @php
     $admin_logo = getSettingsValByName('company_logo');
-    $settings = settings();
+    $generalSettings = settings();
+    $paymentSettings = $invoicePaymentSettings ?? [];
+    $settings = array_merge($generalSettings, $paymentSettings);
 
 @endphp
 
@@ -37,10 +39,10 @@
 
     <script type="text/javascript">
         @if (
-            $invoicePaymentSettings['STRIPE_PAYMENT'] == 'on' &&
-                !empty($invoicePaymentSettings['STRIPE_KEY']) &&
-                !empty($invoicePaymentSettings['STRIPE_SECRET']))
-            var stripe_key = Stripe('{{ $invoicePaymentSettings['STRIPE_KEY'] }}');
+            $paymentSettings['STRIPE_PAYMENT'] == 'on' &&
+                !empty($paymentSettings['STRIPE_KEY']) &&
+                !empty($paymentSettings['STRIPE_SECRET']))
+            var stripe_key = Stripe('{{ $paymentSettings['STRIPE_KEY'] }}');
             var stripe_elements = stripe_key.elements();
             var strip_css = {
                 base: {
@@ -124,7 +126,45 @@
         @endif
     </script> --}}
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
+        // Stripe Elements
+        @if ($paymentSettings['STRIPE_PAYMENT'] == 'on' && !empty($paymentSettings['STRIPE_KEY']))
+            var stripe = Stripe('{{ $paymentSettings['STRIPE_KEY'] }}');
+            var elements = stripe.elements();
+            
+            var style = {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                }
+            };
+            
+            var card = elements.create('card', {style: style});
+            card.mount('#card-element');
+            
+            var form = document.getElementById('stripe-payment-form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    stripe.createToken(card).then(function(result) {
+                        if (result.error) {
+                            var errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = result.error.message;
+                        } else {
+                            var hiddenInput = document.createElement('input');
+                            hiddenInput.setAttribute('type', 'hidden');
+                            hiddenInput.setAttribute('name', 'stripeToken');
+                            hiddenInput.setAttribute('value', result.token.id);
+                            form.appendChild(hiddenInput);
+                            form.submit();
+                        }
+                    });
+                });
+            }
+        @endif
+
         $(document).on("click", "#flutterwavePaymentBtn", function() {
             var amount = $('.amount').val().trim();
             if (!amount || amount <= 0) {
@@ -170,14 +210,20 @@
 @push('script-page')
 <script>
 $(document).ready(function() {
-    function hideAllReceiptSections() {
+    function hideAllPaymentSections() {
         $('.telebirr-receipt-section').hide();
         $('.cbe-receipt-section').hide();
+        $('.stripe-payment-section').hide();
+        $('.paypal-payment-section').hide();
     }
     $(document).on('change', 'input[name="selected_account"]', function() {
-        hideAllReceiptSections();
+        hideAllPaymentSections();
         let selected = $(this).val();
-        if (selected === 'telebirr') {
+        if (selected === 'stripe') {
+            $(this).closest('.payment-account-card').find('.stripe-payment-section').show();
+        } else if (selected === 'paypal') {
+            $(this).closest('.payment-account-card').find('.paypal-payment-section').show();
+        } else if (selected === 'telebirr') {
             $(this).closest('.payment-account-card').find('.telebirr-receipt-section').show();
         } else if (selected === 'cbe') {
             $(this).closest('.payment-account-card').find('.cbe-receipt-section').show();
@@ -202,6 +248,11 @@ $(document).ready(function() {
         var $section = $(this).closest('.cbe-receipt-section');
         var receipt = $section.find('.cbe-receipt-input').val();
         if (!receipt) { alert('Enter CBE receipt number'); return; }
+        
+        // Disable button to prevent double submission
+        var $button = $(this);
+        $button.prop('disabled', true).text('Processing...');
+        
         $.post({
             url: '{{ route('invoice.ajax.receipt') }}',
             data: {
@@ -211,22 +262,41 @@ $(document).ready(function() {
                 invoice_id: '{{ $invoice->id }}'
             },
             success: function(response) {
-                if(response.redirect) {
-                    window.location.href = response.redirect;
-                    return;
+                if(response.success) {
+                    if(response.redirect) {
+                        window.location.href = response.redirect;
+                        return;
+                    }
+                    $section.find('.cbe-receipt-link').attr('href', 'https://apps.cbe.com.et:100/?id=' + encodeURIComponent(receipt)).removeClass('d-none');
+                    $section.find('.cbe-receipt-input').val('');
+                    alert('Payment submitted successfully!');
+                } else {
+                    alert(response.error || 'Payment failed. Please try again.');
                 }
-                $section.find('.cbe-receipt-link').attr('href', 'https://apps.cbe.com.et:100/?id=' + encodeURIComponent(receipt)).removeClass('d-none');
-                $section.find('.cbe-receipt-input').val('');
             },
             error: function(xhr) {
-                // Do nothing (no alert)
+                var errorMessage = 'An error occurred while processing the payment.';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Re-enable button
+                $button.prop('disabled', false).text('Confirm');
             }
         });
     });
+    
     $(document).on('click', '.confirm-telebirr', function() {
         var $section = $(this).closest('.telebirr-receipt-section');
         var receipt = $section.find('.telebirr-receipt-input').val();
         if (!receipt) { alert('Enter Telebirr receipt number'); return; }
+        
+        // Disable button to prevent double submission
+        var $button = $(this);
+        $button.prop('disabled', true).text('Processing...');
+        
         $.post({
             url: '{{ route('invoice.ajax.receipt') }}',
             data: {
@@ -236,15 +306,28 @@ $(document).ready(function() {
                 invoice_id: '{{ $invoice->id }}'
             },
             success: function(response) {
-                if(response.redirect) {
-                    window.location.href = response.redirect;
-                    return;
+                if(response.success) {
+                    if(response.redirect) {
+                        window.location.href = response.redirect;
+                        return;
+                    }
+                    $section.find('.telebirr-receipt-link').attr('href', 'https://transactioninfo.ethiotelecom.et/receipt/' + encodeURIComponent(receipt)).removeClass('d-none');
+                    $section.find('.telebirr-receipt-input').val('');
+                    alert('Payment submitted successfully!');
+                } else {
+                    alert(response.error || 'Payment failed. Please try again.');
                 }
-                $section.find('.telebirr-receipt-link').attr('href', 'https://transactioninfo.ethiotelecom.et/receipt/' + encodeURIComponent(receipt)).removeClass('d-none');
-                $section.find('.telebirr-receipt-input').val('');
             },
             error: function(xhr) {
-                // Do nothing (no alert)
+                var errorMessage = 'An error occurred while processing the payment.';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                alert(errorMessage);
+            },
+            complete: function() {
+                // Re-enable button
+                $button.prop('disabled', false).text('Confirm');
             }
         });
     });
@@ -283,7 +366,7 @@ $(document).ready(function() {
                     </a>
                     </div>
                 <div class="card-body">
-                    @include('invoice.partials.details', ['invoice' => $invoice, 'settings' => $settings, 'tenant' => $tenant])
+                    @include('invoice.partials.details', ['invoice' => $invoice, 'settings' => $generalSettings, 'tenant' => $tenant])
                 </div>
             </div>
         </div>
@@ -297,7 +380,7 @@ $(document).ready(function() {
                     <h5 class="mb-0">{{ __('Add Payment') }}</h5>
                             </div>
                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    @include('invoice.payment', ['settings' => $settings, 'invoice_id' => $invoice->id, 'invoice' => $invoice])
+                    @include('invoice.payment', ['settings' => $paymentSettings, 'invoice_id' => $invoice->id, 'invoice' => $invoice])
                 </div>
             </div>
         </div>

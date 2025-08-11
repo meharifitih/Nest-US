@@ -186,6 +186,15 @@ if (!function_exists('invoicePaymentSettings')) {
             "bank_account_number" => "",
             "bank_ifsc_code" => "",
             "bank_other_details" => "",
+            "flutterwave_payment" => "off",
+            "flutterwave_public_key" => "",
+            "flutterwave_secret_key" => "",
+            "telebirr_payment" => "off",
+            "telebirr_account_name" => "",
+            "telebirr_account_number" => "",
+            "cbe_payment" => "off",
+            "cbe_account_name" => "",
+            "cbe_account_number" => "",
         ];
 
         foreach ($settingData as $row) {

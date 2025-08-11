@@ -8,6 +8,7 @@ use App\Models\PropertyUnit;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stripe;
 
 class HoaController extends Controller
 {
@@ -205,6 +206,119 @@ class HoaController extends Controller
         $hoa->paid_date = now();
         $hoa->save();
         return redirect()->route('hoa.index')->with('success', 'Payment submitted for approval.');
+    }
+
+    public function stripePayment(Request $request, Hoa $hoa)
+    {
+        $request->validate([
+            'stripeToken' => 'required|string',
+            'amount' => 'required|numeric|min:0.01',
+            'card_holder_name' => 'required|string',
+        ]);
+
+        try {
+            // Get payment settings from property owner
+            $ownerId = $hoa->property ? $hoa->property->parent_id : ($hoa->creator ? $hoa->creator->id : null);
+            $settings = $ownerId ? invoicePaymentSettings($ownerId) : invoicePaymentSettings(1);
+
+            $transactionID = uniqid('', true);
+            Stripe\Stripe::setApiKey($settings['STRIPE_SECRET']);
+
+            $response = Stripe\Charge::create([
+                "amount" => 100 * $request->amount,
+                "currency" => $settings['CURRENCY'] ?? 'USD',
+                "source" => $request->stripeToken,
+                "description" => "HOA Payment - " . $hoa->hoa_number,
+                "metadata" => ["hoa_id" => $hoa->id],
+            ]);
+
+            if ($response['status'] == 'succeeded') {
+                $hoa->update([
+                    'status' => 'paid',
+                    'paid_date' => now(),
+                    'receipt' => 'stripe:' . $response['id'],
+                ]);
+
+                return redirect()->route('hoa.index')->with('success', 'HOA payment completed successfully.');
+            } else {
+                return redirect()->back()->with('error', 'Payment failed. Please try again.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function paypalPayment(Request $request, Hoa $hoa)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+
+        try {
+            // Get payment settings from property owner
+            $ownerId = $hoa->property ? $hoa->property->parent_id : ($hoa->creator ? $hoa->creator->id : null);
+            $settings = $ownerId ? invoicePaymentSettings($ownerId) : invoicePaymentSettings(1);
+
+            $provider = new \Srmklive\PayPal\Services\PayPal;
+            $provider->setApiCredentials(config('paypal'));
+            $provider->getAccessToken();
+
+            $response = $provider->createOrder([
+                "intent" => "CAPTURE",
+                "application_context" => [
+                    "return_url" => route('hoa.paypal.status', [$hoa->id, 'success']),
+                    "cancel_url" => route('hoa.paypal.status', [$hoa->id, 'cancel']),
+                ],
+                "purchase_units" => [
+                    0 => [
+                        "amount" => [
+                            "currency_code" => $settings['CURRENCY'] ?? 'USD',
+                            "value" => $request->amount
+                        ],
+                        "description" => "HOA Payment - " . $hoa->hoa_number
+                    ]
+                ]
+            ]);
+
+            if (isset($response['id']) && $response['id'] != null) {
+                foreach ($response['links'] as $links) {
+                    if ($links['rel'] == 'approve') {
+                        return redirect()->away($links['href']);
+                    }
+                }
+            }
+
+            return redirect()->back()->with('error', 'Something went wrong with PayPal.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function paypalStatus(Request $request, Hoa $hoa, $status)
+    {
+        if ($status == 'success') {
+            try {
+                $provider = new \Srmklive\PayPal\Services\PayPal;
+                $provider->setApiCredentials(config('paypal'));
+                $provider->getAccessToken();
+
+                $response = $provider->capturePaymentOrder($request['token']);
+
+                if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+                    $hoa->update([
+                        'status' => 'paid',
+                        'paid_date' => now(),
+                        'receipt' => 'paypal:' . $response['id'],
+                    ]);
+
+                    return redirect()->route('hoa.index')->with('success', 'HOA payment completed successfully.');
+                }
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('error', 'Payment failed.');
     }
 
     public function edit(Hoa $hoa)

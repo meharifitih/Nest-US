@@ -1,5 +1,72 @@
 @php $settings = $settings ?? settings(); @endphp
 <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+    {{-- Stripe Payment --}}
+    @if($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']))
+    <div class="payment-account-card stripe-card align-items-start" style="width:320px;">
+        <div class="card-body p-3 w-100">
+            <div class="form-check d-flex align-items-center w-100 mb-2">
+                <input class="form-check-input me-2" type="radio" name="selected_account" value="stripe">
+                <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                <label class="form-check-label w-100">
+                    <strong style="font-size:1.3rem;">Credit Card</strong><br>
+                    <span style="font-size:1.1rem;">Pay with Stripe</span><br>
+                    <span style="font-size:1.1rem;">Secure payment</span>
+                </label>
+            </div>
+            <div class="stripe-payment-section w-100" style="display:none;">
+                <form action="{{ route('invoice.stripe.payment', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)) }}" method="POST" id="stripe-payment-form">
+                    @csrf
+                    <div class="form-group mb-3">
+                        <label for="card-holder-name">{{ __('Card Holder Name') }}</label>
+                        <input type="text" id="card-holder-name" name="card_holder_name" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="card-element">{{ __('Card Details') }}</label>
+                        <div id="card-element" class="form-control"></div>
+                        <div id="card-errors" class="text-danger mt-2"></div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="amount">{{ __('Amount') }}</label>
+                        <input type="number" id="amount" name="amount" class="form-control amount" step="0.01" min="0.01" value="{{ $invoice->getInvoiceDueAmount() }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-credit-card"></i> {{ __('Pay') }} {{ $settings['CURRENCY_SYMBOL'] ?? '$' }}{{ number_format($invoice->getInvoiceDueAmount(), 2) }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- PayPal Payment --}}
+    @if($settings['paypal_payment'] == 'on' && !empty($settings['paypal_client_id']))
+    <div class="payment-account-card paypal-card align-items-start" style="width:320px;">
+        <div class="card-body p-3 w-100">
+            <div class="form-check d-flex align-items-center w-100 mb-2">
+                <input class="form-check-input me-2" type="radio" name="selected_account" value="paypal">
+                <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                <label class="form-check-label w-100">
+                    <strong style="font-size:1.3rem;">PayPal</strong><br>
+                    <span style="font-size:1.1rem;">Pay with PayPal</span><br>
+                    <span style="font-size:1.1rem;">Fast & secure</span>
+                </label>
+            </div>
+            <div class="paypal-payment-section w-100" style="display:none;">
+                <form action="{{ route('invoice.paypal', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)) }}" method="POST">
+                    @csrf
+                    <div class="form-group mb-3">
+                        <label for="paypal-amount">{{ __('Amount') }}</label>
+                        <input type="number" id="paypal-amount" name="amount" class="form-control" step="0.01" min="0.01" value="{{ $invoice->getInvoiceDueAmount() }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fab fa-paypal"></i> {{ __('Pay with PayPal') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Telebirr --}}
     @if(isset($settings['telebirr_payment']) && $settings['telebirr_payment'] == 'on' && !empty($settings['telebirr_account_name']) && !empty($settings['telebirr_account_number']))
     <div class="payment-account-card telebirr-card align-items-start" style="width:320px;">

@@ -4,6 +4,77 @@
     </div>
     <div class="card-body">
         <div class="row justify-content-center align-items-stretch g-3">
+            {{-- Stripe Payment --}}
+            @if($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']))
+            <div class="col-md-4 d-flex">
+                <div class="payment-account-card stripe-card flex-fill align-items-start" style="width:100%;">
+                    <div class="card-body p-3 w-100">
+                        <div class="form-check d-flex align-items-center w-100 mb-2">
+                            <input class="form-check-input me-2" type="radio" name="selected_account" value="stripe">
+                            <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                            <label class="form-check-label w-100">
+                                <strong style="font-size:1.3rem;">Credit Card</strong><br>
+                                <span style="font-size:1.1rem;">Pay with Stripe</span><br>
+                                <span style="font-size:1.1rem;">Secure payment</span>
+                            </label>
+                        </div>
+                        <div class="stripe-payment-section w-100" style="display:none;">
+                            <form action="{{ route('hoa.stripe.payment', $hoa->id) }}" method="POST" id="stripe-payment-form">
+                                @csrf
+                                <div class="form-group mb-3">
+                                    <label for="card-holder-name">{{ __('Card Holder Name') }}</label>
+                                    <input type="text" id="card-holder-name" name="card_holder_name" class="form-control" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="card-element">{{ __('Card Details') }}</label>
+                                    <div id="card-element" class="form-control"></div>
+                                    <div id="card-errors" class="text-danger mt-2"></div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="amount">{{ __('Amount') }}</label>
+                                    <input type="number" id="amount" name="amount" class="form-control amount" step="0.01" min="0.01" value="{{ $hoa->amount }}" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-credit-card"></i> {{ __('Pay') }} {{ $settings['CURRENCY_SYMBOL'] ?? '$' }}{{ number_format($hoa->amount, 2) }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- PayPal Payment --}}
+            @if($settings['paypal_payment'] == 'on' && !empty($settings['paypal_client_id']))
+            <div class="col-md-4 d-flex">
+                <div class="payment-account-card paypal-card flex-fill align-items-start" style="width:100%;">
+                    <div class="card-body p-3 w-100">
+                        <div class="form-check d-flex align-items-center w-100 mb-2">
+                            <input class="form-check-input me-2" type="radio" name="selected_account" value="paypal">
+                            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal Logo" style="height:60px;width:60px;object-fit:contain;margin-right:16px;">
+                            <label class="form-check-label w-100">
+                                <strong style="font-size:1.3rem;">PayPal</strong><br>
+                                <span style="font-size:1.1rem;">Pay with PayPal</span><br>
+                                <span style="font-size:1.1rem;">Fast & secure</span>
+                            </label>
+                        </div>
+                        <div class="paypal-payment-section w-100" style="display:none;">
+                            <form action="{{ route('hoa.paypal.payment', $hoa->id) }}" method="POST">
+                                @csrf
+                                <div class="form-group mb-3">
+                                    <label for="paypal-amount">{{ __('Amount') }}</label>
+                                    <input type="number" id="paypal-amount" name="amount" class="form-control" step="0.01" min="0.01" value="{{ $hoa->amount }}" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fab fa-paypal"></i> {{ __('Pay with PayPal') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             @if(isset($settings['telebirr_payment']) && $settings['telebirr_payment'] == 'on' && !empty($settings['telebirr_account_name']) && !empty($settings['telebirr_account_number']))
             <div class="col-md-4 d-flex">
                 {{-- Telebirr --}}
@@ -118,16 +189,60 @@
 .payment-account-card input:focus, .payment-account-card input:active { outline:none; box-shadow:none; }
 .payment-account-card input:checked { outline:none; box-shadow:none; }
 </style>
+<script src="https://js.stripe.com/v3/"></script>
 <script>
 $(document).ready(function() {
-    function hideAllReceiptSections() {
+    // Stripe Elements
+    @if($settings['STRIPE_PAYMENT'] == 'on' && !empty($settings['STRIPE_KEY']))
+        var stripe = Stripe('{{ $settings['STRIPE_KEY'] }}');
+        var elements = stripe.elements();
+        
+        var style = {
+            base: {
+                fontSize: '16px',
+                color: '#32325d',
+            }
+        };
+        
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+        
+        var form = document.getElementById('stripe-payment-form');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                stripe.createToken(card).then(function(result) {
+                    if (result.error) {
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        var hiddenInput = document.createElement('input');
+                        hiddenInput.setAttribute('type', 'hidden');
+                        hiddenInput.setAttribute('name', 'stripeToken');
+                        hiddenInput.setAttribute('value', result.token.id);
+                        form.appendChild(hiddenInput);
+                        form.submit();
+                    }
+                });
+            });
+        }
+    @endif
+
+    function hideAllPaymentSections() {
         $('.telebirr-receipt-section').hide();
         $('.cbe-receipt-section').hide();
+        $('.stripe-payment-section').hide();
+        $('.paypal-payment-section').hide();
     }
     $(document).on('change', 'input[name="selected_account"]', function() {
-        hideAllReceiptSections();
+        hideAllPaymentSections();
         let selected = $(this).val();
-        if (selected === 'telebirr') {
+        if (selected === 'stripe') {
+            $(this).closest('.payment-account-card').find('.stripe-payment-section').show();
+        } else if (selected === 'paypal') {
+            $(this).closest('.payment-account-card').find('.paypal-payment-section').show();
+        } else if (selected === 'telebirr') {
             $(this).closest('.payment-account-card').find('.telebirr-receipt-section').show();
         } else if (selected === 'cbe') {
             $(this).closest('.payment-account-card').find('.cbe-receipt-section').show();

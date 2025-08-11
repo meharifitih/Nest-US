@@ -108,7 +108,7 @@ class TenantPaymentController extends Controller
 
     public function payment($id)
     {
-        $payment = TenantPayment::with(['tenant.user', 'invoice'])->findOrFail($id);
+        $payment = TenantPayment::with(['tenant.user', 'invoice', 'tenant.properties'])->findOrFail($id);
         
         // Check permissions
         if (Auth::user()->type == 'tenant') {
@@ -118,15 +118,18 @@ class TenantPaymentController extends Controller
             }
         }
 
-        $settings = $this->getPaymentSettings();
+        // Get payment settings from the property owner
+        $propertyOwnerId = $payment->tenant->properties->parent_id ?? parentId();
+        $settings = invoicePaymentSettings($propertyOwnerId);
 
         return view('tenant.payments.payment', compact('payment', 'settings'));
     }
 
     public function stripePayment(Request $request, $id)
     {
-        $payment = TenantPayment::findOrFail($id);
-        $settings = $this->getPaymentSettings();
+        $payment = TenantPayment::with(['tenant.properties'])->findOrFail($id);
+        $propertyOwnerId = $payment->tenant->properties->parent_id ?? parentId();
+        $settings = invoicePaymentSettings($propertyOwnerId);
 
         try {
             $transactionID = uniqid('', true);
@@ -180,8 +183,9 @@ class TenantPaymentController extends Controller
 
     public function paypalPayment(Request $request, $id)
     {
-        $payment = TenantPayment::findOrFail($id);
-        $settings = $this->getPaymentSettings();
+        $payment = TenantPayment::with(['tenant.properties'])->findOrFail($id);
+        $propertyOwnerId = $payment->tenant->properties->parent_id ?? parentId();
+        $settings = invoicePaymentSettings($propertyOwnerId);
 
         try {
             $provider = new PayPalClient;
@@ -273,7 +277,7 @@ class TenantPaymentController extends Controller
 
     public function bankTransferPayment(Request $request, $id)
     {
-        $payment = TenantPayment::findOrFail($id);
+        $payment = TenantPayment::with(['tenant.properties'])->findOrFail($id);
         
         $request->validate([
             'receipt' => 'required|file|mimes:jpg,jpeg,png,pdf',
@@ -320,7 +324,7 @@ class TenantPaymentController extends Controller
 
     public function cancelRecurring($id)
     {
-        $payment = TenantPayment::findOrFail($id);
+        $payment = TenantPayment::with(['tenant.properties'])->findOrFail($id);
         
         if (!$payment->is_recurring) {
             return redirect()->back()->with('error', 'This is not a recurring payment.');
@@ -328,7 +332,9 @@ class TenantPaymentController extends Controller
 
         try {
             if ($payment->stripe_subscription_id) {
-                Stripe\Stripe::setApiKey($this->getPaymentSettings()['STRIPE_SECRET']);
+                $propertyOwnerId = $payment->tenant->properties->parent_id ?? parentId();
+                $settings = invoicePaymentSettings($propertyOwnerId);
+                Stripe\Stripe::setApiKey($settings['STRIPE_SECRET']);
                 $subscription = Stripe\Subscription::retrieve($payment->stripe_subscription_id);
                 $subscription->cancel();
             }
@@ -391,7 +397,11 @@ class TenantPaymentController extends Controller
 
     private function getPaymentSettings()
     {
-        $settings = settings();
+        // Get payment settings from the property owner
+        $payment = TenantPayment::with(['tenant.properties'])->find(request()->route('id'));
+        $propertyOwnerId = $payment->tenant->properties->parent_id ?? parentId();
+        
+        $settings = invoicePaymentSettings($propertyOwnerId);
         return [
             'CURRENCY' => $settings['CURRENCY'] ?? 'USD',
             'CURRENCY_SYMBOL' => $settings['CURRENCY_SYMBOL'] ?? '$',
