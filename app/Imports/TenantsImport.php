@@ -49,7 +49,7 @@ class TenantsImport implements ToModel, WithHeadingRow
 
         // Validate phone number format after normalization
         if (!$this->isValidPhoneNumber($normalizedPhone)) {
-            throw new \Exception("Invalid phone number format: {$row['phone_number']}. Phone number must be in the format +251XXXXXXXXX (e.g. +251912345678). Accepted: 9XXXXXXXX, 251XXXXXXXXX, +251XXXXXXXXX");
+            throw new \Exception("Invalid phone number format: {$row['phone_number']}. Use US format, e.g. +14155552671, 14155552671, or 4155552671");
         }
 
         // Find or create user role

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Exception;
@@ -58,6 +59,23 @@ class ErrorHandlingMiddleware
             return redirect()->back()
                 ->withErrors($e->errors())
                 ->withInput();
+        } catch (TokenMismatchException $e) {
+            Log::warning('CSRF token mismatch (possible session expiry)', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'url' => $request->fullUrl(),
+            ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Your session has expired. Please login again.',
+                    'redirect' => route('login'),
+                ], 419);
+            }
+
+            return redirect()->route('login')->with('error', 'Your session has expired. Please login again.');
         } catch (NotFoundHttpException $e) {
             Log::warning('Page not found in middleware', [
                 'exception' => get_class($e),

@@ -1,10 +1,16 @@
 RewriteEngine On
 
-# If the request is already for /public, do nothing
-RewriteCond %{REQUEST_URI} !^/public/
+# 1) If the exact file/dir exists inside /public, serve it directly
+RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
+RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
+RewriteRule ^ public/$1 [L]
 
-# Send everything else to /public preserving the path and query string
-RewriteRule ^(.*)$ public/$1 [L,QSA]
+# 2) If request is already in /public, stop here
+RewriteCond %{REQUEST_URI} ^/public/
+RewriteRule ^ - [L]
+
+# 3) Otherwise send everything to /public/index.php (Laravel front controller)
+RewriteRule ^ public/index.php [L]
 
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>

@@ -72,8 +72,14 @@ class SessionTimeout
         }
 
         if (!Auth::check()) {
-            Log::info('SessionTimeout: User not authenticated, redirecting to login');
-            
+            Log::info('SessionTimeout: User not authenticated');
+
+            // If already on a guest route, don't redirect again (prevents loops)
+            if (in_array($currentRoute, ['login', 'password.request', 'password.reset', 'register']) ||
+                $request->is('login*') || $request->is('register*') || $request->is('password*')) {
+                return $next($request);
+            }
+
             // Handle AJAX requests
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
@@ -81,16 +87,23 @@ class SessionTimeout
                     'redirect' => route('login')
                 ], 401);
             }
-            
-            return redirect()->route('login')->with('error', 'Your session has expired. Please login again.');
+
+            // Redirect to login with intended URL to resume after auth
+            return redirect()->guest(route('login'))->with('error', 'Your session has expired. Please login again.');
         }
 
         $user = Auth::user();
         
         if (!$user) {
-            Log::info('SessionTimeout: Invalid user object, redirecting to login');
+            Log::info('SessionTimeout: Invalid user object');
             Auth::logout();
-            
+
+            // If already on a guest route, don't redirect again
+            if (in_array($currentRoute, ['login', 'password.request', 'password.reset', 'register']) ||
+                $request->is('login*') || $request->is('register*') || $request->is('password*')) {
+                return $next($request);
+            }
+
             // Handle AJAX requests
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
@@ -98,14 +111,20 @@ class SessionTimeout
                     'redirect' => route('login')
                 ], 401);
             }
-            
-            return redirect()->route('login')->with('error', 'Your session has expired. Please login again.');
+
+            return redirect()->guest(route('login'))->with('error', 'Your session has expired. Please login again.');
         }
 
         if (!$user->is_active) {
-            Log::info('SessionTimeout: User is inactive, redirecting to login');
+            Log::info('SessionTimeout: User is inactive');
             Auth::logout();
-            
+
+            // If already on a guest route, don't redirect again
+            if (in_array($currentRoute, ['login', 'password.request', 'password.reset', 'register']) ||
+                $request->is('login*') || $request->is('register*') || $request->is('password*')) {
+                return $next($request);
+            }
+
             // Handle AJAX requests
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
@@ -113,8 +132,8 @@ class SessionTimeout
                     'redirect' => route('login')
                 ], 403);
             }
-            
-            return redirect()->route('login')->with('error', 'Your account has been deactivated. Please contact administrator.');
+
+            return redirect()->guest(route('login'))->with('error', 'Your account has been deactivated. Please contact administrator.');
         }
 
         return $next($request);
