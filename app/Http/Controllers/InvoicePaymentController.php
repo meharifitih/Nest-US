@@ -43,7 +43,7 @@ class InvoicePaymentController extends Controller
                         $payment['transaction_id'] = $transactionID;
                         $payment['payment_type'] = 'Stripe';
                         $payment['amount'] = $amount;
-                        $payment['receipt'] = isset($data['receipt_url']) ? $data['receipt_url'] : '';
+                        $payment['receipt'] = 'stripe:' . $data['id'];
                         $payment['notes'] = " Invoice - " . invoicePrefix() . $invoice->invoice_id;
 
                         Invoice::addPayment($payment);
@@ -134,9 +134,9 @@ class InvoicePaymentController extends Controller
             if (isset($response['status']) && $response['status'] == 'COMPLETED') {
                 $payment['invoice_id'] = $invoiceId;
                 $payment['transaction_id'] = $transactionID;
-                $payment['payment_type'] = 'Stripe';
+                $payment['payment_type'] = 'PayPal';
                 $payment['amount'] = $request->amount;
-                $payment['receipt'] = '';
+                $payment['receipt'] = 'paypal:' . $response['id'];
                 $payment['notes'] = " Invoice - " . invoicePrefix() . $invoice->invoice_id;
 
                 Invoice::addPayment($payment);

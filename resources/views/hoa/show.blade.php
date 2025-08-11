@@ -69,10 +69,29 @@
                             <a href="{{ $cbeBase . urlencode($receiptNumber) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                 <i class="ti ti-file"></i> View CBE Receipt
                             </a>
-                        @else
+                        @elseif($receiptType === 'stripe')
+                            <div class="alert alert-info">
+                                <strong>Stripe Payment Receipt:</strong><br>
+                                Transaction ID: {{ $receiptNumber }}<br>
+                                <small class="text-muted">This payment was processed through Stripe. You can view the transaction details in your Stripe dashboard.</small>
+                            </div>
+                        @elseif($receiptType === 'paypal')
+                            <div class="alert alert-info">
+                                <strong>PayPal Payment Receipt:</strong><br>
+                                Transaction ID: {{ $receiptNumber }}<br>
+                                <small class="text-muted">This payment was processed through PayPal. You can view the transaction details in your PayPal account.</small>
+                            </div>
+                        @elseif(str_contains($hoa->receipt, '/'))
+                            {{-- File-based receipt (bank transfer, etc.) --}}
                             <a href="{{ asset('storage/'.$hoa->receipt) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                 <i class="ti ti-file"></i> {{ __('View Receipt') }}
                             </a>
+                        @else
+                            {{-- Generic receipt display --}}
+                            <div class="alert alert-info">
+                                <strong>Payment Receipt:</strong><br>
+                                {{ $hoa->receipt }}
+                            </div>
                         @endif
                     </div>
                 @endif

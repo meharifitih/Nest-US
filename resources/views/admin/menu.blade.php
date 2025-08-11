@@ -207,9 +207,6 @@
                                 <li class="pc-item {{ in_array($routeName, ['rent.index']) ? 'active' : '' }}">
                                     <a class="pc-link" href="{{ route('rent.index') }}">{{ __('Rent') }}</a>
                                 </li>
-                                <li class="pc-item {{ in_array($routeName, ['tenant.payments.index', 'tenant.payments.create', 'tenant.payments.show']) ? 'active' : '' }}">
-                                    <a class="pc-link" href="{{ route('tenant.payments.index') }}">{{ __('Tenant Payments') }}</a>
-                                </li>
                                 @if (Auth::user()->hasRole('owner') || Auth::user()->hasRole('tenant'))
                                     <li class="pc-item {{ in_array($routeName, ['hoa.index', 'hoa.create', 'hoa.show']) ? 'active' : '' }}">
                                         <a class="pc-link" href="{{ route('hoa.index') }}">{{ __('HOA') }}</a>
