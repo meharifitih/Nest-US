@@ -1,7 +1,7 @@
 @php
     $users = \Auth::user();
     $languages = \App\Models\Custom::languages();
-    $userLang = \Auth::user()->lang;
+    $userLang = $users ? $users->lang : 'english';
     $profile = asset(Storage::url('upload/profile'));
 @endphp
 
@@ -40,7 +40,7 @@
                         @endforeach
                     </div>
                 </li>
-                @if (\Auth::user()->type == 'super admin' || \Auth::user()->type == 'owner')
+                @if ($users && ($users->type == 'super admin' || $users->type == 'owner'))
                     <li class="dropdown pc-h-item pc-mega-menu" data-bs-toggle="tooltip" data-bs-original-title="{{__('Theme Settings')}}" data-bs-placement="bottom">
                         <a href="#" class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0"
                             data-bs-toggle="offcanvas" data-bs-target="#offcanvas_pc_layout">
@@ -69,16 +69,16 @@
                                 }
                             @endphp
                             <span class="fw-bold d-block mb-1" style="font-size:1.1rem; color:#222;">{{ $greeting }},</span>
-                            <span class="fw-bold d-block mb-1" style="font-size:1.35rem; letter-spacing:0.5px; color:#444;">{{ \Auth::user()->name }}</span>
-                            <span class="text-muted small">{{ ucfirst(\Auth::user()->type) }}</span>
+                            <span class="fw-bold d-block mb-1" style="font-size:1.35rem; letter-spacing:0.5px; color:#444;">{{ $users ? $users->name : 'Guest' }}</span>
+                            <span class="text-muted small">{{ $users ? ucfirst($users->type) : 'Guest' }}</span>
                         </div>
                         <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 280px)">
-                            @if(\Auth::user()->type !== 'tenant')
+                            @if($users && $users->type !== 'tenant')
                                 <a href="{{ route('setting.index') }}#user_profile_settings" class="dropdown-item">
                                     <i class="ti ti-user"></i>
                                     <span>{{ __('Profile') }}</span>
                                 </a>
-                            @else
+                            @elseif($users && $users->type === 'tenant')
                                 <a href="{{ route('tenant.password.edit') }}" class="dropdown-item">
                                     <i class="ti ti-lock"></i>
                                     <span>{{ __('Change Password') }}</span>

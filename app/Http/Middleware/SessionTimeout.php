@@ -115,7 +115,37 @@ class SessionTimeout
             return redirect()->guest(route('login'))->with('error', 'Your session has expired. Please login again.');
         }
 
+        // Check if user is inactive but not due to pending approval
         if (!$user->is_active) {
+            // If user is pending approval, allow them to stay logged in
+            if ($user->approval_status === 'pending') {
+                Log::info('SessionTimeout: User is pending approval - allowing access');
+                return $next($request);
+            }
+            
+            // If user is rejected, show rejection message
+            if ($user->approval_status === 'rejected') {
+                Log::info('SessionTimeout: User is rejected');
+                Auth::logout();
+
+                // If already on a guest route, don't redirect again
+                if (in_array($currentRoute, ['login', 'password.request', 'password.reset', 'register']) ||
+                    $request->is('login*') || $request->is('register*') || $request->is('password*')) {
+                    return $next($request);
+                }
+
+                // Handle AJAX requests
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'error' => 'Your account has been rejected. Reason: ' . ($user->rejection_reason ?? 'No reason provided'),
+                        'redirect' => route('login')
+                    ], 403);
+                }
+
+                return redirect()->guest(route('login'))->with('error', 'Your account has been rejected. Reason: ' . ($user->rejection_reason ?? 'No reason provided'));
+            }
+            
+            // For other inactive users (deactivated by admin)
             Log::info('SessionTimeout: User is inactive');
             Auth::logout();
 

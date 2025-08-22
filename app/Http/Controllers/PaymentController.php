@@ -256,6 +256,8 @@ class PaymentController extends Controller
                 $data['amount'] = $amount;
                 $data['subscription_transactions_id'] = $packageTransId;
                 $data['payment_type'] = 'Paypal';
+                $data['status'] = 'pending'; // Set status to pending for admin approval
+                $data['payment_status'] = 'pending';
                 PackageTransaction::transactionData($data);
 
                 if($subscription->couponCheck()>0 && !empty($request->coupon)){
@@ -264,9 +266,8 @@ class PaymentController extends Controller
                     CouponHistory::couponData($couhis);
                 }
 
-                 assignSubscription($subscription->id);
-
-                return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
+                // Don't auto-approve - let admin approve
+                return redirect()->route('account.review')->with('success', __('Payment submitted successfully. Please wait for admin approval.'));
             } else {
                 return redirect()
                     ->back()
@@ -314,6 +315,8 @@ class PaymentController extends Controller
                     $data['amount'] = $amount;
                     $data['subscription_transactions_id'] = $packageTransId;
                     $data['payment_type'] = 'Futterwave';
+                    $data['status'] = 'pending'; // Set status to pending for admin approval
+                    $data['payment_status'] = 'pending';
                     PackageTransaction::transactionData($data);
 
                     if ($subscription->couponCheck() > 0 && !empty($request->coupon)) {
@@ -321,9 +324,9 @@ class PaymentController extends Controller
                         $couhis['package'] = $subscription->id;
                         CouponHistory::couponData($couhis);
                     }
-                    assignSubscription($subscription->id);
 
-                    return redirect()->route('dashboard')->with('success', __('Subscription payment successfully completed.'));
+                    // Don't auto-approve - let admin approve
+                    return redirect()->route('account.review')->with('success', __('Payment submitted successfully. Please wait for admin approval.'));
                 } else {
                     return redirect()
                         ->back()

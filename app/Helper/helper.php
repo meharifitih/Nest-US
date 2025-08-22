@@ -289,17 +289,18 @@ if (!function_exists('assignSubscription')) {
     {
         $subscription = Subscription::find($id);
         if ($subscription) {
-            \Auth::user()->subscription = $subscription->id;
+            $user = \Auth::user();
+            $user->subscription = $subscription->id;
             if ($subscription->interval == 'Monthly') {
-                \Auth::user()->subscription_expire_date = Carbon::now()->addMonths(1)->isoFormat('YYYY-MM-DD');
+                $user->subscription_expire_date = Carbon::now()->addMonths(1)->isoFormat('YYYY-MM-DD');
             } elseif ($subscription->interval == 'Quarterly') {
-                \Auth::user()->subscription_expire_date = Carbon::now()->addMonths(3)->isoFormat('YYYY-MM-DD');
+                $user->subscription_expire_date = Carbon::now()->addMonths(3)->isoFormat('YYYY-MM-DD');
             } elseif ($subscription->interval == 'Yearly') {
-                \Auth::user()->subscription_expire_date = Carbon::now()->addYears(1)->isoFormat('YYYY-MM-DD');
+                $user->subscription_expire_date = Carbon::now()->addYears(1)->isoFormat('YYYY-MM-DD');
             } else {
-                \Auth::user()->subscription_expire_date = Carbon::now()->addMonths(1)->isoFormat('YYYY-MM-DD');
+                $user->subscription_expire_date = Carbon::now()->addMonths(1)->isoFormat('YYYY-MM-DD');
             }
-            \Auth::user()->save();
+            $user->save();
 
             $users = User::where('parent_id', '=', parentId())->whereNotIn('type', ['super admin', 'owner'])->get();
 
@@ -348,6 +349,11 @@ if (!function_exists('assignManuallySubscription')) {
             } else {
                 $owner->subscription_expire_date = Carbon::now()->addMonths(1)->isoFormat('YYYY-MM-DD');
             }
+            
+            // Set user as approved and active
+            $owner->approval_status = 'approved';
+            $owner->is_active = 1;
+            $owner->rejection_reason = null;
             $owner->save();
 
             $users = User::where('parent_id', '=', parentId())->whereNotIn('type', ['super admin', 'owner'])->get();

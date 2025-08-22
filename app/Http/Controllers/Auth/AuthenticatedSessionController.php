@@ -45,6 +45,19 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('login')->with('error', __('Verification required: Please check your email to verify your account before continuing.'));
         }
         
+        // Check if user is rejected
+        if ($loginUser->approval_status === 'rejected') {
+            auth()->logout();
+            return redirect()->route('login')->with('error', 'Your account has been rejected. Reason: ' . ($loginUser->rejection_reason ?? 'No reason provided'));
+        }
+        
+        // Check if user is pending approval
+        if ($loginUser->approval_status === 'pending') {
+            // Allow login but redirect to account review page
+            userLoggedHistory();
+            return redirect()->route('account.review')->with('info', 'Your account is pending approval. Please wait for admin approval.');
+        }
+        
         if($loginUser->type=='owner'){
 
             if($loginUser->subscription_expire_date!=null && date('Y-m-d') > $loginUser->subscription_expire_date){

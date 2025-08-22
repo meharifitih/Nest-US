@@ -25,14 +25,15 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        $user=\App\Models\User::find(1);
-        \App::setLocale($user->lang);
-        $registerPage=getSettingsValByName('register_page');
+        $user = \App\Models\User::find(1);
+        $lang = $user ? $user->lang : 'english';
+        \App::setLocale($lang);
+        $registerPage = getSettingsValByName('register_page');
 
-        if($registerPage =='on'){
+        if($registerPage == 'on'){
             $menu = Page::where('slug', 'terms_conditions')->first();
-            return view('auth.register',compact('menu'));
-        }else{
+            return view('auth.register', compact('menu'));
+        } else {
             return view('auth.login');
         }
     }

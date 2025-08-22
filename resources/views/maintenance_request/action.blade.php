@@ -1,4 +1,4 @@
-{{Form::model($maintenanceRequest, array('route' => array('maintenance-request.action', $maintenanceRequest->id), 'method' => 'POST','enctype' => "multipart/form-data")) }}
+{{Form::model($maintenanceRequest, array('route' => array('maintenance-request.action-data', $maintenanceRequest->id), 'method' => 'POST','enctype' => "multipart/form-data")) }}
 <div class="modal-body">
     <div class="row">
         <div class="form-group">
